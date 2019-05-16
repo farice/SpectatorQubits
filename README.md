@@ -24,10 +24,10 @@ pip install -r requirements.txt
 
 > `rl-env` is an arbitrary directory. You can replace `rl-env` with a directory of your choice.
 
-## Run
+## View the notebooks
 
 ```bash
-python main.py
+jupyter notebook
 ```
 
 ## Deactivate
