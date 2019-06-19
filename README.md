@@ -17,7 +17,7 @@ sudo pip install --upgrade virtualenv
 git clone https://github.com/farice/spectatorqubits
 cd spectatorqubits
 mkdir ~/qec-env
-virtualenv --system-site-packages ~/qec-env
+virtualenv ~/qec-env
 source ~/qec-env/bin/activate
 pip install -r requirements.txt
 ```

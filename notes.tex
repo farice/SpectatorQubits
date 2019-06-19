@@ -71,15 +71,44 @@
 \newtheorem{exercise}[theorem]{Exercise}
 \newtheorem{definition}[theorem]{Definition}
 
-\title{Notes}
+\title{Spectator Qubit Notes}
 \author{Faris Sbahi}
 
 \begin{document}
 \maketitle
 
-\begin{enumerate}
-\item
-\end{enumerate}
+\section{Gate Set Tomography}
 
+\subsection{Notation}
+
+Let $\mathcal{H}$ be a Hilbert space of dimension $d$. Hence, we have $d \times d$ density operators $\rho$ s.t. $\rho \succeq 0$ and $\Tr \rho = 1$. We are interested in characterizing an unknown process $G$ which acts on these density operators. Because $G$ is then a CPTP map, we can use Kraus's form
+
+\begin{align*}
+G[\rho] &= \sum_i A_i \rho A_i^\dag 	
+\end{align*}
+
+where $\{A_i\}$ satisfy $\sum_i A_i A_i^\dag = I$.
+
+In tomography, it is useful to represent quantum processes using the Hilbert-Schmidt space of matrices on $\mathcal{H}$, denoted $B(\mathcal{H})$, in which any $d \times d$ matrix $X$ is a vector $\ket{X}$ (or $\bra{X}$) of size $d^2$.
+
+So, let $\{E_i\}$ be a POVM and then
+
+\begin{align*}
+\Pr(k) &= \bra{E_k}\ket{\rho}
+\end{align*}
+
+if we choose $\Tr[X^\dag Y] \equiv \bra{X}\ket{Y}$ as the inner product on $B(\mathcal{H})$.
+
+Furthermore, because $G$ is linear it can be represented as a $d^2 \times d^2$ matrix. Hence, if we perform the measurement given by $\{E_i\}$ after process $G$ has transformed $\rho$, we have
+
+\begin{align*}
+\Pr(k) &= \bra{E_k}G\ket{\rho}
+\end{align*}
+
+\subsection{Tomography}
+
+Assume that $\ket{\rho}$ is unknown.
+
+\subsection{Gate Set Tomography}
 
 \end{document}
