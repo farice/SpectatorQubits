@@ -3,224 +3,212 @@
 	<figure id="bestEstimateColorBoxPlot">
 	  <script>
   $(document).ready(function() {
-var switchmap_plot_6031 = new Array();
-switchmap_plot_6031[ [0,1,0] ] = 'plot_6031_3';
-switchmap_plot_6031[ [0,0,2] ] = 'plot_6031_2';
-switchmap_plot_6031[ [0,1,1] ] = 'plot_6031_4';
-switchmap_plot_6031[ [0,0,1] ] = 'plot_6031_1';
-switchmap_plot_6031[ [0,1,2] ] = 'plot_6031_5';
-switchmap_plot_6031[ [0,0,0] ] = 'plot_6031_0';
-window.switchmap_plot_6031 = switchmap_plot_6031;
+var switchmap_plot_7924 = new Array();
+switchmap_plot_7924[ [0,1,0] ] = 'plot_7924_1';
+switchmap_plot_7924[ [0,0,0] ] = 'plot_7924_0';
+window.switchmap_plot_7924 = switchmap_plot_7924;
 
-function connect_plot_6031_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_3').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {plot_6031_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {plot_6031_onchange(); });
-    $('#switchbd7797_3').on('slidechange', function() {plot_6031_onchange(); });
-    $( '#plot_6031' ).closest('.tabcontent').on('tabchange', function(){
-plot_6031_onchange(); });
-    plot_6031_onchange();
-    console.log('Switches initialized: plot_6031 handlers set');
-    $( '#plot_6031' ).show()
+function connect_plot_7924_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_3').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {plot_7924_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {plot_7924_onchange(); });
+    $('#switchbd1410_3').on('slidechange', function() {plot_7924_onchange(); });
+    $( '#plot_7924' ).closest('.tabcontent').on('tabchange', function(){
+plot_7924_onchange(); });
+    plot_7924_onchange();
+    console.log('Switches initialized: plot_7924 handlers set');
+    $( '#plot_7924' ).show()
   }
   else {
-    setTimeout(connect_plot_6031_to_switches, 500);
-    console.log('plot_6031 switches NOT initialized: Waiting...');
+    setTimeout(connect_plot_7924_to_switches, 500);
+    console.log('plot_7924 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_plot_6031_to_switches();
+  connect_plot_7924_to_switches();
 });
 
-function plot_6031_onchange() {
-  var tabdiv = $( '#plot_6031' ).closest('.tabcontent');
+function plot_7924_onchange() {
+  var tabdiv = $( '#plot_7924' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push(findNearest_switchbd7797_3(true,true,$('#switchbd7797_3').slider('option', 'value')));
-  var idToShow = switchmap_plot_6031[ curSwitchPos ];
-  $( '#plot_6031' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push(findNearest_switchbd1410_3(true,true,$('#switchbd1410_3').slider('option', 'value')));
+  var idToShow = switchmap_plot_7924[ curSwitchPos ];
+  $( '#plot_7924' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#plot_6031').show();
+        divToShow.parentsUntil('#plot_7924').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#plot_6031').show();
+    divToShow.parentsUntil('#plot_7924').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
 }
-make_wsplot_resizable("plot_6031");
+make_wsplot_resizable("plot_7924");
 }); //end on-ready handler
 
 </script>
 
-<div id='plot_6031' class='pygsti-wsoutput-group'>
-<div class='single_switched_value bot_relwrap' id='plot_6031_0'></div>
+<div id='plot_7924' class='pygsti-wsoutput-group'>
+<div class='single_switched_value bot_relwrap' id='plot_7924_0'></div>
 
-<div class='single_switched_value bot_relwrap' id='plot_6031_1'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6031_2'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6031_3'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6031_4'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6031_5'></div>
+<div class='single_switched_value bot_relwrap' id='plot_7924_1'></div>
 
 </div>
 
 	  <script>
 $(document).ready(function() {
-  $('#switchbd7797_0v6').selectmenu();function connect_switchbd7797_0v6_to_base(){
-  if( $('#switchbd7797_0').hasClass('initializedSwitch') ) {
-    $('#switchbd7797_0').on('selectmenuchange', function(event, ui) {
-      var v = $('#switchbd7797_0').val();
-      var el = $('#switchbd7797_0v6');
+  $('#switchbd1410_0v6').selectmenu();function connect_switchbd1410_0v6_to_base(){
+  if( $('#switchbd1410_0').hasClass('initializedSwitch') ) {
+    $('#switchbd1410_0').on('selectmenuchange', function(event, ui) {
+      var v = $('#switchbd1410_0').val();
+      var el = $('#switchbd1410_0v6');
       if( el.val() != v ) { 
         el.val(v).selectmenu('refresh');
       }
-    });    $('#switchbd7797_0v6').on('selectmenuchange', function(event, ui) {
-      var v = $('#switchbd7797_0v6').val();
-      var el = $('#switchbd7797_0');
+    });    $('#switchbd1410_0v6').on('selectmenuchange', function(event, ui) {
+      var v = $('#switchbd1410_0v6').val();
+      var el = $('#switchbd1410_0');
       if( el.val() != v ) { 
         el.val(v).selectmenu('refresh').trigger('selectmenuchange');
       }
     });
-    $('#switchbd7797_0').trigger('selectmenuchange');
-    console.log('switchbd7797_0v6 connected to base');
+    $('#switchbd1410_0').trigger('selectmenuchange');
+    console.log('switchbd1410_0v6 connected to base');
 
   }
   else {
-    setTimeout(connect_switchbd7797_0v6_to_base, 500);
-    console.log('switchbd7797_0v6 base NOT initialized: Waiting...');
+    setTimeout(connect_switchbd1410_0v6_to_base, 500);
+    console.log('switchbd1410_0v6 base NOT initialized: Waiting...');
   }
 };
-connect_switchbd7797_0v6_to_base();$('#switchbd7797_0v6').addClass('initializedSwitch');
+connect_switchbd1410_0v6_to_base();$('#switchbd1410_0v6').addClass('initializedSwitch');
 
-  $('#switchbd7797_1v6').selectmenu();function connect_switchbd7797_1v6_to_base(){
-  if( $('#switchbd7797_1').hasClass('initializedSwitch') ) {
-    $('#switchbd7797_1').on('selectmenuchange', function(event, ui) {
-      var v = $('#switchbd7797_1').val();
-      var el = $('#switchbd7797_1v6');
+  $('#switchbd1410_1v6').selectmenu();function connect_switchbd1410_1v6_to_base(){
+  if( $('#switchbd1410_1').hasClass('initializedSwitch') ) {
+    $('#switchbd1410_1').on('selectmenuchange', function(event, ui) {
+      var v = $('#switchbd1410_1').val();
+      var el = $('#switchbd1410_1v6');
       if( el.val() != v ) { 
         el.val(v).selectmenu('refresh');
       }
-    });    $('#switchbd7797_1v6').on('selectmenuchange', function(event, ui) {
-      var v = $('#switchbd7797_1v6').val();
-      var el = $('#switchbd7797_1');
+    });    $('#switchbd1410_1v6').on('selectmenuchange', function(event, ui) {
+      var v = $('#switchbd1410_1v6').val();
+      var el = $('#switchbd1410_1');
       if( el.val() != v ) { 
         el.val(v).selectmenu('refresh').trigger('selectmenuchange');
       }
     });
-    $('#switchbd7797_1').trigger('selectmenuchange');
-    console.log('switchbd7797_1v6 connected to base');
+    $('#switchbd1410_1').trigger('selectmenuchange');
+    console.log('switchbd1410_1v6 connected to base');
 
   }
   else {
-    setTimeout(connect_switchbd7797_1v6_to_base, 500);
-    console.log('switchbd7797_1v6 base NOT initialized: Waiting...');
+    setTimeout(connect_switchbd1410_1v6_to_base, 500);
+    console.log('switchbd1410_1v6 base NOT initialized: Waiting...');
   }
 };
-connect_switchbd7797_1v6_to_base();$('#switchbd7797_1v6').addClass('initializedSwitch');
+connect_switchbd1410_1v6_to_base();$('#switchbd1410_1v6').addClass('initializedSwitch');
 
-  $('#switchbd7797_2v6 > input').checkboxradio({ icon: false });function connect_switchbd7797_2v6_to_base(){
-  if( $('#switchbd7797_2').hasClass('initializedSwitch') ) {
-    $('#switchbd7797_2').on('change', function(event, ui) {
-      var v = $("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val();
-      var el = $("#switchbd7797_2v6 > input[name='switchbd7797_2v6'][value=" + v + "]");
+  $('#switchbd1410_2v6 > input').checkboxradio({ icon: false });function connect_switchbd1410_2v6_to_base(){
+  if( $('#switchbd1410_2').hasClass('initializedSwitch') ) {
+    $('#switchbd1410_2').on('change', function(event, ui) {
+      var v = $("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val();
+      var el = $("#switchbd1410_2v6 > input[name='switchbd1410_2v6'][value=" + v + "]");
       if( el.is(':checked') == false ) { 
         el.click();
       }
-    });    $('#switchbd7797_2v6').on('change', function(event, ui) {
-      var v = $("#switchbd7797_2v6 > input[name='switchbd7797_2v6']:checked").val();
-      var el = $("#switchbd7797_2 > input[name='switchbd7797_2'][value=" + v + "]");
+    });    $('#switchbd1410_2v6').on('change', function(event, ui) {
+      var v = $("#switchbd1410_2v6 > input[name='switchbd1410_2v6']:checked").val();
+      var el = $("#switchbd1410_2 > input[name='switchbd1410_2'][value=" + v + "]");
       if( el.is(':checked') == false ) { 
         el.click();
       }
     });
-    $('#switchbd7797_2').trigger('change');
+    $('#switchbd1410_2').trigger('change');
   }
   else {
-    setTimeout(connect_switchbd7797_2v6_to_base, 500);
-    console.log('switchbd7797_2v6 base NOT initialized: Waiting...');
+    setTimeout(connect_switchbd1410_2v6_to_base, 500);
+    console.log('switchbd1410_2v6 base NOT initialized: Waiting...');
   }
 };
-connect_switchbd7797_2v6_to_base();$('#switchbd7797_2v6').addClass('initializedSwitch');
+connect_switchbd1410_2v6_to_base();$('#switchbd1410_2v6').addClass('initializedSwitch');
 
-  $('#switchbd7797_3v6').slider({
+  $('#switchbd1410_3v6').slider({
      orientation: 'horizontal', range: false,
-     min: 0.000000, max: 2.000000, step: 0.020000,
-     value: 2.000000,
+     min: 0.000000, max: 0.000000, step: 0.000000,
+     value: 0.000000,
      create: function() {
-       $('#switchbd7797_3v6-handle').text('4');
-       $('#switchbd7797_3v6-handle').css({'width':'3.000000em','height':'1.700000em'});
-       $('#switchbd7797_3v6-handle').css({'margin-left':'-1.500000em','top':'-0.450000em'});
-       $('#switchbd7797_3v6-handle').css({'text-align':'center','line-height':'1.5em'});
-       $('#switchbd7797_3v6').css({'margin-left':'1.500000em', 'margin-top':'0.4em'});
+       $('#switchbd1410_3v6-handle').text('1');
+       $('#switchbd1410_3v6-handle').css({'width':'3.000000em','height':'1.700000em'});
+       $('#switchbd1410_3v6-handle').css({'margin-left':'-1.500000em','top':'-0.450000em'});
+       $('#switchbd1410_3v6-handle').css({'text-align':'center','line-height':'1.5em'});
+       $('#switchbd1410_3v6').css({'margin-left':'1.500000em', 'margin-top':'0.4em'});
      },
      slide: function(event, ui) {
         var includeLeft = event.keyCode != $.ui.keyCode.RIGHT;
         var includeRight = event.keyCode != $.ui.keyCode.LEFT;
-        var iValue = findNearest_switchbd7797_3(includeLeft, includeRight, ui.value);
-        if($('#switchbd7797_3v6').slider('value') != switchbd7797_3_float_values[iValue]) {
-          $('#switchbd7797_3-handle').text(switchbd7797_3_str_values[iValue]);
-          $('#switchbd7797_3').slider('value', switchbd7797_3_float_values[iValue]);
+        var iValue = findNearest_switchbd1410_3(includeLeft, includeRight, ui.value);
+        if($('#switchbd1410_3v6').slider('value') != switchbd1410_3_float_values[iValue]) {
+          $('#switchbd1410_3-handle').text(switchbd1410_3_str_values[iValue]);
+          $('#switchbd1410_3').slider('value', switchbd1410_3_float_values[iValue]);
         }        return false;    },
-  });function connect_switchbd7797_3v6_to_base(){
-  if( $('#switchbd7797_3').hasClass('initializedSwitch') ) {
-    $('#switchbd7797_3').on('slidechange', function(event, ui) {
-      $('#switchbd7797_3v6').slider('value', ui.value);
-      $('#switchbd7797_3v6-handle').text( $('#switchbd7797_3-handle').text() );
+  });function connect_switchbd1410_3v6_to_base(){
+  if( $('#switchbd1410_3').hasClass('initializedSwitch') ) {
+    $('#switchbd1410_3').on('slidechange', function(event, ui) {
+      $('#switchbd1410_3v6').slider('value', ui.value);
+      $('#switchbd1410_3v6-handle').text( $('#switchbd1410_3-handle').text() );
       });
-    var mock_ui = { value: $('#switchbd7797_3').slider('value') };
-    $('#switchbd7797_3').trigger('slidechange', mock_ui);
+    var mock_ui = { value: $('#switchbd1410_3').slider('value') };
+    $('#switchbd1410_3').trigger('slidechange', mock_ui);
   }
   else {
-    setTimeout(connect_switchbd7797_3v6_to_base, 500);
-    console.log('switchbd7797_3v6 base NOT initialized: Waiting...');
+    setTimeout(connect_switchbd1410_3v6_to_base, 500);
+    console.log('switchbd1410_3v6 base NOT initialized: Waiting...');
   }
 };
-connect_switchbd7797_3v6_to_base();$('#switchbd7797_3v6').addClass('initializedSwitch');
+connect_switchbd1410_3v6_to_base();$('#switchbd1410_3v6').addClass('initializedSwitch');
 
 });
 </script>
 
 <div class='switch_container' style='display: none'><fieldset>
-<label for='switchbd7797_0v6'>Dataset</label>
-<select name='switchbd7797_0v6' id='switchbd7797_0v6'>
+<label for='switchbd1410_0v6'>Dataset</label>
+<select name='switchbd1410_0v6' id='switchbd1410_0v6'>
 <option value=0 selected='selected'>unique</option>
 </select>
 </fieldset></div>
 
 <div class='switch_container' style='display: none'><fieldset>
-<label for='switchbd7797_1v6'>Estimate</label>
-<select name='switchbd7797_1v6' id='switchbd7797_1v6'>
-<option value=0 selected='selected'>TP</option>
+<label for='switchbd1410_1v6'>Estimate</label>
+<select name='switchbd1410_1v6' id='switchbd1410_1v6'>
+<option value=0 selected='selected'>TP.Robust+</option>
 <option value=1>Target</option>
 </select>
 </fieldset></div>
 
 <div class='switch_container' style='display: none'>
-<fieldset id='switchbd7797_2v6'>
+<fieldset id='switchbd1410_2v6'>
 <legend>Gauge-Opt: </legend>
-<label for='switchbd7797_2v6-0'>single</label>
-<input type='radio' name='switchbd7797_2v6' id='switchbd7797_2v6-0' value=0 checked='checked'>
+<label for='switchbd1410_2v6-0'>single</label>
+<input type='radio' name='switchbd1410_2v6' id='switchbd1410_2v6-0' value=0 checked='checked'>
 </fieldset></div>
 
-<div id='switchbd7797_3v6-container' class='switch_container'>
+<div id='switchbd1410_3v6-container' class='switch_container' style='display: none'>
 <fieldset>
-<label for='switchbd7797_3v6' class='pygsti-slider-label'>max(L)</label>
-<div name='switchbd7797_3v6' id='switchbd7797_3v6'>
-<div id='switchbd7797_3v6-handle' class='ui-slider-handle'></div></div>
+<label for='switchbd1410_3v6' class='pygsti-slider-label'>max(L)</label>
+<div name='switchbd1410_3v6' id='switchbd1410_3v6'>
+<div id='switchbd1410_3v6-handle' class='ui-slider-handle'></div></div>
 </fieldset></div>
 
 	  <figcaption><span class="captiontitle">Per-sequence model violation box plot.</span><span class="captiondetail"> This plot shows the <span class="math">2\Delta\log(\mathcal{L})</span> contribution for each individual circuit in the dataset.  Each box represents a single gate sequence, and its color indicates whether GST was able to fit the corresponding frequency well.  Shades of white/gray indicate typical (within the expected) values. Red squares represent statistically significant evidence for model violation (non-Markovianity), and the probabilty that <i>any</i> red squares appear is 5% when the data really are Markovian. Each square block of pixels (<q>plaquette</q>) corresponds to a particular germ-power "base sequence", and each pixel within a block corresponds to a specific "fiducial pair" -- i.e., choice of pre- and post-fiducial sequences.  The base sequences are arranged by germ (varying from row to row), and by power/length (varying from column to column).  Hovering over a colored box will pop up the exact circuit to which it corresponds, the observed frequencies, and the corresponding probabilities predicted by the GST estimate of the gateset.  The slider below the figure permits switching between different estimates, labeled by <span class="math">L</span>, which were obtained from subsets of the data that included only base sequences of length up to <span class="math">L</span>. </span></figcaption>
@@ -230,78 +218,66 @@ connect_switchbd7797_3v6_to_base();$('#switchbd7797_3v6').addClass('initializedS
 	<figure id="bestEstimateTVDColorBoxPlot">
 	  <script>
   $(document).ready(function() {
-var switchmap_plot_6526 = new Array();
-switchmap_plot_6526[ [0,1,0] ] = 'plot_6526_3';
-switchmap_plot_6526[ [0,0,2] ] = 'plot_6526_2';
-switchmap_plot_6526[ [0,1,1] ] = 'plot_6526_4';
-switchmap_plot_6526[ [0,0,1] ] = 'plot_6526_1';
-switchmap_plot_6526[ [0,1,2] ] = 'plot_6526_5';
-switchmap_plot_6526[ [0,0,0] ] = 'plot_6526_0';
-window.switchmap_plot_6526 = switchmap_plot_6526;
+var switchmap_plot_4419 = new Array();
+switchmap_plot_4419[ [0,1,0] ] = 'plot_4419_1';
+switchmap_plot_4419[ [0,0,0] ] = 'plot_4419_0';
+window.switchmap_plot_4419 = switchmap_plot_4419;
 
-function connect_plot_6526_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_3').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {plot_6526_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {plot_6526_onchange(); });
-    $('#switchbd7797_3').on('slidechange', function() {plot_6526_onchange(); });
-    $( '#plot_6526' ).closest('.tabcontent').on('tabchange', function(){
-plot_6526_onchange(); });
-    plot_6526_onchange();
-    console.log('Switches initialized: plot_6526 handlers set');
-    $( '#plot_6526' ).show()
+function connect_plot_4419_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_3').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {plot_4419_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {plot_4419_onchange(); });
+    $('#switchbd1410_3').on('slidechange', function() {plot_4419_onchange(); });
+    $( '#plot_4419' ).closest('.tabcontent').on('tabchange', function(){
+plot_4419_onchange(); });
+    plot_4419_onchange();
+    console.log('Switches initialized: plot_4419 handlers set');
+    $( '#plot_4419' ).show()
   }
   else {
-    setTimeout(connect_plot_6526_to_switches, 500);
-    console.log('plot_6526 switches NOT initialized: Waiting...');
+    setTimeout(connect_plot_4419_to_switches, 500);
+    console.log('plot_4419 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_plot_6526_to_switches();
+  connect_plot_4419_to_switches();
 });
 
-function plot_6526_onchange() {
-  var tabdiv = $( '#plot_6526' ).closest('.tabcontent');
+function plot_4419_onchange() {
+  var tabdiv = $( '#plot_4419' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push(findNearest_switchbd7797_3(true,true,$('#switchbd7797_3').slider('option', 'value')));
-  var idToShow = switchmap_plot_6526[ curSwitchPos ];
-  $( '#plot_6526' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push(findNearest_switchbd1410_3(true,true,$('#switchbd1410_3').slider('option', 'value')));
+  var idToShow = switchmap_plot_4419[ curSwitchPos ];
+  $( '#plot_4419' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#plot_6526').show();
+        divToShow.parentsUntil('#plot_4419').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#plot_6526').show();
+    divToShow.parentsUntil('#plot_4419').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
 }
-make_wsplot_resizable("plot_6526");
+make_wsplot_resizable("plot_4419");
 }); //end on-ready handler
 
 </script>
 
-<div id='plot_6526' class='pygsti-wsoutput-group'>
-<div class='single_switched_value bot_relwrap' id='plot_6526_0'></div>
+<div id='plot_4419' class='pygsti-wsoutput-group'>
+<div class='single_switched_value bot_relwrap' id='plot_4419_0'></div>
 
-<div class='single_switched_value bot_relwrap' id='plot_6526_1'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6526_2'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6526_3'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6526_4'></div>
-
-<div class='single_switched_value bot_relwrap' id='plot_6526_5'></div>
+<div class='single_switched_value bot_relwrap' id='plot_4419_1'></div>
 
 </div>
 

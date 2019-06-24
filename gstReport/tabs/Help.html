@@ -32,46 +32,46 @@
   <figcaption><span class="captiontitle">Click this title to see my full caption.</span> <span class="captiondetail">This is an example table which demonstrates some of the functionality found in the other tables and figures of this report.  Hovering over the column headers displays descriptive tooltips, and clicking on the pyGSTi logo will cause a plot to be generated.  Hovering over the colored boxes of the plot will display the value of that box, potentially with additional information (in this case, error bars).  Math formulas like <span class="math">\sqrt{x^2 + y^2} = \frac{1}{4}</span> can be displayed in captions but not in tooltips, so sometimes the column-header tooltips simply refer to material in the captions.</span></figcaption>
   <script>
   $(document).ready(function() {
-var switchmap_table_9138 = new Array();
-switchmap_table_9138[ [] ] = 'table_9138_0';
-window.switchmap_table_9138 = switchmap_table_9138;
+var switchmap_table_6180 = new Array();
+switchmap_table_6180[ [] ] = 'table_6180_0';
+window.switchmap_table_6180 = switchmap_table_6180;
 
-function connect_table_9138_to_switches(){
+function connect_table_6180_to_switches(){
   if(true) {
-    $( '#table_9138' ).closest('.tabcontent').on('tabchange', function(){
-table_9138_onchange(); });
-    table_9138_onchange();
-    console.log('Switches initialized: table_9138 handlers set');
-    $( '#table_9138' ).show()
+    $( '#table_6180' ).closest('.tabcontent').on('tabchange', function(){
+table_6180_onchange(); });
+    table_6180_onchange();
+    console.log('Switches initialized: table_6180 handlers set');
+    $( '#table_6180' ).show()
   }
   else {
-    setTimeout(connect_table_9138_to_switches, 500);
-    console.log('table_9138 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_6180_to_switches, 500);
+    console.log('table_6180 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_9138_to_switches();
+  connect_table_6180_to_switches();
 });
 
-function table_9138_onchange() {
-  var tabdiv = $( '#table_9138' ).closest('.tabcontent');
+function table_6180_onchange() {
+  var tabdiv = $( '#table_6180' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  var idToShow = switchmap_table_9138[ curSwitchPos ];
-  $( '#table_9138' ).children().hide();
+  var idToShow = switchmap_table_6180[ curSwitchPos ];
+  $( '#table_6180' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_9138').show();
+        divToShow.parentsUntil('#table_6180').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_9138').show();
+    divToShow.parentsUntil('#table_6180').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -80,8 +80,8 @@ function table_9138_onchange() {
 
 </script>
 
-<div id='table_9138' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_9138_0'></div>
+<div id='table_6180' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_6180_0'></div>
 
 </div>
 

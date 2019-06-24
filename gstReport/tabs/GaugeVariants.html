@@ -11,53 +11,53 @@
 	  <figcaption><span class="captiontitle">SPAM error metrics</span> <span class="captiondetail"> This table presents (gauge-variant) metrics that quantify errors in the <em>SPAM operations</em> -- the estimated initial state preparation[s] and POVM measurement -- with respect to the ideal target operations,   A description of each metric can be found by hovering the pointer over the column header.</span></figcaption>
 	  <script>
   $(document).ready(function() {
-var switchmap_table_5694 = new Array();
-switchmap_table_5694[ [0,1,0] ] = 'table_5694_1';
-switchmap_table_5694[ [0,0,0] ] = 'table_5694_0';
-window.switchmap_table_5694 = switchmap_table_5694;
+var switchmap_table_4750 = new Array();
+switchmap_table_4750[ [0,1,0] ] = 'table_4750_1';
+switchmap_table_4750[ [0,0,0] ] = 'table_4750_0';
+window.switchmap_table_4750 = switchmap_table_4750;
 
-function connect_table_5694_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {table_5694_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {table_5694_onchange(); });
-    $('#switchbd7797_2').on('change', function() {table_5694_onchange(); });
-    $( '#table_5694' ).closest('.tabcontent').on('tabchange', function(){
-table_5694_onchange(); });
-    table_5694_onchange();
-    console.log('Switches initialized: table_5694 handlers set');
-    $( '#table_5694' ).show()
+function connect_table_4750_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_2').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {table_4750_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {table_4750_onchange(); });
+    $('#switchbd1410_2').on('change', function() {table_4750_onchange(); });
+    $( '#table_4750' ).closest('.tabcontent').on('tabchange', function(){
+table_4750_onchange(); });
+    table_4750_onchange();
+    console.log('Switches initialized: table_4750 handlers set');
+    $( '#table_4750' ).show()
   }
   else {
-    setTimeout(connect_table_5694_to_switches, 500);
-    console.log('table_5694 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_4750_to_switches, 500);
+    console.log('table_4750 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_5694_to_switches();
+  connect_table_4750_to_switches();
 });
 
-function table_5694_onchange() {
-  var tabdiv = $( '#table_5694' ).closest('.tabcontent');
+function table_4750_onchange() {
+  var tabdiv = $( '#table_4750' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
-  var idToShow = switchmap_table_5694[ curSwitchPos ];
-  $( '#table_5694' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push($("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val());
+  var idToShow = switchmap_table_4750[ curSwitchPos ];
+  $( '#table_4750' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_5694').show();
+        divToShow.parentsUntil('#table_4750').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_5694').show();
+    divToShow.parentsUntil('#table_4750').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -66,10 +66,10 @@ function table_5694_onchange() {
 
 </script>
 
-<div id='table_5694' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_5694_0'></div>
+<div id='table_4750' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_4750_0'></div>
 
-<div class='single_switched_value' id='table_5694_1'></div>
+<div class='single_switched_value' id='table_4750_1'></div>
 
 </div>
 
@@ -79,53 +79,53 @@ function table_5694_onchange() {
 	  <figcaption><span class="captiontitle">Individual gate error metrics</span> <span class="captiondetail">This table presents various (gauge-variant) metrics that quantify errors in each individual estimated logic gate, with respect to the ideal target gates.  Note that "Entanglement infidelity" and "Average gate infidelity" are two common definitions of process fidelity, and related by a constant dimensional factor.  A description of each metric can be found by  hovering the pointer over the column header.</span></figcaption>
 	  <script>
   $(document).ready(function() {
-var switchmap_table_3148 = new Array();
-switchmap_table_3148[ [0,1,0] ] = 'table_3148_1';
-switchmap_table_3148[ [0,0,0] ] = 'table_3148_0';
-window.switchmap_table_3148 = switchmap_table_3148;
+var switchmap_table_766 = new Array();
+switchmap_table_766[ [0,1,0] ] = 'table_766_1';
+switchmap_table_766[ [0,0,0] ] = 'table_766_0';
+window.switchmap_table_766 = switchmap_table_766;
 
-function connect_table_3148_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {table_3148_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {table_3148_onchange(); });
-    $('#switchbd7797_2').on('change', function() {table_3148_onchange(); });
-    $( '#table_3148' ).closest('.tabcontent').on('tabchange', function(){
-table_3148_onchange(); });
-    table_3148_onchange();
-    console.log('Switches initialized: table_3148 handlers set');
-    $( '#table_3148' ).show()
+function connect_table_766_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_2').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {table_766_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {table_766_onchange(); });
+    $('#switchbd1410_2').on('change', function() {table_766_onchange(); });
+    $( '#table_766' ).closest('.tabcontent').on('tabchange', function(){
+table_766_onchange(); });
+    table_766_onchange();
+    console.log('Switches initialized: table_766 handlers set');
+    $( '#table_766' ).show()
   }
   else {
-    setTimeout(connect_table_3148_to_switches, 500);
-    console.log('table_3148 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_766_to_switches, 500);
+    console.log('table_766 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_3148_to_switches();
+  connect_table_766_to_switches();
 });
 
-function table_3148_onchange() {
-  var tabdiv = $( '#table_3148' ).closest('.tabcontent');
+function table_766_onchange() {
+  var tabdiv = $( '#table_766' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
-  var idToShow = switchmap_table_3148[ curSwitchPos ];
-  $( '#table_3148' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push($("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val());
+  var idToShow = switchmap_table_766[ curSwitchPos ];
+  $( '#table_766' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_3148').show();
+        divToShow.parentsUntil('#table_766').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_3148').show();
+    divToShow.parentsUntil('#table_766').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -134,10 +134,10 @@ function table_3148_onchange() {
 
 </script>
 
-<div id='table_3148' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_3148_0'></div>
+<div id='table_766' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_766_0'></div>
 
-<div class='single_switched_value' id='table_3148_1'></div>
+<div class='single_switched_value' id='table_766_1'></div>
 
 </div>
 
@@ -147,14 +147,14 @@ function table_3148_onchange() {
 	  <figcaption><span class="captiontitle">Single metric comparison.</span> <span class="captiondetail">TODO: caption</span> </figcaption>
 	  <script>
 $(document).ready(function() {
-  $('#switchbd3812_0').selectmenu();$('#switchbd3812_0').addClass('initializedSwitch');
+  $('#switchbd6079_0').selectmenu();$('#switchbd6079_0').addClass('initializedSwitch');
 
 });
 </script>
 
 <div class='switch_container'><fieldset>
-<label for='switchbd3812_0'>Metric</label>
-<select name='switchbd3812_0' id='switchbd3812_0'>
+<label for='switchbd6079_0'>Metric</label>
+<select name='switchbd6079_0' id='switchbd6079_0'>
 <option value=0 selected='selected'>Entanglement Infidelity</option>
 <option value=1>Avg. Gate Infidelity</option>
 <option value=2>1/2 Trace Distance</option>
@@ -167,56 +167,56 @@ $(document).ready(function() {
 
 	  <script>
   $(document).ready(function() {
-var switchmap_table_6143 = new Array();
-switchmap_table_6143[ [1,0] ] = 'table_6143_1';
-switchmap_table_6143[ [5,0] ] = 'table_6143_5';
-switchmap_table_6143[ [0,0] ] = 'table_6143_0';
-switchmap_table_6143[ [4,0] ] = 'table_6143_4';
-switchmap_table_6143[ [2,0] ] = 'table_6143_2';
-switchmap_table_6143[ [3,0] ] = 'table_6143_3';
-switchmap_table_6143[ [6,0] ] = 'table_6143_6';
-window.switchmap_table_6143 = switchmap_table_6143;
+var switchmap_table_6302 = new Array();
+switchmap_table_6302[ [1,0] ] = 'table_6302_1';
+switchmap_table_6302[ [5,0] ] = 'table_6302_5';
+switchmap_table_6302[ [0,0] ] = 'table_6302_0';
+switchmap_table_6302[ [4,0] ] = 'table_6302_4';
+switchmap_table_6302[ [2,0] ] = 'table_6302_2';
+switchmap_table_6302[ [3,0] ] = 'table_6302_3';
+switchmap_table_6302[ [6,0] ] = 'table_6302_6';
+window.switchmap_table_6302 = switchmap_table_6302;
 
-function connect_table_6143_to_switches(){
-  if($('#switchbd3812_0').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
-    $('#switchbd3812_0').on('selectmenuchange', function() {table_6143_onchange(); });
-    $('#switchbd7797_2').on('change', function() {table_6143_onchange(); });
-    $( '#table_6143' ).closest('.tabcontent').on('tabchange', function(){
-table_6143_onchange(); });
-    table_6143_onchange();
-    console.log('Switches initialized: table_6143 handlers set');
-    $( '#table_6143' ).show()
+function connect_table_6302_to_switches(){
+  if($('#switchbd6079_0').hasClass('initializedSwitch') && $('#switchbd1410_2').hasClass('initializedSwitch')) {
+    $('#switchbd6079_0').on('selectmenuchange', function() {table_6302_onchange(); });
+    $('#switchbd1410_2').on('change', function() {table_6302_onchange(); });
+    $( '#table_6302' ).closest('.tabcontent').on('tabchange', function(){
+table_6302_onchange(); });
+    table_6302_onchange();
+    console.log('Switches initialized: table_6302 handlers set');
+    $( '#table_6302' ).show()
   }
   else {
-    setTimeout(connect_table_6143_to_switches, 500);
-    console.log('table_6143 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_6302_to_switches, 500);
+    console.log('table_6302 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_6143_to_switches();
+  connect_table_6302_to_switches();
 });
 
-function table_6143_onchange() {
-  var tabdiv = $( '#table_6143' ).closest('.tabcontent');
+function table_6302_onchange() {
+  var tabdiv = $( '#table_6302' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd3812_0').val());
-  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
-  var idToShow = switchmap_table_6143[ curSwitchPos ];
-  $( '#table_6143' ).children().hide();
+  curSwitchPos.push($('#switchbd6079_0').val());
+  curSwitchPos.push($("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val());
+  var idToShow = switchmap_table_6302[ curSwitchPos ];
+  $( '#table_6302' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_6143').show();
+        divToShow.parentsUntil('#table_6302').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_6143').show();
+    divToShow.parentsUntil('#table_6302').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -225,20 +225,20 @@ function table_6143_onchange() {
 
 </script>
 
-<div id='table_6143' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_6143_0'></div>
+<div id='table_6302' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_6302_0'></div>
 
-<div class='single_switched_value' id='table_6143_1'></div>
+<div class='single_switched_value' id='table_6302_1'></div>
 
-<div class='single_switched_value' id='table_6143_2'></div>
+<div class='single_switched_value' id='table_6302_2'></div>
 
-<div class='single_switched_value' id='table_6143_3'></div>
+<div class='single_switched_value' id='table_6302_3'></div>
 
-<div class='single_switched_value' id='table_6143_4'></div>
+<div class='single_switched_value' id='table_6302_4'></div>
 
-<div class='single_switched_value' id='table_6143_5'></div>
+<div class='single_switched_value' id='table_6302_5'></div>
 
-<div class='single_switched_value' id='table_6143_6'></div>
+<div class='single_switched_value' id='table_6302_6'></div>
 
 </div>
 
@@ -254,53 +254,53 @@ function table_6143_onchange() {
 	  <figcaption><span class="captiontitle">Per-germ error metrics</span> <span class="captiondetail">This table presents various (gauge-variant) metrics that quantify errors in the estimated <em>germs</em>, with respect to their ideal target counterparts (as computed from the ideal target gates).  A description of each metric can be found by  hovering the pointer over the column header..</span></figcaption>
 	  <script>
   $(document).ready(function() {
-var switchmap_table_9209 = new Array();
-switchmap_table_9209[ [0,1,0] ] = 'table_9209_1';
-switchmap_table_9209[ [0,0,0] ] = 'table_9209_0';
-window.switchmap_table_9209 = switchmap_table_9209;
+var switchmap_table_9675 = new Array();
+switchmap_table_9675[ [0,1,0] ] = 'table_9675_1';
+switchmap_table_9675[ [0,0,0] ] = 'table_9675_0';
+window.switchmap_table_9675 = switchmap_table_9675;
 
-function connect_table_9209_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {table_9209_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {table_9209_onchange(); });
-    $('#switchbd7797_2').on('change', function() {table_9209_onchange(); });
-    $( '#table_9209' ).closest('.tabcontent').on('tabchange', function(){
-table_9209_onchange(); });
-    table_9209_onchange();
-    console.log('Switches initialized: table_9209 handlers set');
-    $( '#table_9209' ).show()
+function connect_table_9675_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_2').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {table_9675_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {table_9675_onchange(); });
+    $('#switchbd1410_2').on('change', function() {table_9675_onchange(); });
+    $( '#table_9675' ).closest('.tabcontent').on('tabchange', function(){
+table_9675_onchange(); });
+    table_9675_onchange();
+    console.log('Switches initialized: table_9675 handlers set');
+    $( '#table_9675' ).show()
   }
   else {
-    setTimeout(connect_table_9209_to_switches, 500);
-    console.log('table_9209 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_9675_to_switches, 500);
+    console.log('table_9675 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_9209_to_switches();
+  connect_table_9675_to_switches();
 });
 
-function table_9209_onchange() {
-  var tabdiv = $( '#table_9209' ).closest('.tabcontent');
+function table_9675_onchange() {
+  var tabdiv = $( '#table_9675' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
-  var idToShow = switchmap_table_9209[ curSwitchPos ];
-  $( '#table_9209' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push($("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val());
+  var idToShow = switchmap_table_9675[ curSwitchPos ];
+  $( '#table_9675' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_9209').show();
+        divToShow.parentsUntil('#table_9675').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_9209').show();
+    divToShow.parentsUntil('#table_9675').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -309,10 +309,10 @@ function table_9209_onchange() {
 
 </script>
 
-<div id='table_9209' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_9209_0'></div>
+<div id='table_9675' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_9675_0'></div>
 
-<div class='single_switched_value' id='table_9209_1'></div>
+<div class='single_switched_value' id='table_9675_1'></div>
 
 </div>
 

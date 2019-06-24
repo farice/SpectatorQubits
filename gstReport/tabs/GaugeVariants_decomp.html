@@ -5,53 +5,53 @@
 	  <figcaption><span class="captiontitle">Decomposition of estimated gates.</span> <span class="captiondetail">This table attempts to describe each gate as a rotation operator (this interpretation is more reliable for single qubits than for other systems).   From each gate, a rotation axis and angle are extracted by considering the projection of its logarithm onto the Pauli Hamiltonian projectors.  The rotation axis and angle are (respectively) given by the direction and the magnitude (up to a conventional constant) of this projected logarithm.  In other words, the <q>rotation axis</q> is basically the Hamiltonian that generated the gate.  The angles between the various gates' rotation axes are computed from the dot products between them.</span></figcaption>
 	  <script>
   $(document).ready(function() {
-var switchmap_table_4971 = new Array();
-switchmap_table_4971[ [0,1,0] ] = 'table_4971_1';
-switchmap_table_4971[ [0,0,0] ] = 'table_4971_0';
-window.switchmap_table_4971 = switchmap_table_4971;
+var switchmap_table_418 = new Array();
+switchmap_table_418[ [0,1,0] ] = 'table_418_1';
+switchmap_table_418[ [0,0,0] ] = 'table_418_0';
+window.switchmap_table_418 = switchmap_table_418;
 
-function connect_table_4971_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {table_4971_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {table_4971_onchange(); });
-    $('#switchbd7797_2').on('change', function() {table_4971_onchange(); });
-    $( '#table_4971' ).closest('.tabcontent').on('tabchange', function(){
-table_4971_onchange(); });
-    table_4971_onchange();
-    console.log('Switches initialized: table_4971 handlers set');
-    $( '#table_4971' ).show()
+function connect_table_418_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_2').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {table_418_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {table_418_onchange(); });
+    $('#switchbd1410_2').on('change', function() {table_418_onchange(); });
+    $( '#table_418' ).closest('.tabcontent').on('tabchange', function(){
+table_418_onchange(); });
+    table_418_onchange();
+    console.log('Switches initialized: table_418 handlers set');
+    $( '#table_418' ).show()
   }
   else {
-    setTimeout(connect_table_4971_to_switches, 500);
-    console.log('table_4971 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_418_to_switches, 500);
+    console.log('table_418 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_4971_to_switches();
+  connect_table_418_to_switches();
 });
 
-function table_4971_onchange() {
-  var tabdiv = $( '#table_4971' ).closest('.tabcontent');
+function table_418_onchange() {
+  var tabdiv = $( '#table_418' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
-  var idToShow = switchmap_table_4971[ curSwitchPos ];
-  $( '#table_4971' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push($("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val());
+  var idToShow = switchmap_table_418[ curSwitchPos ];
+  $( '#table_418' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_4971').show();
+        divToShow.parentsUntil('#table_418').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_4971').show();
+    divToShow.parentsUntil('#table_418').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -60,10 +60,10 @@ function table_4971_onchange() {
 
 </script>
 
-<div id='table_4971' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_4971_0'></div>
+<div id='table_418' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_418_0'></div>
 
-<div class='single_switched_value' id='table_4971_1'></div>
+<div class='single_switched_value' id='table_418_1'></div>
 
 </div>
 
@@ -73,53 +73,53 @@ function table_4971_onchange() {
 	  <figcaption><span class="captiontitle">Estimated gates' Choi representation and spectra</span> <span class="captiondetail"> These plots show each gate's Choi-Jamiolkowski representation and that representation's eigenvalues.  Every completely positive (CP) map has a non-negative Choi spectrum, so any negative eigenvalues (shown in <span style="color:red">red</span>) indicate that the estimate violates positivity.  If a gate is perfectly unitary, its Choi spectrum will be rank-1, and real-world gates often have many Choi eigenvalues that are very close to zero.  Therefore, although negative eigenvalues indicate that the estimate is non-physical, this can easily stem from statistical fluctuations.  If statistically significant, though, it usually indicates either non-Markovianity or a failed gauge optimization.  Since the Choi matrix is Hermitian, it is displayed using colored boxes by placing the real and imaginary parts of the upper-triangle's off-diagonal elements in the upper and lower triangles of the color box plot, respectively.</span></figcaption>
 	  <script>
   $(document).ready(function() {
-var switchmap_table_6504 = new Array();
-switchmap_table_6504[ [0,1,0] ] = 'table_6504_1';
-switchmap_table_6504[ [0,0,0] ] = 'table_6504_0';
-window.switchmap_table_6504 = switchmap_table_6504;
+var switchmap_table_3767 = new Array();
+switchmap_table_3767[ [0,1,0] ] = 'table_3767_1';
+switchmap_table_3767[ [0,0,0] ] = 'table_3767_0';
+window.switchmap_table_3767 = switchmap_table_3767;
 
-function connect_table_6504_to_switches(){
-  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
-    $('#switchbd7797_0').on('selectmenuchange', function() {table_6504_onchange(); });
-    $('#switchbd7797_1').on('selectmenuchange', function() {table_6504_onchange(); });
-    $('#switchbd7797_2').on('change', function() {table_6504_onchange(); });
-    $( '#table_6504' ).closest('.tabcontent').on('tabchange', function(){
-table_6504_onchange(); });
-    table_6504_onchange();
-    console.log('Switches initialized: table_6504 handlers set');
-    $( '#table_6504' ).show()
+function connect_table_3767_to_switches(){
+  if($('#switchbd1410_0').hasClass('initializedSwitch') && $('#switchbd1410_1').hasClass('initializedSwitch') && $('#switchbd1410_2').hasClass('initializedSwitch')) {
+    $('#switchbd1410_0').on('selectmenuchange', function() {table_3767_onchange(); });
+    $('#switchbd1410_1').on('selectmenuchange', function() {table_3767_onchange(); });
+    $('#switchbd1410_2').on('change', function() {table_3767_onchange(); });
+    $( '#table_3767' ).closest('.tabcontent').on('tabchange', function(){
+table_3767_onchange(); });
+    table_3767_onchange();
+    console.log('Switches initialized: table_3767 handlers set');
+    $( '#table_3767' ).show()
   }
   else {
-    setTimeout(connect_table_6504_to_switches, 500);
-    console.log('table_6504 switches NOT initialized: Waiting...');
+    setTimeout(connect_table_3767_to_switches, 500);
+    console.log('table_3767 switches NOT initialized: Waiting...');
   }
 };
 $(document).ready(function() {
-  connect_table_6504_to_switches();
+  connect_table_3767_to_switches();
 });
 
-function table_6504_onchange() {
-  var tabdiv = $( '#table_6504' ).closest('.tabcontent');
+function table_3767_onchange() {
+  var tabdiv = $( '#table_3767' ).closest('.tabcontent');
   if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
   var curSwitchPos = new Array();
-  curSwitchPos.push($('#switchbd7797_0').val());
-  curSwitchPos.push($('#switchbd7797_1').val());
-  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
-  var idToShow = switchmap_table_6504[ curSwitchPos ];
-  $( '#table_6504' ).children().hide();
+  curSwitchPos.push($('#switchbd1410_0').val());
+  curSwitchPos.push($('#switchbd1410_1').val());
+  curSwitchPos.push($("#switchbd1410_2 > input[name='switchbd1410_2']:checked").val());
+  var idToShow = switchmap_table_3767[ curSwitchPos ];
+  $( '#table_3767' ).children().hide();
   divToShow = $( '#' + idToShow );
   if( divToShow.children().length == 0 ) {
     loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
         divToShow = $( '#' + idToShow );
         divToShow.show();
-        divToShow.parentsUntil('#table_6504').show();
+        divToShow.parentsUntil('#table_3767').show();
         caption = divToShow.closest('figure').children('figcaption:first');
         caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
     });
   }
   else {
     divToShow.show();
-    divToShow.parentsUntil('#table_6504').show();
+    divToShow.parentsUntil('#table_3767').show();
     caption = divToShow.closest('figure').children('figcaption:first');
     caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
   }
@@ -128,10 +128,10 @@ function table_6504_onchange() {
 
 </script>
 
-<div id='table_6504' class='pygsti-wsoutput-group'>
-<div class='single_switched_value' id='table_6504_0'></div>
+<div id='table_3767' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_3767_0'></div>
 
-<div class='single_switched_value' id='table_6504_1'></div>
+<div class='single_switched_value' id='table_3767_1'></div>
 
 </div>
 
