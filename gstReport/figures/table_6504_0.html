@@ -1,0 +1,452 @@
+<script>
+  $(document).ready(function() {
+  $("#37b0f5fb-4449-4483-ae69-b944db90cddc").addClass("pygsti-plotgroup-master");
+  $("#37b0f5fb-4449-4483-ae69-b944db90cddc").on("init", function(event) {
+    pex_init_plotdiv($("#37b0f5fb-4449-4483-ae69-b944db90cddc"), 140.0, 156.0);
+    pex_init_slaves($("#37b0f5fb-4449-4483-ae69-b944db90cddc"));
+    console.log("Initialized 37b0f5fb-4449-4483-ae69-b944db90cddc");
+  });
+  $("#37b0f5fb-4449-4483-ae69-b944db90cddc").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot 37b0f5fb-4449-4483-ae69-b944db90cddc" );
+     $("#37b0f5fb-4449-4483-ae69-b944db90cddc").off("click.pygsti");
+     console.log("Click-Created 37b0f5fb-4449-4483-ae69-b944db90cddc");
+  });
+  $("#37b0f5fb-4449-4483-ae69-b944db90cddc").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#37b0f5fb-4449-4483-ae69-b944db90cddc"), 0.8974358974358975, fracw, frach, 140.0, 156.0);
+     plotman.enqueue(function() { 
+       $("#37b0f5fb-4449-4483-ae69-b944db90cddc").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("37b0f5fb-4449-4483-ae69-b944db90cddc")) {
+    Plotly.newPlot("37b0f5fb-4449-4483-ae69-b944db90cddc", [{"zmax": 1.0, "uid": "091dc57d-ffb3-46b5-ba9f-f0c9e4ba28c2", "type": "heatmap", "zmin": -1.0, "colorscale": [[0.0, "rgb(0,0,255)"], [0.5, "rgb(255,255,255)"], [1.0, "rgb(255,0,0)"]], "text": [["0.000616", "0.0001702", "0.0003782", "0.0023948"], ["0.0022401", "0.0001044", "0.0021728", "0.0013517"], ["-0.0005741", "0.0019007", "0.0006547", "0.0009922"], ["0.9935318", "-0.0003782", "0.0001702", "-0.0001044"]], "z": [[0.0006160059968629912, 0.00017023113428152672, 0.0003782177040539505, 0.002394768146857685], [0.0022400650579847046, 0.00010444175170898398, 0.0021727589181347066, 0.0013517190855728755], [-0.0005740805671683411, 0.0019006610554958862, 0.0006546743958831217, 0.0009921804760316122], [0.9935318118795119, -0.00037821770405395037, 0.00017023113428152672, -0.00010444175170898355]], "hoverinfo": "text", "showscale": false}], {"title": {"font": {"size": 10.0}}, "xaxis": {"mirror": true, "side": "top", "ticktext": ["<i>I</i>", "<i>X</i>", "<i>Y</i>", "<i>Z</i>"], "showline": true, "tickangle": -90, "zeroline": false, "showgrid": false, "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "title": {"font": {"size": 10.0}}, "linewidth": 2, "showticklabels": true, "ticks": ""}, "yaxis": {"mirror": true, "side": "left", "ticktext": ["<i>Z</i>", "<i>Y</i>", "<i>X</i>", "<i>I</i>"], "showline": true, "zeroline": false, "showgrid": false, "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "title": {"font": {"size": 10.0}}, "linewidth": 2, "showticklabels": true, "ticks": ""}, "margin": {"l": 60.0, "b": 20.0, "t": 76.0, "r": 20.0}, "shapes": [{"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 0.5, "type": "line", "y1": 3.5, "x1": 0.5}, {"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 1.5, "type": "line", "y1": 3.5, "x1": 1.5}, {"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 2.5, "type": "line", "y1": 3.5, "x1": 2.5}, {"line": {"color": "black", "width": 1}, "y0": 0.5, "x0": -0.5, "type": "line", "y1": 0.5, "x1": 3.5}, {"line": {"color": "black", "width": 1}, "y0": 1.5, "x0": -0.5, "type": "line", "y1": 1.5, "x1": 3.5}, {"line": {"color": "black", "width": 1}, "y0": 2.5, "x0": -0.5, "type": "line", "y1": 2.5, "x1": 3.5}]}, {"plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly", "showLink": false}); 
+}
+ 
+       pex_create_slaves($("#37b0f5fb-4449-4483-ae69-b944db90cddc"), 140.0, 156.0);
+     }, "Creating Plot 37b0f5fb-4449-4483-ae69-b944db90cddc" );
+     console.log("Created 37b0f5fb-4449-4483-ae69-b944db90cddc");
+  });
+  $("#37b0f5fb-4449-4483-ae69-b944db90cddc").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#37b0f5fb-4449-4483-ae69-b944db90cddc"), 0.8974358974358975, fracw, frach, 140.0, 156.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("37b0f5fb-4449-4483-ae69-b944db90cddc")); 
+      pex_resize_slaves($("#37b0f5fb-4449-4483-ae69-b944db90cddc"), 140.0, 156.0);
+     }, "Resizing Plot 37b0f5fb-4449-4483-ae69-b944db90cddc" );
+    //console.log("Resized 37b0f5fb-4449-4483-ae69-b944db90cddc");
+  });
+var switchmap_plot_4847 = new Array();
+switchmap_plot_4847[ [] ] = 'plot_4847_0';
+window.switchmap_plot_4847 = switchmap_plot_4847;
+
+function connect_plot_4847_to_switches(){
+  if(true) {
+    $( '#plot_4847' ).closest('.tabcontent').on('tabchange', function(){
+plot_4847_onchange(); });
+    plot_4847_onchange();
+    console.log('Switches initialized: plot_4847 handlers set');
+    $( '#plot_4847' ).show()
+  }
+  else {
+    setTimeout(connect_plot_4847_to_switches, 500);
+    console.log('plot_4847 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_4847_to_switches();
+});
+
+function plot_4847_onchange() {
+  var tabdiv = $( '#plot_4847' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_4847[ curSwitchPos ];
+  $( '#plot_4847' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_4847').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+  $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").addClass("pygsti-plotgroup-master");
+  $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").on("init", function(event) {
+    pex_init_plotdiv($("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29"), 170.0, 180.0);
+    pex_init_slaves($("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29"));
+    console.log("Initialized bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29");
+  });
+  $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29" );
+     $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").off("click.pygsti");
+     console.log("Click-Created bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29");
+  });
+  $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29"), 0.9444444444444444, fracw, frach, 170.0, 180.0);
+     plotman.enqueue(function() { 
+       $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29")) {
+    Plotly.newPlot("bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29", [{"uid": "e904f3a7-55b6-4799-ae69-30cf6d226f28", "y": [0.0007797845766887422, 0.0014036954244035476, 0.004278745500456611, 0.9935377744984518], "text": ["0.0007798", "0.0014037", "0.0042787", "0.993538"], "marker": {"color": ["rgb(200,200,200)", "rgb(200,200,200)", "rgb(200,200,200)", "rgb(200,200,200)"]}, "x": [0, 1, 2, 3], "type": "bar", "hoverinfo": "text"}], {"xaxis": {"title": {"text": "index"}, "tickvals": [0, 1, 2, 3]}, "yaxis": {"range": [-4.1, -0.0], "type": "log"}, "margin": {"l": 40.0, "b": 50.0, "t": 10.0, "r": 10.0}, "bargap": 0.02}, {"plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly", "showLink": false}); 
+}
+ 
+       pex_create_slaves($("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29"), 170.0, 180.0);
+     }, "Creating Plot bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29" );
+     console.log("Created bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29");
+  });
+  $("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29"), 0.9444444444444444, fracw, frach, 170.0, 180.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29")); 
+      pex_resize_slaves($("#bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29"), 170.0, 180.0);
+     }, "Resizing Plot bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29" );
+    //console.log("Resized bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29");
+  });
+var switchmap_plot_6984 = new Array();
+switchmap_plot_6984[ [] ] = 'plot_6984_0';
+window.switchmap_plot_6984 = switchmap_plot_6984;
+
+function connect_plot_6984_to_switches(){
+  if(true) {
+    $( '#plot_6984' ).closest('.tabcontent').on('tabchange', function(){
+plot_6984_onchange(); });
+    plot_6984_onchange();
+    console.log('Switches initialized: plot_6984 handlers set');
+    $( '#plot_6984' ).show()
+  }
+  else {
+    setTimeout(connect_plot_6984_to_switches, 500);
+    console.log('plot_6984 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_6984_to_switches();
+});
+
+function plot_6984_onchange() {
+  var tabdiv = $( '#plot_6984' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_6984[ curSwitchPos ];
+  $( '#plot_6984' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_6984').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+  $("#56453e40-71b7-494f-a53f-1333bd9bffbd").addClass("pygsti-plotgroup-master");
+  $("#56453e40-71b7-494f-a53f-1333bd9bffbd").on("init", function(event) {
+    pex_init_plotdiv($("#56453e40-71b7-494f-a53f-1333bd9bffbd"), 140.0, 156.0);
+    pex_init_slaves($("#56453e40-71b7-494f-a53f-1333bd9bffbd"));
+    console.log("Initialized 56453e40-71b7-494f-a53f-1333bd9bffbd");
+  });
+  $("#56453e40-71b7-494f-a53f-1333bd9bffbd").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot 56453e40-71b7-494f-a53f-1333bd9bffbd" );
+     $("#56453e40-71b7-494f-a53f-1333bd9bffbd").off("click.pygsti");
+     console.log("Click-Created 56453e40-71b7-494f-a53f-1333bd9bffbd");
+  });
+  $("#56453e40-71b7-494f-a53f-1333bd9bffbd").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#56453e40-71b7-494f-a53f-1333bd9bffbd"), 0.8974358974358975, fracw, frach, 140.0, 156.0);
+     plotman.enqueue(function() { 
+       $("#56453e40-71b7-494f-a53f-1333bd9bffbd").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("56453e40-71b7-494f-a53f-1333bd9bffbd")) {
+    Plotly.newPlot("56453e40-71b7-494f-a53f-1333bd9bffbd", [{"zmax": 1.0, "uid": "37c9236c-8310-4851-b149-1962545560c0", "type": "heatmap", "zmin": -1.0, "colorscale": [[0.0, "rgb(0,0,255)"], [0.5, "rgb(255,255,255)"], [1.0, "rgb(255,0,0)"]], "text": [["0.0001641", "2.46e-05", "-0.0002903", "0.0014261"], ["0.000496", "0.0002953", "0.003122", "6.2e-06"], ["0.4945342", "0.4980291", "0.0013156", "-0.0001641"], ["0.4974228", "0.0002903", "2.46e-05", "-0.0002953"]], "z": [[0.000164067629861826, 2.4616804799967872e-05, -0.00029031271151573124, 0.0014260509889501567], [0.0004960310025735862, 0.0002952657240468671, 0.003122047662592499, 6.2497351403650895e-06], [0.49453415867298933, 0.49802909916241445, 0.0013156188304702479, -0.0001641109628033205], [0.49742280218604307, 0.00029031271151573124, 2.4616804800078894e-05, -0.00029526572404697815]], "hoverinfo": "text", "showscale": false}], {"title": {"font": {"size": 10.0}}, "xaxis": {"mirror": true, "side": "top", "ticktext": ["<i>I</i>", "<i>X</i>", "<i>Y</i>", "<i>Z</i>"], "showline": true, "tickangle": -90, "zeroline": false, "showgrid": false, "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "title": {"font": {"size": 10.0}}, "linewidth": 2, "showticklabels": true, "ticks": ""}, "yaxis": {"mirror": true, "side": "left", "ticktext": ["<i>Z</i>", "<i>Y</i>", "<i>X</i>", "<i>I</i>"], "showline": true, "zeroline": false, "showgrid": false, "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "title": {"font": {"size": 10.0}}, "linewidth": 2, "showticklabels": true, "ticks": ""}, "margin": {"l": 60.0, "b": 20.0, "t": 76.0, "r": 20.0}, "shapes": [{"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 0.5, "type": "line", "y1": 3.5, "x1": 0.5}, {"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 1.5, "type": "line", "y1": 3.5, "x1": 1.5}, {"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 2.5, "type": "line", "y1": 3.5, "x1": 2.5}, {"line": {"color": "black", "width": 1}, "y0": 0.5, "x0": -0.5, "type": "line", "y1": 0.5, "x1": 3.5}, {"line": {"color": "black", "width": 1}, "y0": 1.5, "x0": -0.5, "type": "line", "y1": 1.5, "x1": 3.5}, {"line": {"color": "black", "width": 1}, "y0": 2.5, "x0": -0.5, "type": "line", "y1": 2.5, "x1": 3.5}]}, {"plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly", "showLink": false}); 
+}
+ 
+       pex_create_slaves($("#56453e40-71b7-494f-a53f-1333bd9bffbd"), 140.0, 156.0);
+     }, "Creating Plot 56453e40-71b7-494f-a53f-1333bd9bffbd" );
+     console.log("Created 56453e40-71b7-494f-a53f-1333bd9bffbd");
+  });
+  $("#56453e40-71b7-494f-a53f-1333bd9bffbd").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#56453e40-71b7-494f-a53f-1333bd9bffbd"), 0.8974358974358975, fracw, frach, 140.0, 156.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("56453e40-71b7-494f-a53f-1333bd9bffbd")); 
+      pex_resize_slaves($("#56453e40-71b7-494f-a53f-1333bd9bffbd"), 140.0, 156.0);
+     }, "Resizing Plot 56453e40-71b7-494f-a53f-1333bd9bffbd" );
+    //console.log("Resized 56453e40-71b7-494f-a53f-1333bd9bffbd");
+  });
+var switchmap_plot_9655 = new Array();
+switchmap_plot_9655[ [] ] = 'plot_9655_0';
+window.switchmap_plot_9655 = switchmap_plot_9655;
+
+function connect_plot_9655_to_switches(){
+  if(true) {
+    $( '#plot_9655' ).closest('.tabcontent').on('tabchange', function(){
+plot_9655_onchange(); });
+    plot_9655_onchange();
+    console.log('Switches initialized: plot_9655 handlers set');
+    $( '#plot_9655' ).show()
+  }
+  else {
+    setTimeout(connect_plot_9655_to_switches, 500);
+    console.log('plot_9655 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_9655_to_switches();
+});
+
+function plot_9655_onchange() {
+  var tabdiv = $( '#plot_9655' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_9655[ curSwitchPos ];
+  $( '#plot_9655' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_9655').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+  $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").addClass("pygsti-plotgroup-master");
+  $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").on("init", function(event) {
+    pex_init_plotdiv($("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493"), 170.0, 180.0);
+    pex_init_slaves($("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493"));
+    console.log("Initialized 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493");
+  });
+  $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493" );
+     $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").off("click.pygsti");
+     console.log("Click-Created 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493");
+  });
+  $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493"), 0.9444444444444444, fracw, frach, 170.0, 180.0);
+     plotman.enqueue(function() { 
+       $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("9fbb0110-7f16-4cea-a6ee-70f2e0a1b493")) {
+    Plotly.newPlot("9fbb0110-7f16-4cea-a6ee-70f2e0a1b493", [{"uid": "26e6b053-e7e4-4afd-b09e-65f2bb26fd93", "y": [0.0013285301483794499, 0.002582685485094972, 0.003826748746806415, 0.9922620356197204], "text": ["0.0013285", "0.0025827", "0.0038267", "0.992262"], "marker": {"color": ["rgb(200,200,200)", "rgb(200,200,200)", "rgb(200,200,200)", "rgb(200,200,200)"]}, "x": [0, 1, 2, 3], "type": "bar", "hoverinfo": "text"}], {"xaxis": {"title": {"text": "index"}, "tickvals": [0, 1, 2, 3]}, "yaxis": {"range": [-3.1, -0.0], "type": "log"}, "margin": {"l": 40.0, "b": 50.0, "t": 10.0, "r": 10.0}, "bargap": 0.02}, {"plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly", "showLink": false}); 
+}
+ 
+       pex_create_slaves($("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493"), 170.0, 180.0);
+     }, "Creating Plot 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493" );
+     console.log("Created 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493");
+  });
+  $("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493"), 0.9444444444444444, fracw, frach, 170.0, 180.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("9fbb0110-7f16-4cea-a6ee-70f2e0a1b493")); 
+      pex_resize_slaves($("#9fbb0110-7f16-4cea-a6ee-70f2e0a1b493"), 170.0, 180.0);
+     }, "Resizing Plot 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493" );
+    //console.log("Resized 9fbb0110-7f16-4cea-a6ee-70f2e0a1b493");
+  });
+var switchmap_plot_8608 = new Array();
+switchmap_plot_8608[ [] ] = 'plot_8608_0';
+window.switchmap_plot_8608 = switchmap_plot_8608;
+
+function connect_plot_8608_to_switches(){
+  if(true) {
+    $( '#plot_8608' ).closest('.tabcontent').on('tabchange', function(){
+plot_8608_onchange(); });
+    plot_8608_onchange();
+    console.log('Switches initialized: plot_8608 handlers set');
+    $( '#plot_8608' ).show()
+  }
+  else {
+    setTimeout(connect_plot_8608_to_switches, 500);
+    console.log('plot_8608 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_8608_to_switches();
+});
+
+function plot_8608_onchange() {
+  var tabdiv = $( '#plot_8608' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_8608[ curSwitchPos ];
+  $( '#plot_8608' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_8608').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+  $("#fedf3bbb-daec-4e65-b50b-1450143aea40").addClass("pygsti-plotgroup-master");
+  $("#fedf3bbb-daec-4e65-b50b-1450143aea40").on("init", function(event) {
+    pex_init_plotdiv($("#fedf3bbb-daec-4e65-b50b-1450143aea40"), 140.0, 156.0);
+    pex_init_slaves($("#fedf3bbb-daec-4e65-b50b-1450143aea40"));
+    console.log("Initialized fedf3bbb-daec-4e65-b50b-1450143aea40");
+  });
+  $("#fedf3bbb-daec-4e65-b50b-1450143aea40").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot fedf3bbb-daec-4e65-b50b-1450143aea40" );
+     $("#fedf3bbb-daec-4e65-b50b-1450143aea40").off("click.pygsti");
+     console.log("Click-Created fedf3bbb-daec-4e65-b50b-1450143aea40");
+  });
+  $("#fedf3bbb-daec-4e65-b50b-1450143aea40").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#fedf3bbb-daec-4e65-b50b-1450143aea40"), 0.8974358974358975, fracw, frach, 140.0, 156.0);
+     plotman.enqueue(function() { 
+       $("#fedf3bbb-daec-4e65-b50b-1450143aea40").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("fedf3bbb-daec-4e65-b50b-1450143aea40")) {
+    Plotly.newPlot("fedf3bbb-daec-4e65-b50b-1450143aea40", [{"zmax": 1.0, "uid": "524e374e-7290-4de6-99c2-d432cd6a491d", "type": "heatmap", "zmin": -1.0, "colorscale": [[0.0, "rgb(0,0,255)"], [0.5, "rgb(255,255,255)"], [1.0, "rgb(255,0,0)"]], "text": [["0.0001706", "-0.0002345", "9.74e-05", "0.0011755"], ["0.4947423", "-0.0001334", "0.4961435", "-0.0001706"], ["0.0001696", "0.0028728", "0.001642", "-3.4e-06"], ["0.4998082", "-9.74e-05", "-0.0002345", "0.0001334"]], "z": [[0.0001705586266032533, -0.0002344910290902514, 9.738747251944461e-05, 0.0011755127479661236], [0.4947422533198559, -0.00013338817112010243, 0.4961435463553132, -0.00017056533457897194], [0.00016963313503353018, 0.002872765986806651, 0.0016420167201942574, -3.4027061899255545e-06], [0.4998081749099143, -9.738747251952788e-05, -0.00023449102909025142, 0.0001333881711199914]], "hoverinfo": "text", "showscale": false}], {"title": {"font": {"size": 10.0}}, "xaxis": {"mirror": true, "side": "top", "ticktext": ["<i>I</i>", "<i>X</i>", "<i>Y</i>", "<i>Z</i>"], "showline": true, "tickangle": -90, "zeroline": false, "showgrid": false, "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "title": {"font": {"size": 10.0}}, "linewidth": 2, "showticklabels": true, "ticks": ""}, "yaxis": {"mirror": true, "side": "left", "ticktext": ["<i>Z</i>", "<i>Y</i>", "<i>X</i>", "<i>I</i>"], "showline": true, "zeroline": false, "showgrid": false, "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "title": {"font": {"size": 10.0}}, "linewidth": 2, "showticklabels": true, "ticks": ""}, "margin": {"l": 60.0, "b": 20.0, "t": 76.0, "r": 20.0}, "shapes": [{"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 0.5, "type": "line", "y1": 3.5, "x1": 0.5}, {"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 1.5, "type": "line", "y1": 3.5, "x1": 1.5}, {"line": {"color": "black", "width": 1}, "y0": -0.5, "x0": 2.5, "type": "line", "y1": 3.5, "x1": 2.5}, {"line": {"color": "black", "width": 1}, "y0": 0.5, "x0": -0.5, "type": "line", "y1": 0.5, "x1": 3.5}, {"line": {"color": "black", "width": 1}, "y0": 1.5, "x0": -0.5, "type": "line", "y1": 1.5, "x1": 3.5}, {"line": {"color": "black", "width": 1}, "y0": 2.5, "x0": -0.5, "type": "line", "y1": 2.5, "x1": 3.5}]}, {"plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly", "showLink": false}); 
+}
+ 
+       pex_create_slaves($("#fedf3bbb-daec-4e65-b50b-1450143aea40"), 140.0, 156.0);
+     }, "Creating Plot fedf3bbb-daec-4e65-b50b-1450143aea40" );
+     console.log("Created fedf3bbb-daec-4e65-b50b-1450143aea40");
+  });
+  $("#fedf3bbb-daec-4e65-b50b-1450143aea40").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#fedf3bbb-daec-4e65-b50b-1450143aea40"), 0.8974358974358975, fracw, frach, 140.0, 156.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("fedf3bbb-daec-4e65-b50b-1450143aea40")); 
+      pex_resize_slaves($("#fedf3bbb-daec-4e65-b50b-1450143aea40"), 140.0, 156.0);
+     }, "Resizing Plot fedf3bbb-daec-4e65-b50b-1450143aea40" );
+    //console.log("Resized fedf3bbb-daec-4e65-b50b-1450143aea40");
+  });
+var switchmap_plot_401 = new Array();
+switchmap_plot_401[ [] ] = 'plot_401_0';
+window.switchmap_plot_401 = switchmap_plot_401;
+
+function connect_plot_401_to_switches(){
+  if(true) {
+    $( '#plot_401' ).closest('.tabcontent').on('tabchange', function(){
+plot_401_onchange(); });
+    plot_401_onchange();
+    console.log('Switches initialized: plot_401 handlers set');
+    $( '#plot_401' ).show()
+  }
+  else {
+    setTimeout(connect_plot_401_to_switches, 500);
+    console.log('plot_401 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_401_to_switches();
+});
+
+function plot_401_onchange() {
+  var tabdiv = $( '#plot_401' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_401[ curSwitchPos ];
+  $( '#plot_401' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_401').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+  $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").addClass("pygsti-plotgroup-master");
+  $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").on("init", function(event) {
+    pex_init_plotdiv($("#3bc4a948-7ca4-436f-b87f-21859cf7dd62"), 170.0, 180.0);
+    pex_init_slaves($("#3bc4a948-7ca4-436f-b87f-21859cf7dd62"));
+    console.log("Initialized 3bc4a948-7ca4-436f-b87f-21859cf7dd62");
+  });
+  $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot 3bc4a948-7ca4-436f-b87f-21859cf7dd62" );
+     $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").off("click.pygsti");
+     console.log("Click-Created 3bc4a948-7ca4-436f-b87f-21859cf7dd62");
+  });
+  $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#3bc4a948-7ca4-436f-b87f-21859cf7dd62"), 0.9444444444444444, fracw, frach, 170.0, 180.0);
+     plotman.enqueue(function() { 
+       $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("3bc4a948-7ca4-436f-b87f-21859cf7dd62")) {
+    Plotly.newPlot("3bc4a948-7ca4-436f-b87f-21859cf7dd62", [{"uid": "56945635-2036-4160-8984-968c55e98557", "y": [0.0010519160297691088, 0.002103317101444916, 0.0041215237887448, 0.9927232430800419], "text": ["0.0010519", "0.0021033", "0.0041215", "0.992723"], "marker": {"color": ["rgb(200,200,200)", "rgb(200,200,200)", "rgb(200,200,200)", "rgb(200,200,200)"]}, "x": [0, 1, 2, 3], "type": "bar", "hoverinfo": "text"}], {"xaxis": {"title": {"text": "index"}, "tickvals": [0, 1, 2, 3]}, "yaxis": {"range": [-3.1, -0.0], "type": "log"}, "margin": {"l": 40.0, "b": 50.0, "t": 10.0, "r": 10.0}, "bargap": 0.02}, {"plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly", "showLink": false}); 
+}
+ 
+       pex_create_slaves($("#3bc4a948-7ca4-436f-b87f-21859cf7dd62"), 170.0, 180.0);
+     }, "Creating Plot 3bc4a948-7ca4-436f-b87f-21859cf7dd62" );
+     console.log("Created 3bc4a948-7ca4-436f-b87f-21859cf7dd62");
+  });
+  $("#3bc4a948-7ca4-436f-b87f-21859cf7dd62").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#3bc4a948-7ca4-436f-b87f-21859cf7dd62"), 0.9444444444444444, fracw, frach, 170.0, 180.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("3bc4a948-7ca4-436f-b87f-21859cf7dd62")); 
+      pex_resize_slaves($("#3bc4a948-7ca4-436f-b87f-21859cf7dd62"), 170.0, 180.0);
+     }, "Resizing Plot 3bc4a948-7ca4-436f-b87f-21859cf7dd62" );
+    //console.log("Resized 3bc4a948-7ca4-436f-b87f-21859cf7dd62");
+  });
+var switchmap_plot_2271 = new Array();
+switchmap_plot_2271[ [] ] = 'plot_2271_0';
+window.switchmap_plot_2271 = switchmap_plot_2271;
+
+function connect_plot_2271_to_switches(){
+  if(true) {
+    $( '#plot_2271' ).closest('.tabcontent').on('tabchange', function(){
+plot_2271_onchange(); });
+    plot_2271_onchange();
+    console.log('Switches initialized: plot_2271 handlers set');
+    $( '#plot_2271' ).show()
+  }
+  else {
+    setTimeout(connect_plot_2271_to_switches, 500);
+    console.log('plot_2271 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_2271_to_switches();
+});
+
+function plot_2271_onchange() {
+  var tabdiv = $( '#plot_2271' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_2271[ curSwitchPos ];
+  $( '#plot_2271' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_2271').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+    make_wstable_resizable("table_6504_0");
+    trigger_wstable_plot_creation("table_6504_0",true);
+}); //end on-ready handler
+
+</script>
+<table class="dataTable" id="table_6504_0_tbl"><thead><tr><th> <span title="Gate">Gate</span> </th><th> <span title="Choi matrix (Pauli-Product basis basis)">Choi matrix (Pauli-Product basis basis)</span> </th><th> <span title="Eigenvalue Magnitudes">Eigenvalue Magnitudes</span> </th></tr></thead><tbody><tr><td><span title="Gi">Gi</span></td><td><div id='plot_4847' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_4847_0'>
+<div class='abswrap'><div id="37b0f5fb-4449-4483-ae69-b944db90cddc" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td><td><div id='plot_6984' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_6984_0'>
+<div class='abswrap'><div id="bb6c2bdb-255a-4d5e-87b2-737b6b8a3b29" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td></tr><tr><td><span title="Gx">Gx</span></td><td><div id='plot_9655' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_9655_0'>
+<div class='abswrap'><div id="56453e40-71b7-494f-a53f-1333bd9bffbd" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td><td><div id='plot_8608' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_8608_0'>
+<div class='abswrap'><div id="9fbb0110-7f16-4cea-a6ee-70f2e0a1b493" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td></tr><tr><td><span title="Gy">Gy</span></td><td><div id='plot_401' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_401_0'>
+<div class='abswrap'><div id="fedf3bbb-daec-4e65-b50b-1450143aea40" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td><td><div id='plot_2271' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_2271_0'>
+<div class='abswrap'><div id="3bc4a948-7ca4-436f-b87f-21859cf7dd62" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td></tr></tbody></table>

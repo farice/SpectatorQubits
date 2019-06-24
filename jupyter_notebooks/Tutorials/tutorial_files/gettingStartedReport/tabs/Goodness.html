@@ -1,0 +1,261 @@
+	<h1>Model Violation Analysis</h1>
+        <p>The plots and tables on this tab summarize how well the GST estimate actually fits the data.  Although they may be less familiar to you than, say, process fidelity, these analyses are essential to understanding the GST estimate, and how much to trust it!  Real qubit systems often display behavior that isn't consistent with modeling each gate as a stationary CPTP map.  When pyGSTi tries to fit such data to its model (a single gateset), this "non-Markovianity" manifests as <em>model violation</em>.  This tab provides several views of the model violation observed for this fit, ranging from the coarse-grained (total violation) to hyper-detailed (per-circuit violation).  More observed model violation &#8658; the error metrics on other tabs should be trusted <em>less</em>.</p>
+
+	<figure id="progressBarPlot" class='tbl'>
+	  <figcaption><span class="captiontitle">Model violation summary.</span> <span class="captiondetail">This plot summarizes how well GST was able to fit the data -- or subsets of it -- to a gateset.  Bars indicate the difference between the actual and expected log-likelihood values, and are given in units of standard deviations of the appropriate <span class="math">\chi^2</span> distribution. Each bar corresponds to a <em>subset</em> of the data including only circuits of length up to <span class="math">\sim L</span>; the rightmost bar corresponds to the full dataset.  Low values are better (less model violation), and bars are colored according to the <q>star</q> rating found in a later table detailing the overall model violation.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_plot_2672 = new Array();
+switchmap_plot_2672[ [0,2] ] = 'plot_2672_2';
+switchmap_plot_2672[ [0,1] ] = 'plot_2672_1';
+switchmap_plot_2672[ [0,0] ] = 'plot_2672_0';
+window.switchmap_plot_2672 = switchmap_plot_2672;
+
+function connect_plot_2672_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {plot_2672_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {plot_2672_onchange(); });
+    $( '#plot_2672' ).closest('.tabcontent').on('tabchange', function(){
+plot_2672_onchange(); });
+    plot_2672_onchange();
+    console.log('Switches initialized: plot_2672 handlers set');
+    $( '#plot_2672' ).show()
+  }
+  else {
+    setTimeout(connect_plot_2672_to_switches, 500);
+    console.log('plot_2672 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_2672_to_switches();
+});
+
+function plot_2672_onchange() {
+  var tabdiv = $( '#plot_2672' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  var idToShow = switchmap_plot_2672[ curSwitchPos ];
+  $( '#plot_2672' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#plot_2672').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#plot_2672').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+make_wsplot_resizable("plot_2672");
+}); //end on-ready handler
+
+</script>
+
+<div id='plot_2672' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_2672_0'></div>
+
+<div class='single_switched_value relwrap' id='plot_2672_1'></div>
+
+<div class='single_switched_value relwrap' id='plot_2672_2'></div>
+
+</div>
+
+	</figure>
+
+
+        <figure id="progressTable" class='tbl'>
+	  <figcaption><span class="captiontitle">Detailed overall model violation.</span> <span class="captiondetail"> This table provides a detailed look at how the observed model violation -- defined by how badly the GST model fits the data -- evolves as more and more of the data are incorporated into the fit.  PyGSTi fits the data iteratively, starting by just fitting data from the shortest circuits (<span class="math">L=1</span>), and then adding longer and longer sequences.  Each subset of the data, defined by its maximum sequence length <span class="math">L</span>, yields an independent fit that is analyzed here.  The key quantity is the difference between the observed and expected maximum loglikelihood (<span class="math">\log(\mathcal{L})</span>).  If the model fits, then <span class="math">2\Delta\log(\mathcal{L})</span> should be a <span class="math">\chi^2_k</span> random variable, where <span class="math">k</span> (the degrees of freedom) is the difference between <span class="math">N_S</span> (the number of independent data points) and <span class="math">N_p</span> (the number of model parameters).  So <span class="math">2\Delta\log(\mathcal{L})</span> should lie in <span class="math">[k-\sqrt{2k},k+\sqrt{2k}]</span>, and <span class="math">N_\sigma = (2\Delta\log(\mathcal{L})-k)/\sqrt{2k}</span> quantifies how many standard deviations it falls above the mean (a <span class="math">p</span>-value can be straightforwardly derived from <span class="math">N_\sigma</span>).  The rating from 1 to 5 stars gives a very crude indication of goodness of fit.  Heading tool tips provide descriptions of each column's value.</span></figcaption>
+	  <!--<span class="math">p</span> is the p-value derived from a <span class="math">\chi^2_k</span> distribution.(For example, if <span class="math">p=0.05</span>, then the probability of observing a <span class="math">\chi^{2}</span> value as large as, or larger than, the one indicated in the table is 5%, assuming the GST model is valid.) -->
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_2094 = new Array();
+switchmap_table_2094[ [0,2] ] = 'table_2094_2';
+switchmap_table_2094[ [0,1] ] = 'table_2094_1';
+switchmap_table_2094[ [0,0] ] = 'table_2094_0';
+window.switchmap_table_2094 = switchmap_table_2094;
+
+function connect_table_2094_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {table_2094_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {table_2094_onchange(); });
+    $( '#table_2094' ).closest('.tabcontent').on('tabchange', function(){
+table_2094_onchange(); });
+    table_2094_onchange();
+    console.log('Switches initialized: table_2094 handlers set');
+    $( '#table_2094' ).show()
+  }
+  else {
+    setTimeout(connect_table_2094_to_switches, 500);
+    console.log('table_2094 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_2094_to_switches();
+});
+
+function table_2094_onchange() {
+  var tabdiv = $( '#table_2094' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  var idToShow = switchmap_table_2094[ curSwitchPos ];
+  $( '#table_2094' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_2094').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_2094').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_2094' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_2094_0'></div>
+
+<div class='single_switched_value' id='table_2094_1'></div>
+
+<div class='single_switched_value' id='table_2094_2'></div>
+
+</div>
+
+	</figure>
+	
+	<figure id="bestEstimateColorScatterPlot" class='tbl'>
+	  <figcaption><span class="captiontitle">Per-circuit model violation vs. circuit length</span> <span class="captiondetail">The fit's total <span class="math">2\Delta\log(\mathcal{L})</span> is a sum over all <span class="math">N_s</span> circuits used for GST.  This plot shows <span class="math">2\Delta\log(\mathcal{L})</span> for each individual circuit, plotted against that circuit's length (on the X axis).  Certain forms of non-Markovian noise, like slow drift, produce a characteristic linear relationship.  Note that the length plotted here is the <em>actual</em> length of the circuit, not its nominal <span class="math">L</span>.</span> </figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_plot_3928 = new Array();
+switchmap_plot_3928[ [0,1,3] ] = 'plot_3928_9';
+switchmap_plot_3928[ [0,1,0] ] = 'plot_3928_6';
+switchmap_plot_3928[ [0,2,3] ] = 'plot_3928_15';
+switchmap_plot_3928[ [0,1,4] ] = 'plot_3928_10';
+switchmap_plot_3928[ [0,1,1] ] = 'plot_3928_7';
+switchmap_plot_3928[ [0,2,1] ] = 'plot_3928_13';
+switchmap_plot_3928[ [0,0,4] ] = 'plot_3928_4';
+switchmap_plot_3928[ [0,1,5] ] = 'plot_3928_11';
+switchmap_plot_3928[ [0,1,2] ] = 'plot_3928_8';
+switchmap_plot_3928[ [0,2,2] ] = 'plot_3928_14';
+switchmap_plot_3928[ [0,0,3] ] = 'plot_3928_3';
+switchmap_plot_3928[ [0,0,2] ] = 'plot_3928_2';
+switchmap_plot_3928[ [0,0,5] ] = 'plot_3928_5';
+switchmap_plot_3928[ [0,2,0] ] = 'plot_3928_12';
+switchmap_plot_3928[ [0,0,1] ] = 'plot_3928_1';
+switchmap_plot_3928[ [0,0,0] ] = 'plot_3928_0';
+switchmap_plot_3928[ [0,2,4] ] = 'plot_3928_16';
+switchmap_plot_3928[ [0,2,5] ] = 'plot_3928_17';
+window.switchmap_plot_3928 = switchmap_plot_3928;
+
+function connect_plot_3928_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch') && $('#switchbd6211_3').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {plot_3928_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {plot_3928_onchange(); });
+    $('#switchbd6211_3').on('slidechange', function() {plot_3928_onchange(); });
+    $( '#plot_3928' ).closest('.tabcontent').on('tabchange', function(){
+plot_3928_onchange(); });
+    plot_3928_onchange();
+    console.log('Switches initialized: plot_3928 handlers set');
+    $( '#plot_3928' ).show()
+  }
+  else {
+    setTimeout(connect_plot_3928_to_switches, 500);
+    console.log('plot_3928 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_3928_to_switches();
+});
+
+function plot_3928_onchange() {
+  var tabdiv = $( '#plot_3928' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  curSwitchPos.push(findNearest_switchbd6211_3(true,true,$('#switchbd6211_3').slider('option', 'value')));
+  var idToShow = switchmap_plot_3928[ curSwitchPos ];
+  $( '#plot_3928' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#plot_3928').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#plot_3928').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+make_wsplot_resizable("plot_3928");
+}); //end on-ready handler
+
+</script>
+
+<div id='plot_3928' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_3928_0'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_1'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_2'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_3'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_4'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_5'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_6'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_7'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_8'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_9'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_10'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_11'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_12'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_13'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_14'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_15'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_16'></div>
+
+<div class='single_switched_value relwrap' id='plot_3928_17'></div>
+
+</div>
+
+	</figure>
+

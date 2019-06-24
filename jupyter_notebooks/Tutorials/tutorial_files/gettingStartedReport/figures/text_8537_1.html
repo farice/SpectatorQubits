@@ -1,0 +1,95 @@
+<script>
+  $(document).ready(function() {
+el = $("#text_8537_1");
+if(el.hasClass("pygsti-wsoutput-group")) {
+  el.children("div.single_switched_value").each( function(i,el){
+    CollapsibleLists.applyTo( el.find("ul").first()[0] );
+  });
+} else if(el.hasClass("single_switched_value")){
+  CollapsibleLists.applyTo(el[0]);
+}
+caption = el.closest("figure").children("figcaption:first");
+caption.css("width", Math.round(el.width()*0.9) + "px");
+}); //end on-ready handler
+
+</script>
+<ul class='collapsibleList'><li><b> Circuit Creation </b><ul>
+<li>1702 sequences created</li>
+<li>Dataset has 1702 entries: 1702 utilized, 0 requested sequences were missing</li>
+</ul>
+</li>
+<li><b> Iterative MLGST: Iter 1 of 6  92 operation sequences </b><ul>
+<li> Minimum Chi^2 GST </li>
+<li>Sum of Chi^2 = 7261.36 (92 data params - 29 model params = expected mean of 63; p-value = 0)</li>
+<li>Completed in 14.2s</li>
+<li>2*Delta(log(L)) = 9298.63</li>
+<li>Iteration 1 took 14.2s</li>
+<li></li>
+</ul>
+</li>
+<li><b> Iterative MLGST: Iter 2 of 6  168 operation sequences </b><ul>
+<li> Minimum Chi^2 GST </li>
+<li>Sum of Chi^2 = 14453 (168 data params - 29 model params = expected mean of 139; p-value = 0)</li>
+<li>Completed in 3.8s</li>
+<li>2*Delta(log(L)) = 18419.6</li>
+<li>Iteration 2 took 3.8s</li>
+<li></li>
+</ul>
+</li>
+<li><b> Iterative MLGST: Iter 3 of 6  450 operation sequences </b><ul>
+<li> Minimum Chi^2 GST </li>
+<li>Sum of Chi^2 = 51157.2 (450 data params - 30 model params = expected mean of 420; p-value = 0)</li>
+<li>Completed in 4.3s</li>
+<li>2*Delta(log(L)) = 64498</li>
+<li>Iteration 3 took 4.3s</li>
+<li></li>
+</ul>
+</li>
+<li><b> Iterative MLGST: Iter 4 of 6  862 operation sequences </b><ul>
+<li> Minimum Chi^2 GST </li>
+<li>Sum of Chi^2 = 106512 (862 data params - 29 model params = expected mean of 833; p-value = 0)</li>
+<li>Completed in 5.1s</li>
+<li>2*Delta(log(L)) = 132484</li>
+<li>Iteration 4 took 5.2s</li>
+<li></li>
+</ul>
+</li>
+<li><b> Iterative MLGST: Iter 5 of 6  1282 operation sequences </b><ul>
+<li> Minimum Chi^2 GST </li>
+<li>Sum of Chi^2 = 1325.74 (1282 data params - 31 model params = expected mean of 1251; p-value = 0.0696008)</li>
+<li>Completed in 13.7s</li>
+<li>2*Delta(log(L)) = 1333.43</li>
+<li>Iteration 5 took 13.7s</li>
+<li></li>
+</ul>
+</li>
+<li><b> Iterative MLGST: Iter 6 of 6  1702 operation sequences </b><ul>
+<li> Minimum Chi^2 GST </li>
+<li>Sum of Chi^2 = 1825.59 (1702 data params - 31 model params = expected mean of 1671; p-value = 0.00456429)</li>
+<li>Completed in 6.1s</li>
+<li>2*Delta(log(L)) = 1833.29</li>
+<li>Iteration 6 took 6.1s</li>
+<li></li>
+<li>Switching to ML objective (last iteration)</li>
+<li> MLGST </li>
+<li>Maximum log(L) = 915.696 below upper bound of -2.63408e+06</li>
+<li>2*Delta(log(L)) = 1831.39 (1702 data params - 31 model params = expected mean of 1671; p-value = 0.00344824)</li>
+<li>Completed in 2.2s</li>
+<li>2*Delta(log(L)) = 1831.39</li>
+<li>Final MLGST took 2.2s</li>
+<li></li>
+</ul>
+</li>
+<li>Iterative MLGST Total Time: 49.5s</li>
+<li><b> Re-optimizing logl after robust data scaling </b><ul>
+<li> MLGST </li>
+<li>Maximum log(L) = 915.696 below upper bound of -2.63408e+06</li>
+<li>2*Delta(log(L)) = 1831.39 (1702 data params - 31 model params = expected mean of 1671; p-value = 0.00344824)</li>
+<li>Completed in 0.6s</li>
+</ul>
+</li>
+<li> Performing 'single' gauge optimization on CPTP estimate </li>
+<li> Conveying 'single' gauge optimization to CPTP.Robust+ estimate </li>
+</ul>
+</li>
+</ul>

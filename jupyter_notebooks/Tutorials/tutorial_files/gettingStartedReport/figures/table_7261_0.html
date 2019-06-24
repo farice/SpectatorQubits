@@ -1,0 +1,82 @@
+<script>
+  $(document).ready(function() {
+  $("#eb0eade5-e586-40ce-8236-83a551998f18").addClass("pygsti-plotgroup-master");
+  $("#eb0eade5-e586-40ce-8236-83a551998f18").on("init", function(event) {
+    pex_init_plotdiv($("#eb0eade5-e586-40ce-8236-83a551998f18"), 220.0, 156.0);
+    pex_init_slaves($("#eb0eade5-e586-40ce-8236-83a551998f18"));
+    console.log("Initialized eb0eade5-e586-40ce-8236-83a551998f18");
+  });
+  $("#eb0eade5-e586-40ce-8236-83a551998f18").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("eb0eade5-e586-40ce-8236-83a551998f18")) {
+    Plotly.newPlot("eb0eade5-e586-40ce-8236-83a551998f18", [{"zmin": -1.0, "type": "heatmap", "text": [["-1.0 <br>+/- 0.05", "-0.2 <br>+/- 0.01", "0.1666667 <br>+/- 0.0083333", "1.0 <br>+/- 0.05"], ["-0.3333333 <br>+/- 0.0166667", "0.0 <br>+/- 0.0", "1.0 <br>+/- 0.05", "0.1666667 <br>+/- 0.0083333"], ["0.3333333 <br>+/- 0.0166667", "1.0 <br>+/- 0.05", "0.0 <br>+/- 0.0", "-0.2 <br>+/- 0.01"], ["1.0 <br>+/- 0.05", "0.3333333 <br>+/- 0.0166667", "-0.3333333 <br>+/- 0.0166667", "-1.0 <br>+/- 0.05"]], "zmax": 1.0, "colorscale": [[0.0, "rgb(0,0,255)"], [0.5, "rgb(255,255,255)"], [1.0, "rgb(255,0,0)"]], "z": [[-1.0, -0.2, 0.16666666666666666, 1.0], [-0.3333333333333333, 0.0, 1.0, 0.16666666666666666], [0.3333333333333333, 1.0, 0.0, -0.2], [1.0, 0.3333333333333333, -0.3333333333333333, -1.0]], "uid": "1615ac4c-afd4-4573-a351-579b3937bded", "hoverinfo": "text", "showscale": true}], {"shapes": [{"type": "line", "x1": 0.5, "x0": 0.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 3.5}, {"type": "line", "x1": 1.5, "x0": 1.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 3.5}, {"type": "line", "x1": 2.5, "x0": 2.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 3.5}, {"type": "line", "x1": 3.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 0.5, "y1": 0.5}, {"type": "line", "x1": 3.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 1.5, "y1": 1.5}, {"type": "line", "x1": 3.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 2.5, "y1": 2.5}], "margin": {"r": 100.0, "t": 76.0, "b": 20.0, "l": 60.0}, "xaxis": {"showgrid": false, "mirror": true, "linewidth": 2, "side": "top", "tickvals": [0, 1, 2, 3], "showticklabels": true, "range": [-0.5, 3.5], "tickangle": -90, "ticks": "", "showline": true, "zeroline": false, "ticktext": ["<i>I</i>", "<i>X</i>", "<i>Y</i>", "<i>Z</i>"], "title": {"font": {"size": 10.0}}}, "yaxis": {"showgrid": false, "mirror": true, "linewidth": 2, "side": "left", "tickvals": [0, 1, 2, 3], "range": [-0.5, 3.5], "ticktext": ["<i>Z</i>", "<i>Y</i>", "<i>X</i>", "<i>I</i>"], "ticks": "", "showline": true, "zeroline": false, "showticklabels": true, "title": {"font": {"size": 10.0}}}, "title": {"font": {"size": 10.0}}}, {"showLink": false, "plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly"}); 
+}
+ 
+     }, "Click-creating Plot eb0eade5-e586-40ce-8236-83a551998f18" );
+     $("#eb0eade5-e586-40ce-8236-83a551998f18").off("click.pygsti");
+     console.log("Click-Created eb0eade5-e586-40ce-8236-83a551998f18");
+  });
+  $("#eb0eade5-e586-40ce-8236-83a551998f18").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#eb0eade5-e586-40ce-8236-83a551998f18"), 1.4102564102564104, fracw, frach, 220.0, 156.0);
+     plotman.enqueue(function() { 
+       $("#eb0eade5-e586-40ce-8236-83a551998f18").addClass("pygBackground");
+        
+       pex_create_slaves($("#eb0eade5-e586-40ce-8236-83a551998f18"), 220.0, 156.0);
+     }, "Creating Plot eb0eade5-e586-40ce-8236-83a551998f18" );
+     console.log("Created eb0eade5-e586-40ce-8236-83a551998f18");
+  });
+  $("#eb0eade5-e586-40ce-8236-83a551998f18").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#eb0eade5-e586-40ce-8236-83a551998f18"), 1.4102564102564104, fracw, frach, 220.0, 156.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("eb0eade5-e586-40ce-8236-83a551998f18")); 
+      pex_resize_slaves($("#eb0eade5-e586-40ce-8236-83a551998f18"), 220.0, 156.0);
+     }, "Resizing Plot eb0eade5-e586-40ce-8236-83a551998f18" );
+    //console.log("Resized eb0eade5-e586-40ce-8236-83a551998f18");
+  });
+var switchmap_plot_7121 = new Array();
+switchmap_plot_7121[ [] ] = 'plot_7121_0';
+window.switchmap_plot_7121 = switchmap_plot_7121;
+
+function connect_plot_7121_to_switches(){
+  if(true) {
+    $( '#plot_7121' ).closest('.tabcontent').on('tabchange', function(){
+plot_7121_onchange(); });
+    plot_7121_onchange();
+    console.log('Switches initialized: plot_7121 handlers set');
+    $( '#plot_7121' ).show()
+  }
+  else {
+    setTimeout(connect_plot_7121_to_switches, 500);
+    console.log('plot_7121 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_plot_7121_to_switches();
+});
+
+function plot_7121_onchange() {
+  var tabdiv = $( '#plot_7121' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_plot_7121[ curSwitchPos ];
+  $( '#plot_7121' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  divToShow.show();
+  divToShow.parentsUntil('#plot_7121').show();
+  caption = divToShow.closest('figure').children('figcaption:first');
+  caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+}
+
+    make_wstable_resizable("table_7261_0");
+    trigger_wstable_plot_creation("table_7261_0",true);
+}); //end on-ready handler
+
+</script>
+<table class="dataTable" id="table_7261_0_tbl"><thead><tr><th> <span title="This tooltip can give more information about what this column displays">Hover over me...</span> </th><th> <span title="Unfortunately, we can't show nicely formatted math in these tooltips (yet)">And me!</span> </th><th> <span title="Click on the pyGSTi logo below to create the non-automatically-generated plot; then hover over the colored boxes.">Click the pig</span> </th></tr></thead><tbody><tr><td><span title="Pi">Pi</span></td><td><span title="3.141592653589793">3.141593</span></td><td><div id='plot_7121' class='pygsti-wsoutput-group'>
+<div class='single_switched_value relwrap' id='plot_7121_0'>
+<div class='abswrap'><div id="eb0eade5-e586-40ce-8236-83a551998f18" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
+</div>
+
+</div>
+</td></tr></tbody></table>

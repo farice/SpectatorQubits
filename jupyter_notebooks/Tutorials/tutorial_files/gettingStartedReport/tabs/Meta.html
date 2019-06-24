@@ -1,0 +1,276 @@
+	<h1>System and pyGSTi parameters</h1>
+	<p>This tab contains a raw dump of system information and various pyGSTi parameters.  Its purpose is to stamp this report with parameters that indicate how exactly GST was run to create it, as well as to record the software environment in within which the report creation was run.  However, if the core GST computation was done on a different computer, then the software information contained here will be less useful (it describes the environment in which the report was generated, not the one in which the estimate was generated).</p>
+
+	<figure id="metadataTable" class='tbl'>
+          <figcaption><span class="captiontitle">Listing of GST parameters and meta-data.</span> <span class="captiondetail"> These parameters and related metadata describe how the GST computation that produced this report was performed.</span></figcaption>
+          <script>
+  $(document).ready(function() {
+var switchmap_table_3408 = new Array();
+switchmap_table_3408[ [0,1,0] ] = 'table_3408_1';
+switchmap_table_3408[ [0,0,0] ] = 'table_3408_0';
+switchmap_table_3408[ [0,2,0] ] = 'table_3408_2';
+window.switchmap_table_3408 = switchmap_table_3408;
+
+function connect_table_3408_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch') && $('#switchbd6211_2').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {table_3408_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {table_3408_onchange(); });
+    $('#switchbd6211_2').on('change', function() {table_3408_onchange(); });
+    $( '#table_3408' ).closest('.tabcontent').on('tabchange', function(){
+table_3408_onchange(); });
+    table_3408_onchange();
+    console.log('Switches initialized: table_3408 handlers set');
+    $( '#table_3408' ).show()
+  }
+  else {
+    setTimeout(connect_table_3408_to_switches, 500);
+    console.log('table_3408 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_3408_to_switches();
+});
+
+function table_3408_onchange() {
+  var tabdiv = $( '#table_3408' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  curSwitchPos.push($("#switchbd6211_2 > input[name='switchbd6211_2']:checked").val());
+  var idToShow = switchmap_table_3408[ curSwitchPos ];
+  $( '#table_3408' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_3408').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_3408').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_3408' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_3408_0'></div>
+
+<div class='single_switched_value' id='table_3408_1'></div>
+
+<div class='single_switched_value' id='table_3408_2'></div>
+
+</div>
+
+	</figure>
+
+	<figure id="profilerTable" class='tbl'>
+          <figcaption><span class="captiontitle">Profiler timing.</span> <span class="captiondetail"> Timing information from pyGSTi's built-in lightweight profiler (if it was enabled).</span></figcaption>
+          <script>
+  $(document).ready(function() {
+var switchmap_table_5615 = new Array();
+switchmap_table_5615[ [0,2] ] = 'table_5615_2';
+switchmap_table_5615[ [0,1] ] = 'table_5615_1';
+switchmap_table_5615[ [0,0] ] = 'table_5615_0';
+window.switchmap_table_5615 = switchmap_table_5615;
+
+function connect_table_5615_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {table_5615_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {table_5615_onchange(); });
+    $( '#table_5615' ).closest('.tabcontent').on('tabchange', function(){
+table_5615_onchange(); });
+    table_5615_onchange();
+    console.log('Switches initialized: table_5615 handlers set');
+    $( '#table_5615' ).show()
+  }
+  else {
+    setTimeout(connect_table_5615_to_switches, 500);
+    console.log('table_5615 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_5615_to_switches();
+});
+
+function table_5615_onchange() {
+  var tabdiv = $( '#table_5615' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  var idToShow = switchmap_table_5615[ curSwitchPos ];
+  $( '#table_5615' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_5615').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_5615').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_5615' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_5615_0'></div>
+
+<div class='single_switched_value' id='table_5615_1'></div>
+
+<div class='single_switched_value' id='table_5615_2'></div>
+
+</div>
+
+	</figure>
+
+	<figure id="stdoutBlock" class='txtblk'>
+	  <figcaption><span class="captiontitle">Standard output.</span> <span class="captiondetail"> The standard output text, along with warnings and errors, that was collected (recorded) when GST was run to create the results reported here.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_text_8537 = new Array();
+switchmap_text_8537[ [0,2] ] = 'text_8537_2';
+switchmap_text_8537[ [0,1] ] = 'text_8537_1';
+switchmap_text_8537[ [0,0] ] = 'text_8537_0';
+window.switchmap_text_8537 = switchmap_text_8537;
+
+function connect_text_8537_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {text_8537_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {text_8537_onchange(); });
+    $( '#text_8537' ).closest('.tabcontent').on('tabchange', function(){
+text_8537_onchange(); });
+    text_8537_onchange();
+    console.log('Switches initialized: text_8537 handlers set');
+    $( '#text_8537' ).show()
+  }
+  else {
+    setTimeout(connect_text_8537_to_switches, 500);
+    console.log('text_8537 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_text_8537_to_switches();
+});
+
+function text_8537_onchange() {
+  var tabdiv = $( '#text_8537' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  var idToShow = switchmap_text_8537[ curSwitchPos ];
+  $( '#text_8537' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#text_8537').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#text_8537').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='text_8537' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='text_8537_0'></div>
+
+<div class='single_switched_value' id='text_8537_1'></div>
+
+<div class='single_switched_value' id='text_8537_2'></div>
+
+</div>
+
+	</figure>
+
+	<figure id="softwareEnvTable" class='tbl'>
+	  <figcaption><span class="captiontitle">Listing of the software environment.</span> <span class="captiondetail"> This table describes the software environment of the machine used to generate this report.  It may not describe the machine used to perform the core GST gate set estimation.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_2183 = new Array();
+switchmap_table_2183[ [] ] = 'table_2183_0';
+window.switchmap_table_2183 = switchmap_table_2183;
+
+function connect_table_2183_to_switches(){
+  if(true) {
+    $( '#table_2183' ).closest('.tabcontent').on('tabchange', function(){
+table_2183_onchange(); });
+    table_2183_onchange();
+    console.log('Switches initialized: table_2183 handlers set');
+    $( '#table_2183' ).show()
+  }
+  else {
+    setTimeout(connect_table_2183_to_switches, 500);
+    console.log('table_2183 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_2183_to_switches();
+});
+
+function table_2183_onchange() {
+  var tabdiv = $( '#table_2183' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  var idToShow = switchmap_table_2183[ curSwitchPos ];
+  $( '#table_2183' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_2183').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_2183').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_2183' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_2183_0'></div>
+
+</div>
+
+	</figure>
+
+
+
+
+
+	

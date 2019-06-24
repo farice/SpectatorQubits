@@ -1,0 +1,324 @@
+	<h1>Gauge Variant Error Metrics</h1>
+	<p>This tab provides a variety of common (and uncommon) error metrics derived from the estimated gate set.  All of these quanties are <q>gauge-dependent</q>, which means two things.  First, they aren't directly physically measurable, so they can't map directly to observable error rates.  Second, they are only as reliable (as diagnostics) inasmuch as pyGSTi is able to pick a sensible gauge (reference frame) in which to report gates.  PyGSTi does this by first finding an estimate based on the data (and ignoring gauge entirely), then varying over all possible representations of those gates (gauges) to minimize a measure of the gates' implausibility (distance from the targets, combined with violation of positivity).  This measure has parameters -- e.g. the weights placed on different gates -- and reports often include multiple "gauge optimizations".  A dropdown menu in the sidebar allows switching between these options, and the parameters used for the currently-shown estimate are shown below it.</p>
+
+	<!-- Moved to GaugeInvariant tab for now, since only predicted RB error rate -->
+	<!-- <figure id="bestGatesetVsTargetTable" class='tbl'>
+	  <figcaption><span class="captiontitle">Overall error metrics</span> <span class="captiondetail">This table presents metrics that quantify the distance between the ideal target gateset and the estimated gateset, and which quantify the <em>aggregated</em> distance between <i>entire gate sets</i>.</span></figcaption>
+	  (bestGatesetVsTargetTable)s
+	</figure> -->
+
+	<figure id="bestGatesetSpamVsTargetTable" class='tbl'>
+	  <figcaption><span class="captiontitle">SPAM error metrics</span> <span class="captiondetail"> This table presents (gauge-variant) metrics that quantify errors in the <em>SPAM operations</em> -- the estimated initial state preparation[s] and POVM measurement -- with respect to the ideal target operations,   A description of each metric can be found by hovering the pointer over the column header.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_5694 = new Array();
+switchmap_table_5694[ [0,1,0] ] = 'table_5694_1';
+switchmap_table_5694[ [0,0,0] ] = 'table_5694_0';
+window.switchmap_table_5694 = switchmap_table_5694;
+
+function connect_table_5694_to_switches(){
+  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
+    $('#switchbd7797_0').on('selectmenuchange', function() {table_5694_onchange(); });
+    $('#switchbd7797_1').on('selectmenuchange', function() {table_5694_onchange(); });
+    $('#switchbd7797_2').on('change', function() {table_5694_onchange(); });
+    $( '#table_5694' ).closest('.tabcontent').on('tabchange', function(){
+table_5694_onchange(); });
+    table_5694_onchange();
+    console.log('Switches initialized: table_5694 handlers set');
+    $( '#table_5694' ).show()
+  }
+  else {
+    setTimeout(connect_table_5694_to_switches, 500);
+    console.log('table_5694 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_5694_to_switches();
+});
+
+function table_5694_onchange() {
+  var tabdiv = $( '#table_5694' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd7797_0').val());
+  curSwitchPos.push($('#switchbd7797_1').val());
+  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
+  var idToShow = switchmap_table_5694[ curSwitchPos ];
+  $( '#table_5694' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_5694').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_5694').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_5694' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_5694_0'></div>
+
+<div class='single_switched_value' id='table_5694_1'></div>
+
+</div>
+
+	</figure>
+	
+	<figure id="bestGatesVsTargetTable_gv" class='tbl'>
+	  <figcaption><span class="captiontitle">Individual gate error metrics</span> <span class="captiondetail">This table presents various (gauge-variant) metrics that quantify errors in each individual estimated logic gate, with respect to the ideal target gates.  Note that "Entanglement infidelity" and "Average gate infidelity" are two common definitions of process fidelity, and related by a constant dimensional factor.  A description of each metric can be found by  hovering the pointer over the column header.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_3148 = new Array();
+switchmap_table_3148[ [0,1,0] ] = 'table_3148_1';
+switchmap_table_3148[ [0,0,0] ] = 'table_3148_0';
+window.switchmap_table_3148 = switchmap_table_3148;
+
+function connect_table_3148_to_switches(){
+  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
+    $('#switchbd7797_0').on('selectmenuchange', function() {table_3148_onchange(); });
+    $('#switchbd7797_1').on('selectmenuchange', function() {table_3148_onchange(); });
+    $('#switchbd7797_2').on('change', function() {table_3148_onchange(); });
+    $( '#table_3148' ).closest('.tabcontent').on('tabchange', function(){
+table_3148_onchange(); });
+    table_3148_onchange();
+    console.log('Switches initialized: table_3148 handlers set');
+    $( '#table_3148' ).show()
+  }
+  else {
+    setTimeout(connect_table_3148_to_switches, 500);
+    console.log('table_3148 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_3148_to_switches();
+});
+
+function table_3148_onchange() {
+  var tabdiv = $( '#table_3148' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd7797_0').val());
+  curSwitchPos.push($('#switchbd7797_1').val());
+  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
+  var idToShow = switchmap_table_3148[ curSwitchPos ];
+  $( '#table_3148' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_3148').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_3148').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_3148' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_3148_0'></div>
+
+<div class='single_switched_value' id='table_3148_1'></div>
+
+</div>
+
+	</figure>
+
+	<figure id="singleMetricTable_gv" class='tbl'>
+	  <figcaption><span class="captiontitle">Single metric comparison.</span> <span class="captiondetail">TODO: caption</span> </figcaption>
+	  <script>
+$(document).ready(function() {
+  $('#switchbd3812_0').selectmenu();$('#switchbd3812_0').addClass('initializedSwitch');
+
+});
+</script>
+
+<div class='switch_container'><fieldset>
+<label for='switchbd3812_0'>Metric</label>
+<select name='switchbd3812_0' id='switchbd3812_0'>
+<option value=0 selected='selected'>Entanglement Infidelity</option>
+<option value=1>Avg. Gate Infidelity</option>
+<option value=2>1/2 Trace Distance</option>
+<option value=3>1/2 Diamond-Dist</option>
+<option value=4>Non-unitary Ent. Infidelity</option>
+<option value=5>Non-unitary Avg. Gate Infidelity</option>
+<option value=6>Frobenius Distance</option>
+</select>
+</fieldset></div>
+
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_6143 = new Array();
+switchmap_table_6143[ [1,0] ] = 'table_6143_1';
+switchmap_table_6143[ [5,0] ] = 'table_6143_5';
+switchmap_table_6143[ [0,0] ] = 'table_6143_0';
+switchmap_table_6143[ [4,0] ] = 'table_6143_4';
+switchmap_table_6143[ [2,0] ] = 'table_6143_2';
+switchmap_table_6143[ [3,0] ] = 'table_6143_3';
+switchmap_table_6143[ [6,0] ] = 'table_6143_6';
+window.switchmap_table_6143 = switchmap_table_6143;
+
+function connect_table_6143_to_switches(){
+  if($('#switchbd3812_0').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
+    $('#switchbd3812_0').on('selectmenuchange', function() {table_6143_onchange(); });
+    $('#switchbd7797_2').on('change', function() {table_6143_onchange(); });
+    $( '#table_6143' ).closest('.tabcontent').on('tabchange', function(){
+table_6143_onchange(); });
+    table_6143_onchange();
+    console.log('Switches initialized: table_6143 handlers set');
+    $( '#table_6143' ).show()
+  }
+  else {
+    setTimeout(connect_table_6143_to_switches, 500);
+    console.log('table_6143 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_6143_to_switches();
+});
+
+function table_6143_onchange() {
+  var tabdiv = $( '#table_6143' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd3812_0').val());
+  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
+  var idToShow = switchmap_table_6143[ curSwitchPos ];
+  $( '#table_6143' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_6143').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_6143').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_6143' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_6143_0'></div>
+
+<div class='single_switched_value' id='table_6143_1'></div>
+
+<div class='single_switched_value' id='table_6143_2'></div>
+
+<div class='single_switched_value' id='table_6143_3'></div>
+
+<div class='single_switched_value' id='table_6143_4'></div>
+
+<div class='single_switched_value' id='table_6143_5'></div>
+
+<div class='single_switched_value' id='table_6143_6'></div>
+
+</div>
+
+	</figure>
+
+
+	<!-- <figure id="bestGatesetEigenvalueTable" class='tbl'>
+	  <figcaption><span class="captiontitle">Relative Eigenvalues of estimated gates.</span> <span class="captiondetail"> This table shows the spectrum of the matrix obtained by dividing each estimated gate by its ideal (target) counterpart.  The second column displays these eigenvalues over the complex disc.</span></figcaption>
+	  (bestGatesetRelEvalTable)s
+	</figure> -->
+
+	<figure id="bestGatesVsTargetTable_gvgerms" class='tbl'>
+	  <figcaption><span class="captiontitle">Per-germ error metrics</span> <span class="captiondetail">This table presents various (gauge-variant) metrics that quantify errors in the estimated <em>germs</em>, with respect to their ideal target counterparts (as computed from the ideal target gates).  A description of each metric can be found by  hovering the pointer over the column header..</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_9209 = new Array();
+switchmap_table_9209[ [0,1,0] ] = 'table_9209_1';
+switchmap_table_9209[ [0,0,0] ] = 'table_9209_0';
+window.switchmap_table_9209 = switchmap_table_9209;
+
+function connect_table_9209_to_switches(){
+  if($('#switchbd7797_0').hasClass('initializedSwitch') && $('#switchbd7797_1').hasClass('initializedSwitch') && $('#switchbd7797_2').hasClass('initializedSwitch')) {
+    $('#switchbd7797_0').on('selectmenuchange', function() {table_9209_onchange(); });
+    $('#switchbd7797_1').on('selectmenuchange', function() {table_9209_onchange(); });
+    $('#switchbd7797_2').on('change', function() {table_9209_onchange(); });
+    $( '#table_9209' ).closest('.tabcontent').on('tabchange', function(){
+table_9209_onchange(); });
+    table_9209_onchange();
+    console.log('Switches initialized: table_9209 handlers set');
+    $( '#table_9209' ).show()
+  }
+  else {
+    setTimeout(connect_table_9209_to_switches, 500);
+    console.log('table_9209 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_9209_to_switches();
+});
+
+function table_9209_onchange() {
+  var tabdiv = $( '#table_9209' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd7797_0').val());
+  curSwitchPos.push($('#switchbd7797_1').val());
+  curSwitchPos.push($("#switchbd7797_2 > input[name='switchbd7797_2']:checked").val());
+  var idToShow = switchmap_table_9209[ curSwitchPos ];
+  $( '#table_9209' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_9209').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_9209').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_9209' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_9209_0'></div>
+
+<div class='single_switched_value' id='table_9209_1'></div>
+
+</div>
+
+	</figure>
+
+	
+
+		
+	

@@ -1,0 +1,19 @@
+<script>
+  $(document).ready(function() {
+el = $("#text_8537_2");
+if(el.hasClass("pygsti-wsoutput-group")) {
+  el.children("div.single_switched_value").each( function(i,el){
+    CollapsibleLists.applyTo( el.find("ul").first()[0] );
+  });
+} else if(el.hasClass("single_switched_value")){
+  CollapsibleLists.applyTo(el[0]);
+}
+caption = el.closest("figure").children("figcaption:first");
+caption.css("width", Math.round(el.width()*0.9) + "px");
+}); //end on-ready handler
+
+</script>
+<ul class='collapsibleList'><li> Performing 'single' gauge optimization on Target estimate </li>
+</ul>
+</li>
+</ul>

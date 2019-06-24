@@ -1,0 +1,145 @@
+	<h1>Raw Estimates</h1>
+	<p>This tab shows the raw GST estimates &mdash; the density matrices, POVM effects, and process matrices that comprise the estimated gateset.  These are explicitly gauge-dependent, and most reports include multiple <q>gauge optimizations</q> that correspond to slightly different (but physically equivalent and indistinguishable) representations  of the operations.  Usually, these raw estimates are less useful than the derived properties and decompositions shown elsewhere, but sometimes it's useful to see them.  Furthermore, it's possible (at least in some versions of the report) to download the raw gateset in machine-readable form, in order to do calculations and simulations with it.</p>
+
+	<figure id="bestGatesetSpamTable" class='tbl'>
+	  <figcaption><span class="captiontitle">Estimated SPAM operations</span> <span class="captiondetail">This table presents the GST-estimated SPAM operations &mdash; the initial state, as a density matrix, and the terminating measurement as a POVM &mdash; and compares them to the corresponding ideal target operations.  All of these matrices should be positive semidefinite, so their eigenvalues are shown to provide a quick diagnostic.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_5989 = new Array();
+switchmap_table_5989[ [0,1,0] ] = 'table_5989_1';
+switchmap_table_5989[ [0,0,0] ] = 'table_5989_0';
+switchmap_table_5989[ [0,2,0] ] = 'table_5989_2';
+window.switchmap_table_5989 = switchmap_table_5989;
+
+function connect_table_5989_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch') && $('#switchbd6211_2').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {table_5989_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {table_5989_onchange(); });
+    $('#switchbd6211_2').on('change', function() {table_5989_onchange(); });
+    $( '#table_5989' ).closest('.tabcontent').on('tabchange', function(){
+table_5989_onchange(); });
+    table_5989_onchange();
+    console.log('Switches initialized: table_5989 handlers set');
+    $( '#table_5989' ).show()
+  }
+  else {
+    setTimeout(connect_table_5989_to_switches, 500);
+    console.log('table_5989 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_5989_to_switches();
+});
+
+function table_5989_onchange() {
+  var tabdiv = $( '#table_5989' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  curSwitchPos.push($("#switchbd6211_2 > input[name='switchbd6211_2']:checked").val());
+  var idToShow = switchmap_table_5989[ curSwitchPos ];
+  $( '#table_5989' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_5989').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_5989').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_5989' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_5989_0'></div>
+
+<div class='single_switched_value' id='table_5989_1'></div>
+
+<div class='single_switched_value' id='table_5989_2'></div>
+
+</div>
+
+	</figure>
+
+	<figure id="bestGatesetGatesTable" class='tbl'>
+	  <figcaption><span class="captiontitle">Estimated logic gate operations</span> <span class="captiondetail">This table presents the GST-estimated logic gates &mdash; represented as process matrices (aka Liouville superoperators or Pauli transfer matrices) &mdash; and compares them to the <em>ideal</em> (generally unitary) <q>target</q> logic gates.  Each gate is represented as a <span class="math">d^2\times d^2</span> <em>superoperator</em> that acts by matrix multiplication on vectors in the vector space <span class="math">\mathcal{B}(\mathcal{H})</span> of operators.  Matrices are displayed using a heat map that ranges between 1.0 (<span style="color:red">red</span>) and -1.0 (<span style="color:blue">blue</span>), and hovering the pointer over a matrix element will pop up its precise numerical value.  Note that it is impossible to discern even order-1% deviations from the ideal in this view; that's what other analyses (especially the Gate Error Generators tab) are for.</span></figcaption>
+	  <script>
+  $(document).ready(function() {
+var switchmap_table_5887 = new Array();
+switchmap_table_5887[ [0,1,0] ] = 'table_5887_1';
+switchmap_table_5887[ [0,0,0] ] = 'table_5887_0';
+switchmap_table_5887[ [0,2,0] ] = 'table_5887_2';
+window.switchmap_table_5887 = switchmap_table_5887;
+
+function connect_table_5887_to_switches(){
+  if($('#switchbd6211_0').hasClass('initializedSwitch') && $('#switchbd6211_1').hasClass('initializedSwitch') && $('#switchbd6211_2').hasClass('initializedSwitch')) {
+    $('#switchbd6211_0').on('selectmenuchange', function() {table_5887_onchange(); });
+    $('#switchbd6211_1').on('selectmenuchange', function() {table_5887_onchange(); });
+    $('#switchbd6211_2').on('change', function() {table_5887_onchange(); });
+    $( '#table_5887' ).closest('.tabcontent').on('tabchange', function(){
+table_5887_onchange(); });
+    table_5887_onchange();
+    console.log('Switches initialized: table_5887 handlers set');
+    $( '#table_5887' ).show()
+  }
+  else {
+    setTimeout(connect_table_5887_to_switches, 500);
+    console.log('table_5887 switches NOT initialized: Waiting...');
+  }
+};
+$(document).ready(function() {
+  connect_table_5887_to_switches();
+});
+
+function table_5887_onchange() {
+  var tabdiv = $( '#table_5887' ).closest('.tabcontent');
+  if( tabdiv.length > 0 && !tabdiv.hasClass('active') ) return;
+  var curSwitchPos = new Array();
+  curSwitchPos.push($('#switchbd6211_0').val());
+  curSwitchPos.push($('#switchbd6211_1').val());
+  curSwitchPos.push($("#switchbd6211_2 > input[name='switchbd6211_2']:checked").val());
+  var idToShow = switchmap_table_5887[ curSwitchPos ];
+  $( '#table_5887' ).children().hide();
+  divToShow = $( '#' + idToShow );
+  if( divToShow.children().length == 0 ) {
+    loadLocal('figures/' + idToShow + '.html', '#' + idToShow, function() {
+        divToShow = $( '#' + idToShow );
+        divToShow.show();
+        divToShow.parentsUntil('#table_5887').show();
+        caption = divToShow.closest('figure').children('figcaption:first');
+        caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+    });
+  }
+  else {
+    divToShow.show();
+    divToShow.parentsUntil('#table_5887').show();
+    caption = divToShow.closest('figure').children('figcaption:first');
+    caption.css('width', Math.round(divToShow.width()*0.9) + 'px');
+  }
+}
+}); //end on-ready handler
+
+</script>
+
+<div id='table_5887' class='pygsti-wsoutput-group'>
+<div class='single_switched_value' id='table_5887_0'></div>
+
+<div class='single_switched_value' id='table_5887_1'></div>
+
+<div class='single_switched_value' id='table_5887_2'></div>
+
+</div>
+
+	</figure>
+

@@ -1,0 +1,42 @@
+<script>
+  $(document).ready(function() {
+  $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").addClass("pygsti-plotgroup-master");
+  $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").on("init", function(event) {
+    pex_init_plotdiv($("#325abd82-6390-4e04-8d3b-dcd390ebc57b"), 300.0, 300.0);
+    pex_init_slaves($("#325abd82-6390-4e04-8d3b-dcd390ebc57b"));
+    console.log("Initialized 325abd82-6390-4e04-8d3b-dcd390ebc57b");
+  });
+  $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").on("click.pygsti", function(event) {
+     plotman.enqueue(function() { 
+        
+     }, "Click-creating Plot 325abd82-6390-4e04-8d3b-dcd390ebc57b" );
+     $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").off("click.pygsti");
+     console.log("Click-Created 325abd82-6390-4e04-8d3b-dcd390ebc57b");
+  });
+  $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").on("create", function(event, fracw, frach) {
+     pex_update_plotdiv_size($("#325abd82-6390-4e04-8d3b-dcd390ebc57b"), 1.0, fracw, frach, 300.0, 300.0);
+     plotman.enqueue(function() { 
+       $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").addClass("pygBackground");
+       window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
+if (document.getElementById("325abd82-6390-4e04-8d3b-dcd390ebc57b")) {
+    Plotly.newPlot("325abd82-6390-4e04-8d3b-dcd390ebc57b", [{"zmin": 0, "type": "heatmap", "zmax": 1, "colorscale": [[0, "white"], [1, "black"]], "z": [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]], "uid": "361a1255-fde6-47b9-b397-61251fa80578", "hoverinfo": "none", "showscale": false}], {"shapes": [{"type": "line", "x1": 0.5, "x0": 0.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 5.5}, {"type": "line", "x1": 1.5, "x0": 1.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 5.5}, {"type": "line", "x1": 2.5, "x0": 2.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 5.5}, {"type": "line", "x1": 3.5, "x0": 3.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 5.5}, {"type": "line", "x1": 4.5, "x0": 4.5, "line": {"color": "black", "width": 1}, "y0": -0.5, "y1": 5.5}, {"type": "line", "x1": 5.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 0.5, "y1": 0.5}, {"type": "line", "x1": 5.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 1.5, "y1": 1.5}, {"type": "line", "x1": 5.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 2.5, "y1": 2.5}, {"type": "line", "x1": 5.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 3.5, "y1": 3.5}, {"type": "line", "x1": 5.5, "x0": -0.5, "line": {"color": "black", "width": 1}, "y0": 4.5, "y1": 4.5}], "annotations": [{"x": 0.5, "showarrow": false, "y": 1.2, "text": "Preparation fiducial", "yref": "paper", "font": {"color": "black", "size": 12.0}, "xref": "paper"}, {"x": -0.2, "showarrow": false, "y": 0.5, "xref": "paper", "yref": "paper", "font": {"color": "black", "size": 12.0}, "textangle": -90, "text": "Measurement fiducial"}], "xaxis": {"ticktext": ["{}", "Gx", "Gy", "GxGx", "GxGxGx", "GyGyGy"], "showgrid": false, "mirror": true, "linewidth": 2, "side": "bottom", "tickangle": 90, "tickvals": [0, 1, 2, 3, 4, 5], "ticks": "", "showline": true, "zeroline": false, "showticklabels": true}, "yaxis": {"ticktext": ["GyGyGy", "GxGxGx", "GxGx", "Gy", "Gx", "{}"], "showgrid": false, "mirror": true, "linewidth": 2, "side": "right", "tickvals": [0, 1, 2, 3, 4, 5], "ticks": "", "showline": true, "zeroline": false, "showticklabels": true}}, {"showLink": false, "plotlyServerURL": "https://plot.ly", "linkText": "Export to plot.ly"}); 
+}
+ 
+       pex_create_slaves($("#325abd82-6390-4e04-8d3b-dcd390ebc57b"), 300.0, 300.0);
+     }, "Creating Plot 325abd82-6390-4e04-8d3b-dcd390ebc57b" );
+     console.log("Created 325abd82-6390-4e04-8d3b-dcd390ebc57b");
+  });
+  $("#325abd82-6390-4e04-8d3b-dcd390ebc57b").on("resize", function(event,fracw,frach) {
+    pex_update_plotdiv_size($("#325abd82-6390-4e04-8d3b-dcd390ebc57b"), 1.0, fracw, frach, 300.0, 300.0);
+    plotman.enqueue(function() { 
+        Plotly.Plots.resize(document.getElementById("325abd82-6390-4e04-8d3b-dcd390ebc57b")); 
+      pex_resize_slaves($("#325abd82-6390-4e04-8d3b-dcd390ebc57b"), 300.0, 300.0);
+     }, "Resizing Plot 325abd82-6390-4e04-8d3b-dcd390ebc57b" );
+    //console.log("Resized 325abd82-6390-4e04-8d3b-dcd390ebc57b");
+  });
+make_wsplot_resizable("plot_9797_0");
+trigger_wsplot_plot_creation("plot_9797_0",true);
+}); //end on-ready handler
+
+</script>
+<div class='abswrap'><div id="325abd82-6390-4e04-8d3b-dcd390ebc57b" style="height: 100%; width: 100%;" class="plotly-graph-div"></div></div>
