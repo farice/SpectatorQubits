@@ -34,8 +34,9 @@ jupyter lab
 
 ## Layout
 
-- `simply.ipynb`: coherent vs. incoherent noise classification
-- `xyz_classification.ipynb`: mixed incoherent and coherent error channel classification
+- `simple_classification.ipynb`: coherent vs. incoherent noise classification
+- `mixed_coherent_classification.ipynb`: mixed incoherent and coherent error channel classification
+- `asym_depolarizing.ipynb`: asymmetric depolarizing channel classification
 
 ## Deactivate
 
