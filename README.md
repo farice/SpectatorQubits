@@ -14,21 +14,28 @@ sudo pip install --upgrade virtualenv
 2. Clone the repository and install the requirements
 
 ```bash
-git clone https://github.com/farice/spectatorqubits
-cd spectatorqubits
+git clone https://github.com/farice/SpectatorQubits
+cd SpectatorQubits
 mkdir ~/qec-env
 virtualenv ~/qec-env
 source ~/qec-env/bin/activate
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
-> `rl-env` is an arbitrary directory. You can replace `rl-env` with a directory of your choice.
+> `qec-env` is an arbitrary directory. You can replace `qec-env` with a directory of your choice.
 
 ## View the notebooks
 
+We recommend jupyter lab for viewing.
+
 ```bash
-jupyter notebook
+jupyter lab
 ```
+
+## Layout
+
+- `simply.ipynb`: coherent vs. incoherent noise classification
+- `xyz_classification.ipynb`: mixed incoherent and coherent error channel classification
 
 ## Deactivate
 
