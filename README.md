@@ -19,7 +19,7 @@ cd SpectatorQubits
 mkdir ~/qec-env
 virtualenv ~/qec-env
 source ~/qec-env/bin/activate
-python3 -m pip install -r requirements.txt
+python3 -m pip install --user -U -r requirements.txt
 ```
 
 > `qec-env` is an arbitrary directory. You can replace `qec-env` with a directory of your choice.
