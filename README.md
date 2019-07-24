@@ -1,14 +1,19 @@
 # SpectatorQubits
 
-## Setup
+## Setup (DCC Cluster)
 
-1.  Install pip and virtualenv
+1.  Install homebrew
 
-On MacOS
+Homebrew allows one to easily install dependencies at the user level. We will use this dependency manager to install the latest version of gcc, python3, open-mpi, and node:
 
 ```bash
-sudo easy_install pip
-sudo pip install --upgrade virtualenv
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+```
+
+and follow the instructions to update your PATH. Now, we install the dependencies:
+
+```
+brew install gcc python3 open-mpi node
 ```
 
 2. Clone the repository and install the requirements
@@ -23,9 +28,35 @@ python3 -m pip install --user -U -r requirements.txt
 
 > `qec-env` is an arbitrary directory. You can replace `qec-env` with a directory of your choice.
 
+## Configure Jupyter Lab
+
+```bash
+jupyter notebook --generate-config
+```
+
+We will create a password for remote access:
+
+```bash
+jupyter notebook password
+```
+
+Then, edit `~/.jupyter/jupyter_notebook_config.py`. Modify the following flags:
+
+```python
+c.NotebookApp.open_browser = False
+c.NotebookApp.password_required = True
+c.NotebookApp.port = 8888
+```
+
 ## View the notebooks
 
-We recommend jupyter lab for viewing.
+We recommend jupyter lab for viewing our experiments. The first time, one should rebuild the assets:
+
+```bash
+jupyter lab build
+```
+
+Now, we can start the remote server and access the web interface from our local machine:
 
 ```bash
 jupyter lab # remote VM
@@ -47,9 +78,11 @@ in addition to shutting down the jupyter lab server on the remote VM.
 - `mixed_coherent_classification.ipynb`: mixed incoherent and coherent error channel classification
 - `asym_depolarizing.ipynb`: asymmetric depolarizing channel classification
 
-## Deactivate
+# FAQ 
 
-Once finished deactivate the virtual environment
+## Deactivate virtual environment
+
+Simply,
 
 ```bash
 (rl-env)$ deactivate
