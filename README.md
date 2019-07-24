@@ -29,9 +29,17 @@ We recommend jupyter lab for viewing.
 
 ```bash
 jupyter lab # remote VM
-ssh -N -f -L 8000:localhost:8888 USER@dcc-slogin-01.oit.duke.edu # local machine
-# open localhost:8000 in web browser
+ssh -N -f -M -S /tmp/session -L 8000:localhost:8888 USER@dcc-slogin-01.oit.duke.edu # local machine
+# open localhost:8000 in web browser on local machine
 ```
+
+Remember to close the ssh session from the local machine, when finished:
+
+```bash
+ssh -S /tmp/session -O exit USER@dcc-slogin-01.oit.duke.edu
+```
+
+in addition to shutting down the jupyter lab server on the remote VM.
 
 ## Layout
 
