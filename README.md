@@ -28,7 +28,9 @@ python3 -m pip install --user -U -r requirements.txt
 We recommend jupyter lab for viewing.
 
 ```bash
-jupyter lab
+jupyter lab # remote VM
+ssh -N -f -L 8000:localhost:8888 USER@dcc-slogin-01.oit.duke.edu # local machine
+# open localhost:8000 in web browser
 ```
 
 ## Layout
