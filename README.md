@@ -1,5 +1,13 @@
 # SpectatorQubits
 
+## Overview
+
+See `RL\ for\ QC/`.
+
+Consider using the [Hydrogen Atom](https://atom.io/packages/hydrogen) package to interact with the `*.py` files as an alternative to `jupyter notebook` or `jupyter lab`.
+
+---
+
 ## Setup (DCC Cluster)
 
 1.  Install homebrew
@@ -74,11 +82,13 @@ in addition to shutting down the jupyter lab server on the remote VM.
 
 ## Layout
 
+- `RL\ for\ QC/`: this directory contains notebooks pertaining to the latest and eponymous topic currently being pursued
+
 - `simple_classification.ipynb`: coherent vs. incoherent noise classification
 - `mixed_coherent_classification.ipynb`: mixed incoherent and coherent error channel classification
 - `asym_depolarizing.ipynb`: asymmetric depolarizing channel classification
 
-# FAQ 
+# FAQ
 
 ## Deactivate virtual environment
 
