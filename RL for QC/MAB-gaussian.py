@@ -150,8 +150,8 @@ def mab(error_samples, num_arms=11, N=10000):
 
 # %% codecell
 # mean of gaussian error distribution
-mu_list = np.pi * np.array([0.5])
-sigma = 0.1
+mu_list = np.pi * np.array([0.0, 0.5])
+sigma = np.pi * 0.2
 
 theta_sequence = []
 outcomes_sequence = []
@@ -178,7 +178,26 @@ for mu in mu_list:
 # %% codecell
 (fid_noop_sequence)
 
+# %% markdown
+In this case, we have a positive biased error distribution drawn from a Gaussian(mu=0.5, sigma=0.1)
+We expect the error discrimination procedure:
+- prepare: X +1 eigenstate
+- error: rotate along Z axis
+- measure: X basis
+
+to work quite well given that we essentially are using multi-armed bandits to search for the appropriate cancelling rotation.
+
 # %% codecell
+idx = np.linspace(1, N, N)
+plt.figure()
+plt.plot(idx, fid_noop_sequence[1], 'r.', idx, fid_corrected_sequence[1], 'g.')
+plt.show()
+
+# %% markdown
+Now, instead we have an unbiased error distribution drawn from Gaussian(mu=0, sigma=0.1) which we expect to perform poorly.
+
+# %% codecell
+
 idx = np.linspace(1, N, N)
 plt.figure()
 plt.plot(idx, fid_noop_sequence[0], 'r.', idx, fid_corrected_sequence[0], 'g.')
