@@ -3,9 +3,6 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit import Aer, BasicAer, execute
 import matplotlib.pyplot as plt
 import numpy as np
-from tqdm import tqdm, trange
-import random
-import numba
 from qutip import *
 
 %matplotlib inline
@@ -80,8 +77,8 @@ qc = get_spectator_context_circuit(0.1 * np.pi)
 qc.draw()
 
 # %% codecell
-qc_small_pos = get_spectator_context_circuit(0 * np.pi)
-qc_small_neg = get_spectator_context_circuit(0 * np.pi)
+qc_small_pos = get_spectator_context_circuit(0.1 * np.pi)
+qc_small_neg = get_spectator_context_circuit(-0.1 * np.pi)
 sim_pos = execute(
     qc_small_pos, backend=BasicAer.get_backend('qasm_simulator'),
     shots=1000)
@@ -106,25 +103,30 @@ class MDPNode:
         # action set
         self.thetas = np.pi/2 * np.linspace(-1, 1, num_arms)
         # correspondingly indexed (reward | state, action) set
-        # predicted probability of payout
-        self.rewards = np.full(num_arms, 0.5)
-        # successes
+        # samples from beta(S, F) distribution
+        self.rewards = np.ones(num_arms, dtype=np.float64)
+        # (successes | arm)
         self.S = np.ones(num_arms, dtype=np.int)
-        # failures
+        # (failures | arm)
         self.F = np.ones(num_arms, dtype=np.int)
+
+    def resample_rewards(self):
+        # rewards[arm] is drawn from beta(S[arm], F[arm]) distribution
+        # which enables exploration
+        for i in range(len(self.rewards)):
+            self.rewards[i] = np.random.beta(self.S[i], self.F[i])
 
     def optimal_theta(self):
         return self.thetas[np.argmax(self.rewards)]
 
     def success(self):
+        # update assuming success occurred when pulling currently optimal arm
         arm = np.argmax(self.rewards)
         self.S[arm] += 1
-        self.rewards[arm] = np.random.beta(self.S[arm], self.F[arm])
 
     def failure(self):
         arm = np.argmax(self.rewards)
         self.F[arm] += 1
-        self.rewards[arm] = np.random.beta(self.S[arm], self.F[arm])
 
 
 # %% codecell
@@ -132,7 +134,6 @@ def mab(error_samples, num_arms=11, N=10000):
     outcomes = np.zeros(N)
     V0 = MDPNode(num_arms)
     V1 = MDPNode(num_arms)
-    eta = 0.01
 
     process_fidelity_corrected = np.zeros(N)
     process_fidelity_noop = np.zeros(N)
@@ -157,6 +158,7 @@ def mab(error_samples, num_arms=11, N=10000):
 
         # contextual multi-arm bandit
         context = V0 if outcome_1 == 0 else V1
+        context.resample_rewards()
         correction_theta = context.optimal_theta()
 
         # rotations along the same axis commute
@@ -198,7 +200,7 @@ outcomes_sequence = []
 fid_corrected_sequence = []
 fid_noop_sequence = []
 
-N = 1000
+N = 10000
 for mu in mu_list:
     error_samples = np.random.uniform(-alpha, alpha, N)
     V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples, N=N)
