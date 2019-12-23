@@ -220,15 +220,6 @@ print(V1_sequence[0].rewards)
 # %% codecell
 (fid_noop_sequence)
 
-# %% markdown
-In this case, we have a positive biased error distribution drawn from a Gaussian(mu=0.5, sigma=0.1)
-We expect the error discrimination procedure:
-- prepare: X +1 eigenstate
-- error: rotate along Z axis
-- measure: X basis
-
-to work quite well given that we essentially are using multi-armed bandits to search for the appropriate cancelling rotation.
-
 # %% codecell
 idx = np.linspace(1, N, N)
 plt.figure()
