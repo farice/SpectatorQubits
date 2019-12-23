@@ -80,8 +80,8 @@ qc = get_spectator_context_circuit(0.1 * np.pi)
 qc.draw()
 
 # %% codecell
-qc_small_pos = get_spectator_context_circuit(0.25 * np.pi)
-qc_small_neg = get_spectator_context_circuit(-0.25 * np.pi)
+qc_small_pos = get_spectator_context_circuit(0 * np.pi)
+qc_small_neg = get_spectator_context_circuit(0 * np.pi)
 sim_pos = execute(
     qc_small_pos, backend=BasicAer.get_backend('qasm_simulator'),
     shots=1000)
@@ -105,11 +105,26 @@ class MDPNode:
     def __init__(self, num_arms):
         # action set
         self.thetas = np.pi/2 * np.linspace(-1, 1, num_arms)
-        # correspondingly indexed reward set
-        self.rewards = np.zeros(num_arms)
+        # correspondingly indexed (reward | state, action) set
+        # predicted probability of payout
+        self.rewards = np.full(num_arms, 0.5)
+        # successes
+        self.S = np.ones(num_arms, dtype=np.int)
+        # failures
+        self.F = np.ones(num_arms, dtype=np.int)
 
     def optimal_theta(self):
         return self.thetas[np.argmax(self.rewards)]
+
+    def success(self):
+        arm = np.argmax(self.rewards)
+        self.S[arm] += 1
+        self.rewards[arm] = np.random.beta(self.S[arm], self.F[arm])
+
+    def failure(self):
+        arm = np.argmax(self.rewards)
+        self.F[arm] += 1
+        self.rewards[arm] = np.random.beta(self.S[arm], self.F[arm])
 
 
 # %% codecell
@@ -117,6 +132,7 @@ def mab(error_samples, num_arms=11, N=10000):
     outcomes = np.zeros(N)
     V0 = MDPNode(num_arms)
     V1 = MDPNode(num_arms)
+    eta = 0.01
 
     process_fidelity_corrected = np.zeros(N)
     process_fidelity_noop = np.zeros(N)
@@ -140,12 +156,8 @@ def mab(error_samples, num_arms=11, N=10000):
         # print("\n")
 
         # contextual multi-arm bandit
-        (rewards, thetas) = (V0.rewards, V0.thetas) if outcome_1 == 0 else (V1.rewards, V1.thetas)
-
-        eps = np.random.rand()
-        arm = np.random.randint(0, num_arms) if eps <= 0.1 or i < N/5 else np.argmax(
-                                                                      rewards)
-        correction_theta = thetas[arm]
+        context = V0 if outcome_1 == 0 else V1
+        correction_theta = context.optimal_theta()
 
         # rotations along the same axis commute
         spectator_qc_2 = get_spectator_reward_circuit(
@@ -158,9 +170,9 @@ def mab(error_samples, num_arms=11, N=10000):
             )
 
         if (outcome_2 == 0):
-            rewards[arm] += 1
+            context.success()
         else:
-            rewards[arm] -= 1
+            context.failure()
 
         process_fidelity_corrected[i] = rz(error_samples[i] + correction_theta).tr() / 2
         process_fidelity_noop[i] = rz(error_samples[i]).tr() / 2
@@ -180,7 +192,8 @@ def mab(error_samples, num_arms=11, N=10000):
 mu_list = np.pi * np.array([0.0])
 alpha = np.pi * 0.5
 
-theta_sequence = []
+V0_sequence = []
+V1_sequence = []
 outcomes_sequence = []
 fid_corrected_sequence = []
 fid_noop_sequence = []
@@ -190,14 +203,16 @@ for mu in mu_list:
     error_samples = np.random.uniform(-alpha, alpha, N)
     V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples, N=N)
 
-    theta_sequence.append((V0.optimal_theta(), V1.optimal_theta()))
+    V0_sequence.append(V0)
+    V1_sequence.append(V1)
     outcomes_sequence.append(outcomes)
     fid_corrected_sequence.append(fid_corrected)
     fid_noop_sequence.append(fid_noop)
 
 
 # %% codecell
-(theta_sequence)
+print(V0_sequence[0].rewards)
+print(V1_sequence[0].rewards)
 # %% codecell
 (outcomes_sequence)
 # %% codecell
