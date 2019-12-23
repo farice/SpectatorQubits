@@ -28,8 +28,10 @@ from qutip import *
 
 # %% codecell
 # prepare state in X basis
-# rotate along Z axis
+# rotate along Z axis by theta
 # measure in Y basis
+# hence, p(+1) = cos^2[(1-theta)/2] allowing us to distinguish between
+# small positive and negative errors
 def get_spectator_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
@@ -39,7 +41,7 @@ def get_spectator_circuit(error_theta):
 
     qc.rz(error_theta, qr)
 
-    qc.sdg(qr)
+    # qc.sdg(qr)
     qc.h(qr)
     qc.measure(qr, cr)
 
@@ -50,6 +52,17 @@ def get_spectator_circuit(error_theta):
 spectator_qc = get_spectator_circuit(0.1)
 spectator_qc.draw()
 
+# %% codecell
+qc_small_pos = get_spectator_circuit(0.1 * np.pi)
+qc_small_neg = get_spectator_circuit(-0.1 * np.pi)
+sim_pos = execute(
+    qc_small_pos, backend=BasicAer.get_backend('qasm_simulator'),
+    shots=1000)
+sim_neg = execute(
+    qc_small_neg, backend=BasicAer.get_backend('qasm_simulator'),
+    shots=1000)
+print(sim_pos.result().get_counts())
+print(sim_neg.result().get_counts())
 
 # %% codecell
 # spec = [
@@ -117,15 +130,15 @@ def mab(error_samples, num_arms=11, N=10000):
             list(sim_2.result().get_counts().keys())[0]
             )
 
-        # if (outcome_2 == 0):
-        #     rewards[arm] += 1
-        # else:
-        #     rewards[arm] -= 1
+        if (outcome_2 == 0):
+            rewards[arm] += 1
+        else:
+            rewards[arm] -= 1
 
         process_fidelity_corrected[i] = rz(error_samples[i] + correction_theta).tr() / 2
         process_fidelity_noop[i] = rz(error_samples[i]).tr() / 2
 
-        rewards[arm] = process_fidelity_corrected[i]
+        # rewards[arm] = process_fidelity_corrected[i]
 
         # print(rz(error[i] + correction_theta))
         # print(process_fidelity_corrected[i], process_fidelity_noop[i])
@@ -137,7 +150,7 @@ def mab(error_samples, num_arms=11, N=10000):
 
 # %% codecell
 # mean of gaussian error distribution
-mu_list = np.pi * np.array([0.2])
+mu_list = np.pi * np.array([0.5])
 sigma = 0.0
 
 theta_sequence = []
@@ -146,7 +159,7 @@ fid_corrected_sequence = []
 fid_noop_sequence = []
 
 N = 1000
-for mu in tqdm(mu_list):
+for mu in mu_list:
     error_samples = np.random.normal(mu, sigma, N)
     V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples, N=N)
 
