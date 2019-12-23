@@ -30,9 +30,11 @@ from qutip import *
 # prepare state in X basis
 # rotate along Z axis by theta
 # measure in Y basis
-# hence, p(+1) = cos^2[(1-theta)/2] allowing us to distinguish between
+# hence, p(+1) = cos^2[(pi/2-theta)/2] allowing us to distinguish between
 # small positive and negative errors
-def get_spectator_circuit(error_theta):
+# note, we cannot distinguish between rotations by (pi/2 + eps, pi/2 - eps)
+# therefore, we assume errors lie within [-pi/2, pi/2]
+def get_spectator_context_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
     qc = QuantumCircuit(qr, cr)
@@ -41,7 +43,7 @@ def get_spectator_circuit(error_theta):
 
     qc.rz(error_theta, qr)
 
-    # qc.sdg(qr)
+    qc.sdg(qr)
     qc.h(qr)
     qc.measure(qr, cr)
 
@@ -49,12 +51,37 @@ def get_spectator_circuit(error_theta):
 
 
 # %% codecell
-spectator_qc = get_spectator_circuit(0.1)
-spectator_qc.draw()
+# prepare state in X basis
+# rotate along Z axis by theta
+# measure in Y basis
+# hence, p(+1) = cos^2[theta/2] allowing us to evaluation error correction reward
+def get_spectator_reward_circuit(error_theta):
+    qr = QuantumRegister(1)
+    cr = ClassicalRegister(1)
+    qc = QuantumCircuit(qr, cr)
+
+    qc.h(qr)
+
+    qc.rz(error_theta, qr)
+
+    qc.h(qr)
+    qc.measure(qr, cr)
+
+    return qc
+
 
 # %% codecell
-qc_small_pos = get_spectator_circuit(0.1 * np.pi)
-qc_small_neg = get_spectator_circuit(-0.1 * np.pi)
+qc = get_spectator_reward_circuit(0.1 * np.pi)
+qc.draw()
+
+
+# %% codecell
+qc = get_spectator_context_circuit(0.1 * np.pi)
+qc.draw()
+
+# %% codecell
+qc_small_pos = get_spectator_context_circuit(0.25 * np.pi)
+qc_small_neg = get_spectator_context_circuit(-0.25 * np.pi)
 sim_pos = execute(
     qc_small_pos, backend=BasicAer.get_backend('qasm_simulator'),
     shots=1000)
@@ -77,7 +104,7 @@ print(sim_neg.result().get_counts())
 class MDPNode:
     def __init__(self, num_arms):
         # action set
-        self.thetas = -np.pi * np.linspace(0, 1, num_arms)
+        self.thetas = np.pi/2 * np.linspace(-1, 1, num_arms)
         # correspondingly indexed reward set
         self.rewards = np.zeros(num_arms)
 
@@ -98,7 +125,7 @@ def mab(error_samples, num_arms=11, N=10000):
         # print(V1.rewards)
         # print("\n")
 
-        spectator_qc_1 = get_spectator_circuit(error_samples[i])
+        spectator_qc_1 = get_spectator_context_circuit(error_samples[i])
 
         # single measurement of first spectator qubit
         sim_1 = execute(
@@ -121,7 +148,7 @@ def mab(error_samples, num_arms=11, N=10000):
         correction_theta = thetas[arm]
 
         # rotations along the same axis commute
-        spectator_qc_2 = get_spectator_circuit(
+        spectator_qc_2 = get_spectator_reward_circuit(
             error_samples[i] + correction_theta)
         sim_2 = execute(
             spectator_qc_2, backend=BasicAer.get_backend('qasm_simulator'),
@@ -150,8 +177,8 @@ def mab(error_samples, num_arms=11, N=10000):
 
 # %% codecell
 # mean of gaussian error distribution
-mu_list = np.pi * np.array([0.0, 0.5])
-sigma = np.pi * 0.2
+mu_list = np.pi * np.array([0.0])
+alpha = np.pi * 0.5
 
 theta_sequence = []
 outcomes_sequence = []
@@ -160,7 +187,7 @@ fid_noop_sequence = []
 
 N = 1000
 for mu in mu_list:
-    error_samples = np.random.normal(mu, sigma, N)
+    error_samples = np.random.uniform(-alpha, alpha, N)
     V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples, N=N)
 
     theta_sequence.append((V0.optimal_theta(), V1.optimal_theta()))
@@ -188,16 +215,6 @@ We expect the error discrimination procedure:
 to work quite well given that we essentially are using multi-armed bandits to search for the appropriate cancelling rotation.
 
 # %% codecell
-idx = np.linspace(1, N, N)
-plt.figure()
-plt.plot(idx, fid_noop_sequence[1], 'r.', idx, fid_corrected_sequence[1], 'g.')
-plt.show()
-
-# %% markdown
-Now, instead we have an unbiased error distribution drawn from Gaussian(mu=0, sigma=0.1) which we expect to perform poorly.
-
-# %% codecell
-
 idx = np.linspace(1, N, N)
 plt.figure()
 plt.plot(idx, fid_noop_sequence[0], 'r.', idx, fid_corrected_sequence[0], 'g.')
