@@ -151,7 +151,7 @@ def mab(error_samples, num_arms=11, N=10000):
 # %% codecell
 # mean of gaussian error distribution
 mu_list = np.pi * np.array([0.5])
-sigma = 0.0
+sigma = 0.1
 
 theta_sequence = []
 outcomes_sequence = []
