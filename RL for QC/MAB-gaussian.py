@@ -49,7 +49,7 @@ def get_spectator_context_circuit(error_theta):
 For the reward-determining circuit, we:
 - prepare in X (+1) eigenstate
 - rotate along Z axis by error theta
-- measure in Z basis
+- measure in X basis
 Hence, p(+1) = cos^2[theta/2] allowing us to evaluation error correction reward.
 
 
