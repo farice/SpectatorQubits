@@ -29,7 +29,7 @@ from qutip import *
 # %% codecell
 # prepare state in X basis
 # rotate along Z axis
-# measure in X basis
+# measure in Y basis
 def get_spectator_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
@@ -39,6 +39,7 @@ def get_spectator_circuit(error_theta):
 
     qc.rz(error_theta, qr)
 
+    qc.sdg(qr)
     qc.h(qr)
     qc.measure(qr, cr)
 
@@ -51,12 +52,19 @@ spectator_qc.draw()
 
 
 # %% codecell
+# spec = [
+#     ('thetas', double[:]),               # a simple scalar field
+#     ('rewards', double[:]),          # an array field
+# ]
+
+
 # (action, reward) distribution for a given state
 # in particular, we have two states: V0, V1
+# @jitclass(spec)
 class MDPNode:
-    def __init__(self, num_arms, ):
+    def __init__(self, num_arms):
         # action set
-        self.thetas = -np.linspace(0, 1, num_arms)
+        self.thetas = -np.pi * np.linspace(0, 1, num_arms)
         # correspondingly indexed reward set
         self.rewards = np.zeros(num_arms)
 
@@ -65,8 +73,7 @@ class MDPNode:
 
 
 # %% codecell
-# @numba.jit
-def mab(error_samples, num_arms=10, N=10000):
+def mab(error_samples, num_arms=11, N=10000):
     outcomes = np.zeros(N)
     V0 = MDPNode(num_arms)
     V1 = MDPNode(num_arms)
@@ -96,7 +103,7 @@ def mab(error_samples, num_arms=10, N=10000):
         (rewards, thetas) = (V0.rewards, V0.thetas) if outcome_1 == 0 else (V1.rewards, V1.thetas)
 
         eps = np.random.rand()
-        arm = np.random.randint(0, num_arms-1) if eps <= 1/(i+1) else np.argmax(
+        arm = np.random.randint(0, num_arms) if eps <= 0.1 or i < N/5 else np.argmax(
                                                                       rewards)
         correction_theta = thetas[arm]
 
@@ -110,13 +117,15 @@ def mab(error_samples, num_arms=10, N=10000):
             list(sim_2.result().get_counts().keys())[0]
             )
 
-        if (outcome_2 == 0):
-            rewards[arm] += 1
-        else:
-            rewards[arm] -= 1
+        # if (outcome_2 == 0):
+        #     rewards[arm] += 1
+        # else:
+        #     rewards[arm] -= 1
 
         process_fidelity_corrected[i] = rz(error_samples[i] + correction_theta).tr() / 2
         process_fidelity_noop[i] = rz(error_samples[i]).tr() / 2
+
+        rewards[arm] = process_fidelity_corrected[i]
 
         # print(rz(error[i] + correction_theta))
         # print(process_fidelity_corrected[i], process_fidelity_noop[i])
@@ -128,8 +137,8 @@ def mab(error_samples, num_arms=10, N=10000):
 
 # %% codecell
 # mean of gaussian error distribution
-mu_list = [0.5]
-sigma = 0.1
+mu_list = np.pi * np.array([0.2])
+sigma = 0.0
 
 theta_sequence = []
 outcomes_sequence = []
@@ -148,7 +157,13 @@ for mu in tqdm(mu_list):
 
 
 # %% codecell
-print(theta_sequence)
+(theta_sequence)
+# %% codecell
+(outcomes_sequence)
+# %% codecell
+(fid_corrected_sequence)
+# %% codecell
+(fid_noop_sequence)
 
 # %% codecell
 idx = np.linspace(1, N, N)
