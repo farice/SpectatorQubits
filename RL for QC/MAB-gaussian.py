@@ -5,32 +5,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import *
 
-%matplotlib inline
+# %% markdown
+# TODOs
+
+1. Assume a function f(x) that generates the gaussian distributions (relatively well behaved). How does a strategy like this works then?
+My assumption is that the more stochastic the errors are in the exploration phase, the better MAB will learn. If MAB sees more data that are not similar then it'll train better.
+2. Policy gradient
+Assume the action space is not discrete but use gradient descent to find out the best action.
+3. Put error bars on that average plot.
+4. Time varying error. How do we balance between exploration and exploitation?
+Use hypothesis testing. Null hypothesis is that the error does not change, alternative hypothesis is that it changes. Use how fast v0_mean_estimate or v1_mean_estimate changes to calculate some p value that will tell us that the error is changing.
+5. Optimize MAB parameters.
+6. How to extend this to more complicated error types?
+7. Find composite pulses resistant against over-rotation and phase error.
 
 # %% markdown
-# Things I need to look at:
-# 1. Assume a function f(x) that generates the gaussian distributions (relatively well behaved). How does a strategy like this works then?
-# My assumption is that the more stochastic the errors are in the exploration phase, the better MAB will learn. If MAB sees more data that are not similar then it'll train better.
-#
-# 2. Policy gradient
-# Assume the action space is not discrete but use gradient descent to find out the best action.
-#
-# 3. Put error bars on that average plot.
-# 4. Time varying error. How do we balance between exploraion and exploitation.
-# Use hypothesis testing. Null hypothesis is that the error does not change, alternative hypothesis is that it changes. Use how fast v0_mean_estimate or v1_mean_estimate changes to calculate some p value that will tell us that the error is changing.
-# 5. Optimize MAB parameters.
-# 6. How to extend this to more complicated error types?
-# 7. Find composite pulses resistant against over-rotation and phase error.
+For the state-determining circuit (where we mean state in the MDP and not quantum sense), we:
+- prepare in X (+1) eigenstate
+- rotate along Z axis by error theta
+- measure in Y basis
+Hence, p(+i) = cos^2[(pi/2-theta)/2] allowing us to distinguish between small positive and negative errors.
+Note, we cannot distinguish between rotations by (pi/2 + eps, pi/2 - eps). Therefore, we assume errors lie within [-pi/2, pi/2].
 
 
 # %% codecell
-# prepare state in X basis
-# rotate along Z axis by theta
-# measure in Y basis
-# hence, p(+1) = cos^2[(pi/2-theta)/2] allowing us to distinguish between
-# small positive and negative errors
-# note, we cannot distinguish between rotations by (pi/2 + eps, pi/2 - eps)
-# therefore, we assume errors lie within [-pi/2, pi/2]
 def get_spectator_context_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
@@ -47,11 +45,15 @@ def get_spectator_context_circuit(error_theta):
     return qc
 
 
+# %% markdown
+For the reward-determining circuit, we:
+- prepare in X (+1) eigenstate
+- rotate along Z axis by error theta
+- measure in Z basis
+Hence, p(+1) = cos^2[theta/2] allowing us to evaluation error correction reward.
+
+
 # %% codecell
-# prepare state in X basis
-# rotate along Z axis by theta
-# measure in Y basis
-# hence, p(+1) = cos^2[theta/2] allowing us to evaluation error correction reward
 def get_spectator_reward_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
@@ -65,11 +67,6 @@ def get_spectator_reward_circuit(error_theta):
     qc.measure(qr, cr)
 
     return qc
-
-
-# %% codecell
-qc = get_spectator_reward_circuit(0.1 * np.pi)
-qc.draw()
 
 
 # %% codecell
@@ -88,13 +85,8 @@ sim_neg = execute(
 print(sim_pos.result().get_counts())
 print(sim_neg.result().get_counts())
 
+
 # %% codecell
-# spec = [
-#     ('thetas', double[:]),               # a simple scalar field
-#     ('rewards', double[:]),          # an array field
-# ]
-
-
 # (action, reward) distribution for a given state
 # in particular, we have two states: V0, V1
 # @jitclass(spec)
@@ -130,7 +122,8 @@ class MDPNode:
 
 
 # %% codecell
-def mab(error_samples, num_arms=11, N=10000):
+def mab(error_samples, num_arms=11):
+    N = len(error_samples)
     outcomes = np.zeros(N)
     V0 = MDPNode(num_arms)
     V1 = MDPNode(num_arms)
@@ -138,10 +131,6 @@ def mab(error_samples, num_arms=11, N=10000):
     process_fidelity_corrected = np.zeros(N)
     process_fidelity_noop = np.zeros(N)
     for i in range(N):
-        # print(V0.rewards)
-        # print(V1.rewards)
-        # print("\n")
-
         spectator_qc_1 = get_spectator_context_circuit(error_samples[i])
 
         # single measurement of first spectator qubit
@@ -152,9 +141,6 @@ def mab(error_samples, num_arms=11, N=10000):
             list(sim_1.result().get_counts().keys())[0]
             )
         outcomes[i] = outcome_1
-
-        # print(outcome_1)
-        # print("\n")
 
         # contextual multi-arm bandit
         context = V0 if outcome_1 == 0 else V1
@@ -179,31 +165,22 @@ def mab(error_samples, num_arms=11, N=10000):
         process_fidelity_corrected[i] = rz(error_samples[i] + correction_theta).tr() / 2
         process_fidelity_noop[i] = rz(error_samples[i]).tr() / 2
 
-        # rewards[arm] = process_fidelity_corrected[i]
-
-        # print(rz(error[i] + correction_theta))
-        # print(process_fidelity_corrected[i], process_fidelity_noop[i])
-        # print("\n")
-
     return (V0, V1,
             process_fidelity_corrected, process_fidelity_noop, outcomes)
 
 
 # %% codecell
-# mean of gaussian error distribution
-mu_list = np.pi * np.array([0.0])
-alpha = np.pi * 0.5
+# unif [-alpha, alpha]
+alpha_list = np.pi * np.array([0.5])
 
-V0_sequence = []
-V1_sequence = []
+V0_sequence, V1_sequence = [], []
 outcomes_sequence = []
-fid_corrected_sequence = []
-fid_noop_sequence = []
+fid_corrected_sequence, fid_noop_sequence = [], []
 
-N = 10000
-for mu in mu_list:
+N = 1000
+for alpha in alpha_list:
     error_samples = np.random.uniform(-alpha, alpha, N)
-    V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples, N=N)
+    V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples)
 
     V0_sequence.append(V0)
     V1_sequence.append(V1)
@@ -215,12 +192,7 @@ for mu in mu_list:
 # %% codecell
 print(V0_sequence[0].rewards)
 print(V1_sequence[0].rewards)
-# %% codecell
-(outcomes_sequence)
-# %% codecell
-(fid_corrected_sequence)
-# %% codecell
-(fid_noop_sequence)
+
 
 # %% codecell
 idx = np.linspace(1, N, N)
