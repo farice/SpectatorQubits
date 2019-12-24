@@ -4,3 +4,6 @@ relatively well behaved function (continuous, bounded derivative etc).
 Look into incorporating adaptive state tomography protocols.
 3. What happens when we add time dependence to our error model. We possibly need to move
 towards RL.
+4. Design better composite pulses for ion trap following Google's UQC-DRL paper. Start from
+a parameterized SK1 gate and vary the angles (using DRL) to find optimal pulses that retain
+SK1's benefits (eliminate over-rotation and crosstalk) but is resistant to phase errors 
