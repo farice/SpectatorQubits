@@ -7,12 +7,12 @@ from qutip import *
 
 
 # %% markdown
-For the state-determining circuit (where we mean state in the MDP and not quantum sense), we:
-- prepare in X (+1) eigenstate
+For the state - determining circuit(where we mean state in the MDP and not quantum sense), we:
+- prepare in X(+1) eigenstate
 - rotate along Z axis by error theta
 - measure in Y basis
-Hence, p(+i) = cos^2[(pi/2-theta)/2] allowing us to distinguish between small positive and negative errors.
-Note, we cannot distinguish between rotations by (pi/2 + eps, pi/2 - eps). Therefore, we assume errors lie within [-pi/2, pi/2].
+Hence, p(+i) = cos ^ 2[(pi / 2 - theta) / 2] allowing us to distinguish between small positive and negative errors.
+Note, we cannot distinguish between rotations by(pi / 2 + eps, pi / 2 - eps). Therefore, we assume errors lie within[-pi / 2, pi / 2].
 
 
 # %% codecell
@@ -33,11 +33,11 @@ def get_spectator_context_circuit(error_theta):
 
 
 # %% markdown
-For the reward-determining circuit, we:
-- prepare in X (+1) eigenstate
+For the reward - determining circuit, we:
+- prepare in X(+1) eigenstate
 - rotate along Z axis by error theta
 - measure in X basis
-Hence, p(+1) = cos^2[theta/2] allowing us to evaluation error correction reward.
+Hence, p(+1) = cos ^ 2[theta / 2] allowing us to evaluation error correction reward.
 
 
 # %% codecell
@@ -80,7 +80,7 @@ print(sim_neg.result().get_counts())
 class MDPNode:
     def __init__(self, num_arms):
         # action set
-        self.thetas = np.pi/2 * np.linspace(-1, 1, num_arms)
+        self.thetas = np.pi / 2 * np.linspace(-1, 1, num_arms)
         # correspondingly indexed (reward | state, action) set
         # samples from beta(S, F) distribution
         self.rewards = np.ones(num_arms, dtype=np.float64)
@@ -126,7 +126,7 @@ def mab(error_samples, num_arms=11):
             shots=1)
         outcome_1 = int(
             list(sim_1.result().get_counts().keys())[0]
-            )
+        )
         outcomes[i] = outcome_1
 
         # contextual multi-arm bandit
@@ -142,14 +142,15 @@ def mab(error_samples, num_arms=11):
             shots=1)
         outcome_2 = int(
             list(sim_2.result().get_counts().keys())[0]
-            )
+        )
 
         if (outcome_2 == 0):
             context.success()
         else:
             context.failure()
 
-        process_fidelity_corrected[i] = rz(error_samples[i] + correction_theta).tr() / 2
+        process_fidelity_corrected[i] = rz(
+            error_samples[i] + correction_theta).tr() / 2
         process_fidelity_noop[i] = rz(error_samples[i]).tr() / 2
 
     return (V0, V1,
