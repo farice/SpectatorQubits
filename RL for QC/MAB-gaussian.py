@@ -5,19 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import *
 
-# %% markdown
-# TODOs
-
-1. Assume a function f(x) that generates the gaussian distributions (relatively well behaved). How does a strategy like this works then?
-My assumption is that the more stochastic the errors are in the exploration phase, the better MAB will learn. If MAB sees more data that are not similar then it'll train better.
-2. Policy gradient
-Assume the action space is not discrete but use gradient descent to find out the best action.
-3. Put error bars on that average plot.
-4. Time varying error. How do we balance between exploration and exploitation?
-Use hypothesis testing. Null hypothesis is that the error does not change, alternative hypothesis is that it changes. Use how fast v0_mean_estimate or v1_mean_estimate changes to calculate some p value that will tell us that the error is changing.
-5. Optimize MAB parameters.
-6. How to extend this to more complicated error types?
-7. Find composite pulses resistant against over-rotation and phase error.
 
 # %% markdown
 For the state-determining circuit (where we mean state in the MDP and not quantum sense), we:
