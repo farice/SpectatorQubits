@@ -88,7 +88,7 @@ print(sim_neg.result().get_counts())
 class MDPNode:
     def __init__(self, num_arms):
         # action set
-        self.thetas = np.pi / 2 * np.linspace(-1, 1, num_arms)
+        self.thetas = np.pi / 4 * np.linspace(-1, 1, num_arms)
         # correspondingly indexed (reward | state, action) set
         # samples from beta(S, F) distribution
         self.estimated_rewards = np.ones(num_arms, dtype=np.float64)
@@ -131,7 +131,8 @@ def mab(error_samples, num_arms=11):
     for i in range(N):
         update_spectator_circuit(spectator_context_qc, error_samples[i])
 
-        # single measurement of first spectator qubit
+        # context measurement separates positive from negative rotations
+        # if the rotation is +pi/4 we will draw 0 w.p. 1
         sim_1 = execute(
             spectator_context_qc, backend=BasicAer.get_backend(
                 'qasm_simulator'),
@@ -143,6 +144,7 @@ def mab(error_samples, num_arms=11):
 
         # contextual multi-arm bandit
         context = V0 if outcome_1 == 0 else V1
+        # estimated rewards for arms are redrawn using Beta(#success, #failure)
         context.resample_rewards()
         correction_theta = context.optimal_theta()
 
@@ -156,6 +158,8 @@ def mab(error_samples, num_arms=11):
             list(sim_2.result().get_counts().keys())[0]
         )
 
+        # if the correction is perfect then the reward measurement is 0 w.p. 1
+        # the underlying distribution we are sampling is monotonic in fidelity
         if (outcome_2 == 0):
             context.success()
         else:
@@ -177,7 +181,7 @@ V0_sequence, V1_sequence = [], []
 outcomes_sequence = []
 fid_corrected_sequence, fid_noop_sequence = [], []
 
-N = 1000
+N = 10000
 for alpha in alpha_list:
     error_samples = np.random.uniform(-alpha, alpha, N)
     V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples)
@@ -190,8 +194,15 @@ for alpha in alpha_list:
 
 
 # %% codecell
+print("estimated arm reward given positive rotation context:")
 print(V0_sequence[0].estimated_rewards)
+print("given positive rotation context:")
 print(V1_sequence[0].estimated_rewards)
+
+print("\n")
+
+print("average fidelity with correction: ", np.mean(fid_corrected_sequence[0]))
+print("without correction: ", np.mean(fid_noop_sequence[0]))
 
 
 # %% codecell
