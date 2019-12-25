@@ -5,6 +5,7 @@ from qiskit.extensions.standard.rz import RZGate
 import matplotlib.pyplot as plt
 import numpy as np
 from qutip import *
+from tqdm import trange
 
 
 # %% markdown
@@ -88,7 +89,7 @@ print(sim_neg.result().get_counts())
 class MDPNode:
     def __init__(self, num_arms):
         # action set
-        self.thetas = np.pi / 4 * np.linspace(-1, 1, num_arms)
+        self.thetas = 0.02 * np.pi * np.linspace(-1, 1, num_arms)
         # correspondingly indexed (reward | state, action) set
         # samples from beta(S, F) distribution
         self.estimated_rewards = np.ones(num_arms, dtype=np.float64)
@@ -128,7 +129,7 @@ def mab(error_samples, num_arms=11):
 
     spectator_context_qc = create_spectator_context_circuit(0)
     spectator_reward_qc = create_spectator_reward_circuit(0)
-    for i in range(N):
+    for i in trange(N):
         update_spectator_circuit(spectator_context_qc, error_samples[i])
 
         # context measurement separates positive from negative rotations
@@ -175,15 +176,16 @@ def mab(error_samples, num_arms=11):
 
 # %% codecell
 # unif [-alpha, alpha]
-alpha_list = np.pi * np.array([0.5])
+mu_list = np.pi * np.array([0.01])
+sigma_list = np.pi * np.array([0.005])
 
 V0_sequence, V1_sequence = [], []
 outcomes_sequence = []
 fid_corrected_sequence, fid_noop_sequence = [], []
 
-N = 10000
-for alpha in alpha_list:
-    error_samples = np.random.uniform(-alpha, alpha, N)
+N = 100000
+for mu, sigma in zip(mu_list, sigma_list):
+    error_samples = np.random.normal(mu, sigma, N)
     V0, V1, fid_corrected, fid_noop, outcomes = mab(error_samples)
 
     V0_sequence.append(V0)
@@ -208,5 +210,6 @@ print("without correction: ", np.mean(fid_noop_sequence[0]))
 # %% codecell
 idx = np.linspace(1, N, N)
 plt.figure()
+plt.title("Gaussian(pi/100, pi/200)")
 plt.plot(idx, fid_noop_sequence[0], 'r.', idx, fid_corrected_sequence[0], 'g.')
 plt.show()
