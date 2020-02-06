@@ -18,6 +18,7 @@ class BaseAgent(object):
         self.rewards = []
 
         self.fidelity = []
+        self.control_fidelity = []
 
         self.action_log_frequency = config.ACTION_SELECTION_COUNT_FREQUENCY
         self.action_selections = [0 for _ in range(env.action_space.n)]
@@ -76,6 +77,9 @@ class BaseAgent(object):
 
     def save_fidelity(self, fidelity):
         self.fidelity.append(fidelity)
+        
+    def save_control_fidelity(self, fidelity):
+        self.control_fidelity.append(fidelity)
 
     def save_action(self, action, tstep):
         self.action_selections[int(action)] += 1.0/self.action_log_frequency

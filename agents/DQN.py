@@ -5,7 +5,7 @@ import torch.optim as optim
 
 from agents.BaseAgent import BaseAgent
 from networks.network_bodies import SimpleBody
-from utils.ReplayMemory import ExperienceReplayMemory, PrioritizedReplayMemory
+from utils.ReplayMemory import ExperienceReplayMemory
 
 from timeit import default_timer as timer
 
@@ -62,7 +62,7 @@ class Model(BaseAgent):
         self.target_model = None
 
     def declare_memory(self):
-        self.memory = ExperienceReplayMemory(self.experience_replay_size) if not self.priority_replay else PrioritizedReplayMemory(self.experience_replay_size, self.priority_alpha, self.priority_beta_start, self.priority_beta_frames)
+        self.memory = ExperienceReplayMemory(self.experience_replay_size) # if not self.priority_replay else PrioritizedReplayMemory(self.experience_replay_size, self.priority_alpha, self.priority_beta_start, self.priority_beta_frames)
 
     def append_to_replay(self, s, a, r, s_):
         self.nstep_buffer.append((s, a, r, s_))
