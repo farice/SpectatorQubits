@@ -58,12 +58,11 @@ class Model(BaseAgent):
         self.nstep_buffer = []
 
     def declare_networks(self):
-        self.model = None
-        self.target_model = None
+        pass
 
     def declare_memory(self):
-        self.memory = ExperienceReplayMemory(self.experience_replay_size) # if not self.priority_replay else PrioritizedReplayMemory(self.experience_replay_size, self.priority_alpha, self.priority_beta_start, self.priority_beta_frames)
-
+        pass
+    
     def append_to_replay(self, s, a, r, s_):
         self.nstep_buffer.append((s, a, r, s_))
 
@@ -76,52 +75,10 @@ class Model(BaseAgent):
         self.memory.push((state, action, R, s_))
 
     def prep_minibatch(self):
-        # random transition batch is taken from experience replay memory
-        transitions, indices, weights = self.memory.sample(self.batch_size)
-
-        batch_state, batch_action, batch_reward, batch_next_state = zip(*transitions)
-
-        shape = (-1,)+self.num_feats
-
-        batch_state = torch.tensor(batch_state, device=self.device, dtype=torch.float).view(shape)
-        batch_action = torch.tensor(batch_action, device=self.device, dtype=torch.long).squeeze().view(-1, 1)
-        batch_reward = torch.tensor(batch_reward, device=self.device, dtype=torch.float).squeeze().view(-1, 1)
-
-        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch_next_state)), device=self.device, dtype=torch.uint8)
-        try: #sometimes all next states are false
-            non_final_next_states = torch.tensor([s for s in batch_next_state if s is not None], device=self.device, dtype=torch.float).view(shape)
-            empty_next_state_values = False
-        except:
-            non_final_next_states = None
-            empty_next_state_values = True
-
-        return batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights
+        pass
 
     def compute_loss(self, batch_vars): #faster
-        batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
-
-        #estimate
-        self.model.sample_noise()
-        current_q_values = self.model(batch_state).gather(1, batch_action)
-
-        #target
-        with torch.no_grad():
-            max_next_q_values = torch.zeros(self.batch_size, device=self.device, dtype=torch.float).unsqueeze(dim=1)
-            if not empty_next_state_values:
-                max_next_action = self.get_max_next_state_action(non_final_next_states)
-                self.target_model.sample_noise()
-                max_next_q_values[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)
-            expected_q_values = batch_reward + ((self.gamma**self.nsteps)*max_next_q_values)
-
-        diff = (expected_q_values - current_q_values)
-        if self.priority_replay:
-            self.memory.update_priorities(indices, diff.detach().squeeze().abs().cpu().numpy().tolist())
-            loss = self.MSE(diff).squeeze() * weights
-        else:
-            loss = self.MSE(diff)
-        loss = loss.mean()
-
-        return loss
+        pass
 
     def update(self, s, a, r, s_, frame=0):
         if self.static_policy:
@@ -148,14 +105,7 @@ class Model(BaseAgent):
         self.save_sigma_param_magnitudes(frame)
 
     def get_action(self, s, eps=0.1): #faster
-        with torch.no_grad():
-            if np.random.random() >= eps or self.static_policy or self.noisy:
-                X = torch.tensor([s], device=self.device, dtype=torch.float)
-                self.model.sample_noise()
-                a = self.model(X).max(1)[1].view(1, 1)
-                return a.item()
-            else:
-                return np.random.randint(0, self.num_actions)
+        pass
 
     def update_target_model(self):
         self.update_count+=1
