@@ -1,7 +1,8 @@
 Algorithm:
 	1. Start with an initial ‘gamma’ (hyper-paramter to tune) and a large action space for both contexts. 
 	2. Thompson sampling chooses a few arms after some iterations of this algorithm (calibration phase). 
-	The action space for the two contexts might be different now, so might have to treat these two cases separately. 
+	The action space for the two contexts might be different now, so might have to treat these two cases separately. I suggest 
+	we change the code to have two indepdent action spaces (for two contexts) from the begining. 
 	3. After the calibration phase, we change the action space to be around the arms chosen by Thomson’s sampling.
 	We keep the number of arms fixed. 
 	4. At every step of the algorithm (after the calibration phase), calculate the density of errors (the 2nd spectator qubit
