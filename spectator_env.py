@@ -26,8 +26,12 @@ class SpectatorEnv(Env):
         self.error_samples = error_samples
 
         self.action_space = Tuple((
-            Discrete(num_arms),
-            Box(low=-np.pi, high=np.pi, shape=(2,), dtype=np.float32)
+            # ordered arm within uniform rotation action range
+            Discrete(num_arms), 
+            # uniform range of rotations to consider for correction
+            Box(low=-np.pi, high=np.pi, shape=(2,), dtype=np.float32),
+            # contextual measurement rotational bias
+            Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32)
             )
             )
         self.observation_space = MultiBinary(num_spectators)
@@ -44,46 +48,47 @@ class SpectatorEnv(Env):
 
     def step(self, action):
         reward = self._get_reward(action)
-        self._choose_next_state()
+        self._choose_next_state(action)
         self.current_step += 1
         done = self.current_step >= self.ep_length
         return self.state, reward, done, self.info
 
-    def _choose_next_state(self):
-        self.update_spectator_circuit(self.spectator_context_qc, self.error_samples[self.current_step])
+    def _choose_next_state(self, action=None):
+        rotational_bias = 0 if action is None else list(action)[2]
+        self.update_spectator_circuit(self.spectator_context_qc, self.error_samples[self.current_step] + rotational_bias)
         # context measurement separates positive from negative rotations
         # if the rotation is +pi/4 we will draw 0 w.p. 1
         sim = execute(
             self.spectator_context_qc, backend=BasicAer.get_backend(
                 'qasm_simulator'),
-            shots=1)
+            shots=self.num_spectators, memory=True)
         self.state = np.array(
-            list(sim.result().get_counts().keys())
+            sim.result().get_memory()
         ).astype(int)
 
     def _get_reward(self, action):
-        arm, uniform_theta_bounds = action
+        arm, uniform_theta_bounds, rotational_bias = action
         correction_theta = np.linspace(uniform_theta_bounds[0], uniform_theta_bounds[1], self.num_arms)[arm]
         # rotations along the same axis commute
         self.update_spectator_circuit(self.spectator_reward_qc,
-                                 self.error_samples[self.current_step] + correction_theta)
+                                 self.error_samples[self.current_step] + correction_theta + rotational_bias)
         sim = execute(
             self.spectator_reward_qc,
-            backend=BasicAer.get_backend('qasm_simulator'), shots=1)
-        outcome = int(
-            list(sim.result().get_counts().keys())[0]
-        )
+            backend=BasicAer.get_backend('qasm_simulator'), shots=self.num_spectators, memory=True)
+        outcome = np.array(
+            sim.result().get_memory()
+        ).astype(int)
 
         # fidelity reward
         # debugging only, not observable by agent
         self.info = [
-            np.abs(rz(self.error_samples[self.current_step] + correction_theta).tr()) / 2,
+            np.abs(rz(self.error_samples[self.current_step] + correction_theta + rotational_bias).tr()) / 2,
             np.abs(rz(self.error_samples[self.current_step]).tr()) / 2
             ]
 
         # if the correction is perfect then the reward measurement is 0 w.p. 1
         # the underlying distribution we are sampling is monotonic in fidelity
-        return 1 if (outcome == 0) else 0
+        return 1 - np.sum(outcome) / self.num_spectators # something like a point estimate of fidelity
 
     def render(self, mode='human'):
         pass
