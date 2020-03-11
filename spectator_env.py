@@ -16,13 +16,15 @@ class SpectatorEnv(Env):
     def __init__(self,
                  error_samples,
                  num_arms: int = 21,
-                 num_spectators: int = 1):
+                 num_context_spectators: int = 1,
+                 num_reward_spectators: int = 1):
 
         self.spectator_context_qc = self.create_spectator_context_circuit(0)
         self.spectator_reward_qc = self.create_spectator_reward_circuit(0)
 
         self.num_arms = num_arms
-        self.num_spectators = num_spectators
+        self.num_context_spectators = num_context_spectators
+        self.num_reward_spectators = num_reward_spectators
         self.error_samples = error_samples
 
         self.action_space = Tuple((
@@ -34,7 +36,7 @@ class SpectatorEnv(Env):
             Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32)
             )
             )
-        self.observation_space = MultiBinary(num_spectators)
+        self.observation_space = MultiBinary(num_context_spectators)
         self.ep_length = len(error_samples)
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
@@ -62,7 +64,7 @@ class SpectatorEnv(Env):
         sim = execute(
             self.spectator_context_qc, backend=BasicAer.get_backend(
                 'qasm_simulator'),
-            shots=self.num_spectators, memory=True)
+            shots=self.num_context_spectators, memory=True)
         self.state = np.array(
             sim.result().get_memory()
         ).astype(int)
@@ -77,7 +79,7 @@ class SpectatorEnv(Env):
                                  self.error_samples[self.current_step] + correction_theta + rotational_bias)
         sim = execute(
             self.spectator_reward_qc,
-            backend=BasicAer.get_backend('qasm_simulator'), shots=self.num_spectators, memory=True)
+            backend=BasicAer.get_backend('qasm_simulator'), shots=self.num_reward_spectators, memory=True)
         outcome = np.array(
             sim.result().get_memory()
         ).astype(int)
@@ -91,7 +93,7 @@ class SpectatorEnv(Env):
 
         # if the correction is perfect then the reward measurement is 0 w.p. 1
         # the underlying distribution we are sampling is monotonic in fidelity
-        return 1 - np.sum(outcome) / self.num_spectators # something like a point estimate of fidelity
+        return 1 - np.sum(outcome) / self.num_reward_spectators # something like a point estimate of fidelity
 
     def render(self, mode='human'):
         pass
