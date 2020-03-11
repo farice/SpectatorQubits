@@ -29,7 +29,7 @@ class SpectatorEnv(Env):
             # ordered arm within uniform rotation action range
             Discrete(num_arms), 
             # uniform range of rotations to consider for correction
-            Box(low=-np.pi, high=np.pi, shape=(2,), dtype=np.float32),
+            Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
             # contextual measurement rotational bias
             Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32)
             )
@@ -48,14 +48,15 @@ class SpectatorEnv(Env):
 
     def step(self, action):
         reward = self._get_reward(action)
-        self._choose_next_state(action)
+        if self.current_step + 1 < len(self.error_samples):
+            self._choose_next_state(action)
         self.current_step += 1
         done = self.current_step >= self.ep_length
         return self.state, reward, done, self.info
 
     def _choose_next_state(self, action=None):
         rotational_bias = 0 if action is None else list(action)[2]
-        self.update_spectator_circuit(self.spectator_context_qc, self.error_samples[self.current_step] + rotational_bias)
+        self.update_spectator_circuit(self.spectator_context_qc, self.error_samples[self.current_step + 1] + rotational_bias)
         # context measurement separates positive from negative rotations
         # if the rotation is +pi/4 we will draw 0 w.p. 1
         sim = execute(
@@ -67,8 +68,10 @@ class SpectatorEnv(Env):
         ).astype(int)
 
     def _get_reward(self, action):
-        arm, uniform_theta_bounds, rotational_bias = action
-        correction_theta = np.linspace(uniform_theta_bounds[0], uniform_theta_bounds[1], self.num_arms)[arm]
+        arm, uniform_theta_width, rotational_bias = action
+        correction_theta = np.linspace(-uniform_theta_width / 2, uniform_theta_width / 2, self.num_arms)[arm]
+#         print("correction_theta: ", correction_theta)
+#         print("error sample: ", self.error_samples[self.current_step])
         # rotations along the same axis commute
         self.update_spectator_circuit(self.spectator_reward_qc,
                                  self.error_samples[self.current_step] + correction_theta + rotational_bias)
