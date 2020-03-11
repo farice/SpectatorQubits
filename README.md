@@ -2,8 +2,12 @@
 
 ## Overview
 
-Consider using the [Hydrogen Atom](https://atom.io/packages/hydrogen) package to interact with the `*.py` files as an alternative to `jupyter notebook` or `jupyter lab`.
-
 ## Layout
 
-[MAB-gaussian.py](MAB-gaussian.py): Hydrogen code. Contextual multi-armed bandits to calibrate to coherent noise drawn from a fixed distribution.
+- [MAB-gaussian.ipynb](MAB-gaussian.ipynb): Contextual multi-armed bandits to calibrate to coherent noise drawn from a fixed distribution.
+
+- [dqn_rnn.ipynb](dqn_rnn.ipynb): DQN using a RNN function approximator to handle non-stationarity.
+
+- [spectatorl-noisemodel.py](spectatorl-noisemodel.py): a random walk-like realistic noise model.
+
+- [spectator_env.py](spectator_env.py): a noisy spectator qubit environment testbed for benchmarking control algorithms in a consistent way.

@@ -2,7 +2,7 @@ import numpy as np
 from typing import Optional
 
 from gym import Env, Space
-from gym.spaces import Discrete, MultiDiscrete, MultiBinary, Box
+from gym.spaces import Discrete, MultiDiscrete, MultiBinary, Box, Tuple
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit import Aer, BasicAer, execute
@@ -15,16 +15,22 @@ from qutip import *
 class SpectatorEnv(Env):
     def __init__(self,
                  error_samples,
-                 num_arms: int = 21):
+                 num_arms: int = 21,
+                 num_spectators: int = 1):
 
         self.spectator_context_qc = self.create_spectator_context_circuit(0)
         self.spectator_reward_qc = self.create_spectator_reward_circuit(0)
 
         self.num_arms = num_arms
+        self.num_spectators = num_spectators
         self.error_samples = error_samples
 
-        self.action_space = Discrete(num_arms)
-        self.observation_space = MultiBinary(1)
+        self.action_space = Tuple((
+            Discrete(num_arms),
+            Box(low=-np.pi, high=np.pi, shape=(2,), dtype=np.float32)
+            )
+            )
+        self.observation_space = MultiBinary(num_spectators)
         self.ep_length = len(error_samples)
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
@@ -56,7 +62,8 @@ class SpectatorEnv(Env):
         ).astype(int)
 
     def _get_reward(self, action):
-        correction_theta = (np.pi * np.linspace(-1, 1, self.num_arms))[action]
+        arm, uniform_theta_bounds = action
+        correction_theta = np.linspace(uniform_theta_bounds[0], uniform_theta_bounds[1], self.num_arms)[arm]
         # rotations along the same axis commute
         self.update_spectator_circuit(self.spectator_reward_qc,
                                  self.error_samples[self.current_step] + correction_theta)
@@ -81,7 +88,8 @@ class SpectatorEnv(Env):
     def render(self, mode='human'):
         pass
     
-    def create_spectator_context_circuit(self, error_theta):
+    @staticmethod
+    def create_spectator_context_circuit(error_theta):
         qr = QuantumRegister(1)
         cr = ClassicalRegister(1)
         qc = QuantumCircuit(qr, cr)
@@ -96,7 +104,8 @@ class SpectatorEnv(Env):
 
         return qc
 
-    def create_spectator_reward_circuit(self, error_theta):
+    @staticmethod
+    def create_spectator_reward_circuit(error_theta):
         qr = QuantumRegister(1)
         cr = ClassicalRegister(1)
         qc = QuantumCircuit(qr, cr)
@@ -112,7 +121,8 @@ class SpectatorEnv(Env):
 
     # explicit update function allows us to avoid creating a new ciruit object
     # at every iteration
-    def update_spectator_circuit(self, qc, error_theta):
+    @staticmethod
+    def update_spectator_circuit(qc, error_theta):
         inst, qarg, carg = qc.data[1]
         qc.data[1] = RZGate(error_theta), qarg, carg
 
