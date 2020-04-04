@@ -42,10 +42,12 @@ class SpectatorEnv(Env):
         self.num_resets = -1  # Becomes 0 after __init__ exits.
         self.reset()
 
-    def reset(self):
+    def reset(self,new_error_samples=None):
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
+        #change
+        self.error_samples = self.error_samples if new_error_samples is None else new_error_samples 
         return self.state
 
     def step(self, action):
