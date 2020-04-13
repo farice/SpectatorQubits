@@ -95,7 +95,7 @@ class SpectatorEnv(Env):
 
         # if the correction is perfect then the reward measurement is 0 w.p. 1
         # the underlying distribution we are sampling is monotonic in fidelity
-        return 1 - np.sum(outcome) / self.num_reward_spectators # something like a point estimate of fidelity
+        return self.num_reward_spectators - np.sum(outcome)
 
     def render(self, mode='human'):
         pass
