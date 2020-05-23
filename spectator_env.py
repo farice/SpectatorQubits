@@ -15,6 +15,7 @@ from qutip import *
 class SpectatorEnv(Env):
     def __init__(self,
                  error_samples,
+                 batch_size: int = 1,
                  num_arms: int = 21,
                  num_context_spectators: int = 1,
                  num_reward_spectators: int = 1):
@@ -26,6 +27,8 @@ class SpectatorEnv(Env):
         self.num_context_spectators = num_context_spectators
         self.num_reward_spectators = num_reward_spectators
         self.error_samples = error_samples
+        
+        self.batch_size = batch_size
 
         self.action_space = Tuple((
             # ordered arm within uniform rotation action range
@@ -42,34 +45,43 @@ class SpectatorEnv(Env):
         self.num_resets = -1  # Becomes 0 after __init__ exits.
         self.reset()
 
-    def reset(self,new_error_samples=None):
+    def reset(self):
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
-        #change
-        self.error_samples = self.error_samples if new_error_samples is None else new_error_samples 
         return self.state
 
     def step(self, action):
         reward = self._get_reward(action)
-        if self.current_step + 1 < len(self.error_samples):
+        if self.current_step + self.batch_size < len(self.error_samples):
             self._choose_next_state(action)
-        self.current_step += 1
-        done = self.current_step >= self.ep_length
-        return self.state, reward, done, self.info
+            return self.state, reward, True, self.info
+        return self.state, reward, False, self.info
 
+    def set_error_samples(self, new_error_samples):
+        self.error_samples = new_error_samples
+
+    # sets current step and the batched state
     def _choose_next_state(self, action=None):
         rotational_bias = 0 if action is None else list(action)[2]
-        self.update_spectator_circuit(self.spectator_context_qc, self.error_samples[self.current_step + 1] + rotational_bias)
-        # context measurement separates positive from negative rotations
-        # if the rotation is +pi/4 we will draw 0 w.p. 1
-        sim = execute(
-            self.spectator_context_qc, backend=BasicAer.get_backend(
-                'qasm_simulator'),
-            shots=self.num_context_spectators, memory=True)
-        self.state = np.array(
-            sim.result().get_memory()
-        ).astype(int)
+        
+        state = []
+        for step in range(self.batch_size):
+            self.update_spectator_circuit(self.spectator_context_qc, self.error_samples[self.current_step + step] + rotational_bias)
+            # context measurement separates positive from negative rotations
+            # if the rotation is +pi/4 we will draw 0 w.p. 1
+            sim = execute(
+                self.spectator_context_qc, backend=BasicAer.get_backend(
+                    'qasm_simulator'),
+                shots=self.num_context_spectators, memory=True)
+            
+            print(sim)
+            state.append(np.array(
+                sim.result().get_memory()
+            ).astype(int))
+            
+        self.current_step += self.batch_size
+        self.state = state
 
     def _get_reward(self, action):
         arm, uniform_theta_width, rotational_bias = action
@@ -94,7 +106,7 @@ class SpectatorEnv(Env):
             ]
 
         # if the correction is perfect then the reward measurement is 0 w.p. 1
-        # the underlying distribution we are sampling is monotonic in fidelity
+        # the underlying distribution we are sampling from is fidelity
         return self.num_reward_spectators - np.sum(outcome)
 
     def render(self, mode='human'):
