@@ -1,6 +1,7 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions.standard.rz import RZGate
 
+
 def create_spectator_context_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
@@ -16,6 +17,7 @@ def create_spectator_context_circuit(error_theta):
 
     return qc
 
+
 def create_spectator_reward_circuit(error_theta):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
@@ -29,6 +31,7 @@ def create_spectator_reward_circuit(error_theta):
     qc.measure(qr, cr)
 
     return qc
+
 
 # explicit update function allows us to avoid creating a new ciruit object
 # at every iteration
