@@ -189,6 +189,8 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
             (
                 # uniform range of rotations to consider for correction
                 Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
+                # smoothing delta for gradient approximation
+                Box(low=0, high=np.pi, shape=(), dtype=np.float32),
                 # contextual measurement rotational bias
                 Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
             )
@@ -199,7 +201,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         rotational_biases = (
             np.zeros(self.batch_size)
             if actions is None
-            else [list(action)[1] for action in actions]
+            else [list(action)[2] for action in actions]
         )
 
         batched_state = []
@@ -224,19 +226,30 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         info = []
         rewards = []
         for sample, action in zip(self.error_samples_batch, actions):
-            correction_theta, rotational_bias = action
+            correction_theta, delta, rotational_bias = action
 
             # rotations along the same axis commute
             update_spectator_circuit(
-                self.spectator_reward_qc, sample + correction_theta + rotational_bias
+                self.spectator_reward_qc, sample + correction_theta - delta + rotational_bias
             )
-            sim = execute(
+            sim_lo = execute(
                 self.spectator_reward_qc,
                 backend=BasicAer.get_backend("qasm_simulator"),
-                shots=self.num_reward_spectators,
+                shots=self.num_reward_spectators // 2,
                 memory=True,
             )
-            outcome = np.array(sim.result().get_memory()).astype(int)
+            outcome_lo = np.array(sim_lo.result().get_memory()).astype(int)
+
+            update_spectator_circuit(
+                self.spectator_reward_qc, sample + correction_theta + delta + rotational_bias
+            )
+            sim_hi = execute(
+                self.spectator_reward_qc,
+                backend=BasicAer.get_backend("qasm_simulator"),
+                shots=self.num_reward_spectators // 2,
+                memory=True,
+            )
+            outcome_hi = np.array(sim_hi.result().get_memory()).astype(int)
 
             # fidelity reward
             # debugging only, not observable by agent
@@ -246,7 +259,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
                     np.abs(rz(sample).tr()) / 2,
                 ]
             )
-            rewards.append(self.num_reward_spectators - np.sum(outcome))
+            rewards.append((self.num_reward_spectators // 2 - np.sum(outcome_lo), self.num_reward_spectators // 2 - np.sum(outcome_hi)))
 
         self.info = np.array(info)
         # if the correction is perfect then the reward measurement is 0 w.p. 1
