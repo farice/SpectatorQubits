@@ -226,11 +226,11 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         info = []
         rewards = []
         for sample, action in zip(self.error_samples_batch, actions):
-            correction_theta, delta, rotational_bias = action
+            correction_theta, delta, _ = action
 
             # rotations along the same axis commute
             update_spectator_circuit(
-                self.spectator_reward_qc, sample + correction_theta - delta + rotational_bias
+                self.spectator_reward_qc, sample + correction_theta - delta
             )
             sim_lo = execute(
                 self.spectator_reward_qc,
@@ -241,7 +241,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
             outcome_lo = np.array(sim_lo.result().get_memory()).astype(int)
 
             update_spectator_circuit(
-                self.spectator_reward_qc, sample + correction_theta + delta + rotational_bias
+                self.spectator_reward_qc, sample + correction_theta + delta
             )
             sim_hi = execute(
                 self.spectator_reward_qc,
@@ -255,7 +255,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
             # debugging only, not observable by agent
             info.append(
                 [
-                    np.abs(rz(sample + correction_theta + rotational_bias).tr()) / 2,
+                    np.abs(rz(sample + correction_theta).tr()) / 2,
                     np.abs(rz(sample).tr()) / 2,
                 ]
             )

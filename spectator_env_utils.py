@@ -11,6 +11,7 @@ def create_spectator_context_circuit(error_theta):
 
     qc.rz(error_theta, qr)
 
+    # measure in y-basis
     qc.sdg(qr)
     qc.h(qr)
     qc.measure(qr, cr)
@@ -27,6 +28,7 @@ def create_spectator_reward_circuit(error_theta):
 
     qc.rz(error_theta, qr)
 
+    # measure in x-basis
     qc.h(qr)
     qc.measure(qr, cr)
 
