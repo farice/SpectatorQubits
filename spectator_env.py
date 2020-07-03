@@ -47,7 +47,8 @@ class SpectatorEnvBase(SpectatorEnvApi):
         assert batch_size >= 1
         assert len(error_samples) > 0
 
-        self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
+        # self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, 0, [0,1,0] / np.sqrt(3))
+        # self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
         self.spectator_reward_qc = create_spectator_reward_circuit(0, 0, 0, 0, [0,0,1] / np.sqrt(3))
 
         self.num_context_spectators = num_context_spectators
@@ -221,15 +222,14 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
     # sets batched state
     def _choose_next_state(self, actions=None):
         rotational_biases = (
-            np.zeros(self.batch_size)
+            np.repeat([[0, 0, 0]], self.batch_size, axis=0)
             if actions is None
-            else [list(action)[2] for action in actions]
+            else [list(action)[3] for action in actions]
         )
-
         batched_state = []
         for sample, rotational_bias in zip(self.error_samples_batch, rotational_biases):
             update_spectator_circuit(
-                self.spectator_context_qc, 0, 0, sample + rotational_bias
+                self.spectator_context_qc, 0, 0, sample + rotational_bias[2]
             )
             # context measurement separates positive from negative rotations
             # if the rotation is +pi/4 we will draw 0 w.p. 1
