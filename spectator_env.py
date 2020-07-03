@@ -11,9 +11,30 @@ from gym.spaces import Discrete, MultiBinary, Box, Tuple
 
 from qiskit import BasicAer, execute
 from qutip import rz
+from qutip.operators import sigmax, sigmay, sigmaz
+from qutip.qip.gates import rotation
+
+class SpectatorEnvApi(Env):
+    def reset(self):
+        pass
+
+    def step(self, actions):
+        pass
+
+    def set_error_samples(self, new_error_samples):
+        pass
+
+    def render(self, mode="human"):
+        pass
+
+    def _choose_next_state(self, actions):
+        pass
+
+    def _get_reward(self, actions):
+        pass
 
 
-class SpectatorEnvBase(Env):
+class SpectatorEnvBase(SpectatorEnvApi):
     def __init__(
         self,
         error_samples,
@@ -26,8 +47,8 @@ class SpectatorEnvBase(Env):
         assert batch_size >= 1
         assert len(error_samples) > 0
 
-        self.spectator_context_qc = create_spectator_context_circuit(0)
-        self.spectator_reward_qc = create_spectator_reward_circuit(0)
+        self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
+        self.spectator_reward_qc = create_spectator_reward_circuit(0, 0, 0, 0, [0,0,1] / np.sqrt(3))
 
         self.num_context_spectators = num_context_spectators
         self.num_reward_spectators = num_reward_spectators
@@ -119,7 +140,7 @@ class SpectatorEnvDiscrete(SpectatorEnvBase):
         batched_state = []
         for sample, rotational_bias in zip(self.error_samples_batch, rotational_biases):
             update_spectator_circuit(
-                self.spectator_context_qc, sample + rotational_bias
+                self.spectator_context_qc, 0, 0, sample + rotational_bias
             )
             # context measurement separates positive from negative rotations
             # if the rotation is +pi/4 we will draw 0 w.p. 1
@@ -145,7 +166,7 @@ class SpectatorEnvDiscrete(SpectatorEnvBase):
 
             # rotations along the same axis commute
             update_spectator_circuit(
-                self.spectator_reward_qc, sample + correction_theta + rotational_bias
+                self.spectator_reward_qc, 0, 0, sample, correction_theta + rotational_bias, [0, 0, 1]
             )
             sim = execute(
                 self.spectator_reward_qc,
@@ -179,12 +200,6 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         num_context_spectators: int = 2,
         num_reward_spectators: int = 2,
     ):
-        super().__init__(
-            error_samples,
-            batch_size,
-            num_context_spectators,
-            num_reward_spectators,
-        )
         self.action_space = Tuple(
             (
                 # uniform range of rotations to consider for correction
@@ -195,6 +210,13 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
                 Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
             )
         )
+        super().__init__(
+            error_samples,
+            batch_size,
+            num_context_spectators,
+            num_reward_spectators,
+        )
+
 
     # sets batched state
     def _choose_next_state(self, actions=None):
@@ -207,7 +229,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         batched_state = []
         for sample, rotational_bias in zip(self.error_samples_batch, rotational_biases):
             update_spectator_circuit(
-                self.spectator_context_qc, sample + rotational_bias
+                self.spectator_context_qc, 0, 0, sample + rotational_bias
             )
             # context measurement separates positive from negative rotations
             # if the rotation is +pi/4 we will draw 0 w.p. 1
@@ -226,11 +248,12 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         info = []
         rewards = []
         for sample, action in zip(self.error_samples_batch, actions):
-            correction_theta, delta, _ = action
+            correction_vec, direction, delta, _ = action
 
             # rotations along the same axis commute
             update_spectator_circuit(
-                self.spectator_reward_qc, sample + correction_theta - delta
+                self.spectator_reward_qc, 0, 0, sample, np.linalg.norm(correction_vec - delta * direction),
+                (correction_vec - delta * direction) / np.linalg.norm(correction_vec - delta * direction)
             )
             sim_lo = execute(
                 self.spectator_reward_qc,
@@ -241,7 +264,8 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
             outcome_lo = np.array(sim_lo.result().get_memory()).astype(int)
 
             update_spectator_circuit(
-                self.spectator_reward_qc, sample + correction_theta + delta
+                self.spectator_reward_qc, 0, 0, sample, np.linalg.norm(correction_vec + delta * direction),
+                (correction_vec + delta * direction) / np.linalg.norm(correction_vec + delta * direction)
             )
             sim_hi = execute(
                 self.spectator_reward_qc,
@@ -253,9 +277,12 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
 
             # fidelity reward
             # debugging only, not observable by agent
+            rot_vec = correction_vec[0] * sigmax() + correction_vec[1] * sigmay() + correction_vec[2] * sigmaz()
             info.append(
                 [
-                    np.abs(rz(sample + correction_theta).tr()) / 2,
+                    np.abs((rotation(
+                    rot_vec / np.linalg.norm(rot_vec),
+                    np.linalg.norm(rot_vec)) * rz(sample)).tr()) / 2,
                     np.abs(rz(sample).tr()) / 2,
                 ]
             )
@@ -265,3 +292,33 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         # if the correction is perfect then the reward measurement is 0 w.p. 1
         # the underlying distribution we are sampling from is fidelity
         return np.array(rewards)
+
+
+class SpectatorEnvContinuous2d(SpectatorEnvApi):
+    def __init__(
+        self,
+        error_samples,
+        batch_size: int = 1,
+        num_context_spectators: int = 2,
+        num_reward_spectators: int = 2,
+    ):
+        self.axis1 = SpectatorEnvContinuous(error_samples[0], batch_size, num_context_spectators)
+        self.axis2 = SpectatorEnvContinuous(error_samples[1], batch_size, num_context_spectators)
+
+    def reset(self):
+        return self.axis1.reset(), self.axis2.reset()
+
+    def step(self, actions):
+        return list(zip(self.axis1.step(actions[0]), self.axis2.step(actions[1])))
+
+    def set_error_samples(self, new_error_samples):
+        self.axis1.set_error_samples(new_error_samples[0])
+        self.axis2.set_error_samples(new_error_samples[1])
+
+    def _choose_next_state(self, actions):
+        self.axis1._choose_next_state(actions[0])
+        self.axis2._choose_next_state(actions[1])
+
+    def _get_reward(self, actions):
+        self.axis1._get_reward(actions[0])
+        self.axis2._get_reward(actions[1])

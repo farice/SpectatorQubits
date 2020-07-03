@@ -1,32 +1,46 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions.standard.rz import RZGate
+from qiskit.extensions.standard.ry import RYGate
+from qiskit.circuit.library.standard_gates.u3 import U3Gate
+from qiskit.extensions.unitary import UnitaryGate
+from qutip.operators import sigmax, sigmay, sigmaz
+from qutip.qip.gates import rotation
 
-
-def create_spectator_context_circuit(error_theta):
+def create_spectator_context_circuit(error_theta, error_phi, error_lambda, measure_theta, measure_phi, measure_lambda):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
     qc = QuantumCircuit(qr, cr)
 
+    # prepare in X
     qc.h(qr)
 
-    qc.rz(error_theta, qr)
+    # error rotation in euler basis
+    qc.u3(error_theta, error_phi, error_lambda, qr)
 
-    # measure in y-basis
-    qc.sdg(qr)
-    qc.h(qr)
+    # measure in arbitrary basis
+    qc.u3(measure_theta, measure_phi, measure_lambda, qr)
     qc.measure(qr, cr)
 
     return qc
 
 
-def create_spectator_reward_circuit(error_theta):
+def create_spectator_reward_circuit(error_theta, error_phi, error_lambda, correction_theta, correction_bloch_vector):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
     qc = QuantumCircuit(qr, cr)
 
+    # prepare in X
     qc.h(qr)
 
-    qc.rz(error_theta, qr)
+    # error rotation in euler basis
+    qc.u3(error_theta, error_phi, error_lambda, qr)
+
+    # correction rotation as (theta, Bloch vector)
+    qc.unitary(UnitaryGate(
+        rotation(
+            correction_bloch_vector[0] * sigmax() + correction_bloch_vector[1] * sigmay() + correction_bloch_vector[2] * sigmaz(),
+            correction_theta)
+        ), qr)
 
     # measure in x-basis
     qc.h(qr)
@@ -37,6 +51,14 @@ def create_spectator_reward_circuit(error_theta):
 
 # explicit update function allows us to avoid creating a new ciruit object
 # at every iteration
-def update_spectator_circuit(qc, error_theta):
+def update_spectator_circuit(qc, error_theta, error_phi, error_lambda, correction_theta=None, correction_bloch_vector=None):
     inst, qarg, carg = qc.data[1]
-    qc.data[1] = RZGate(error_theta), qarg, carg
+
+    qc.data[1] = U3Gate(error_theta, error_phi, error_lambda), qarg, carg
+
+    if correction_theta is not None:
+        qc.data[2] = UnitaryGate(
+        rotation(
+            correction_bloch_vector[0] * sigmax() + correction_bloch_vector[1] * sigmay() + correction_bloch_vector[2] * sigmaz(),
+            correction_theta)
+        ), qarg, carg
