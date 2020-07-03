@@ -48,7 +48,7 @@ class SpectatorEnvBase(SpectatorEnvApi):
         assert len(error_samples) > 0
 
         # self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, 0, [0,1,0] / np.sqrt(3))
-        # self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
+        self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
         self.spectator_reward_qc = create_spectator_reward_circuit(0, 0, 0, 0, [0,0,1] / np.sqrt(3))
 
         self.num_context_spectators = num_context_spectators

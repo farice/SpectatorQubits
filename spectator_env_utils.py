@@ -7,7 +7,7 @@ from qutip.operators import sigmax, sigmay, sigmaz
 from qutip.qip.gates import rotation
 
 
-def create_spectator_context_circuit(error_theta, error_phi, error_lambda, measure_theta, measure_bloch_vector):
+def create_spectator_context_circuit(error_theta, error_phi, error_lambda, measure_theta, measure_phi, measure_lambda):
     qr = QuantumRegister(1)
     cr = ClassicalRegister(1)
     qc = QuantumCircuit(qr, cr)
@@ -19,11 +19,12 @@ def create_spectator_context_circuit(error_theta, error_phi, error_lambda, measu
     qc.u3(error_theta, error_phi, error_lambda, qr)
 
     # measure in arbitrary basis
-    qc.unitary(UnitaryGate(
-        rotation(
-            measure_bloch_vector[0] * sigmax() + measure_bloch_vector[1] * sigmay() + measure_bloch_vector[2] * sigmaz(),
-            measure_theta)
-        ), qr)
+    qc.u3(measure_theta, measure_phi, measure_lambda, qr)
+    # qc.unitary(UnitaryGate(
+    #    rotation(
+    #       measure_bloch_vector[0] * sigmax() + measure_bloch_vector[1] * sigmay() + measure_bloch_vector[2] * sigmaz(),
+    #        measure_theta)
+    #    ), qr)
     qc.measure(qr, cr)
 
     return qc
