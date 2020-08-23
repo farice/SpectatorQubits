@@ -200,6 +200,8 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         batch_size: int = 1,
         num_context_spectators: int = 2,
         num_reward_spectators: int = 2,
+        context_sensitivity = 1.0,
+        reward_sensitivity = 1.0,
     ):
         self.action_space = Tuple(
             (
@@ -211,6 +213,8 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
                 Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
             )
         )
+        self.context_sensitivity = context_sensitivity
+        self.reward_sensitivity = reward_sensitivity
         super().__init__(
             error_samples,
             batch_size,
@@ -229,7 +233,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         batched_state = []
         for sample, rotational_bias in zip(self.error_samples_batch, rotational_biases):
             update_spectator_circuit(
-                self.spectator_context_qc, 0, 0, sample + rotational_bias[2]
+                self.spectator_context_qc, 0, 0, self.context_sensitivity * sample + rotational_bias[2]
             )
             # context measurement separates positive from negative rotations
             # if the rotation is +pi/4 we will draw 0 w.p. 1
@@ -252,7 +256,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
 
             # rotations along the same axis commute
             update_spectator_circuit(
-                self.spectator_reward_qc, 0, 0, sample, np.linalg.norm(correction_vec - delta * direction),
+                self.spectator_reward_qc, 0, 0, self.reward_sensitivity * sample, np.linalg.norm(correction_vec - delta * direction),
                 (correction_vec - delta * direction) / np.linalg.norm(correction_vec - delta * direction)
             )
             sim_lo = execute(
@@ -264,7 +268,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
             outcome_lo = np.array(sim_lo.result().get_memory()).astype(int)
 
             update_spectator_circuit(
-                self.spectator_reward_qc, 0, 0, sample, np.linalg.norm(correction_vec + delta * direction),
+                self.spectator_reward_qc, 0, 0, self.reward_sensitivity * sample, np.linalg.norm(correction_vec + delta * direction),
                 (correction_vec + delta * direction) / np.linalg.norm(correction_vec + delta * direction)
             )
             sim_hi = execute(
@@ -282,8 +286,8 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
                 [
                     np.abs((rotation(
                     rot_vec / np.linalg.norm(rot_vec),
-                    np.linalg.norm(rot_vec)) * rz(sample)).tr()) / 2,
-                    np.abs(rz(sample).tr()) / 2,
+                    np.linalg.norm(rot_vec)) * rz(self.reward_sensitivity * sample)).tr()) / 2,
+                    np.abs(rz(self.reward_sensitivity * sample).tr()) / 2,
                 ]
             )
             rewards.append((self.num_reward_spectators // 2 - np.sum(outcome_lo), self.num_reward_spectators // 2 - np.sum(outcome_hi)))
