@@ -4,6 +4,12 @@ from spectator_env_utils import (
     update_spectator_circuit,
 )
 
+from spectator_env_utils_v2 import (
+    create_spectator_analytic_circuits,
+    update_spectator_analytic_circuits
+)
+
+
 import numpy as np
 
 from gym import Env
@@ -13,6 +19,7 @@ from qiskit import BasicAer, execute
 from qutip import rz
 from qutip.operators import sigmax, sigmay, sigmaz
 from qutip.qip.gates import rotation
+from qutip import qeye
 
 class SpectatorEnvApi(Env):
     def reset(self):
@@ -296,6 +303,173 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         # if the correction is perfect then the reward measurement is 0 w.p. 1
         # the underlying distribution we are sampling from is fidelity
         return np.array(rewards)
+
+class SpectatorEnvContinuousV2(SpectatorEnvBase):
+    def __init__(
+        self,
+        error_samples,
+        batch_size: int = 1,
+        num_context_spectators: int = 2,
+        num_reward_spectators: int = 2,
+        context_sensitivity = 1.0,
+        reward_sensitivity = 1.0,
+    ):
+        self.action_space = Tuple(
+            (
+                # uniform range of rotations to consider for correction
+                Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
+                # smoothing delta for gradient approximation
+                Box(low=0, high=np.pi, shape=(), dtype=np.float32),
+                # contextual measurement rotational bias
+                Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32),
+            )
+        )
+        self.context_sensitivity = context_sensitivity
+        self.reward_sensitivity = reward_sensitivity
+        
+        self.sigmas = [
+            sigmay(),
+            sigmax(),
+            sigmay()
+            ]
+        
+        self.spectator_circuit_sets = [
+            create_spectator_analytic_circuits(0, 0, 0, 0, self.sigmas[0], qeye(2), qeye(2)),
+            create_spectator_analytic_circuits(0, 0, 0, 0, self.sigmas[1], qeye(2), qeye(2)),
+            create_spectator_analytic_circuits(0, 0, 0, 0, self.sigmas[2], qeye(2), qeye(2))
+        ]
+        
+        super().__init__(
+            error_samples,
+            batch_size,
+            num_context_spectators,
+            num_reward_spectators,
+        )
+
+    def _get_preps(self, t):
+        g = [
+            1j * t[0] * self.sigmas[0],
+            1j * t[1] * self.sigmas[1],
+            1j * t[2] * self.sigmas[2]
+        ]
+        return [
+            qeye(2),
+            g[0].expm(),
+            g[1].expm() * g[0].expm()
+        ]
+
+    def _get_obs(self, t):
+        g = [
+            1j * t[0] * self.sigmas[0],
+            1j * t[1] * self.sigmas[1],
+            1j * t[2] * self.sigmas[2]
+        ]
+        return [
+            g[2].expm() * g[1].expm(),
+            g[2].expm(),
+            qeye(2)
+        ]
+    
+    def _get_correction(self, t):
+        g = [
+            1j * t[0] * self.sigmas[0],
+            1j * t[1] * self.sigmas[1],
+            1j * t[2] * self.sigmas[2]
+        ]
+        return g[2].expm() * g[1].expm() * g[0].expm()
+
+    # sets batched state
+    def _choose_next_state(self, actions=None):
+        batched_state = []
+        
+        context_theta = (
+            np.repeat([[0, 0, 0]], self.batch_size, axis=0)
+            if actions is None
+            else [list(action)[1] for action in actions]
+        )
+        
+        circuit_set = self.spectator_circuit_sets[0]
+        for sample, _context_theta in zip(self.error_samples_batch, context_theta):
+            preps = self._get_preps(_context_theta)
+            obs = self._get_obs(_context_theta)
+            update_spectator_analytic_circuits(
+                circuit_set, 0, 0, self.context_sensitivity * sample, _context_theta[0], self.sigmas[0], preps[0], obs[0]
+            )
+            sim = execute(
+                circuit_set[1],
+                backend=BasicAer.get_backend("qasm_simulator"),
+                shots=self.num_context_spectators,
+                memory=True,
+            )
+
+            batched_state.append(np.array(sim.result().get_memory()).astype(int))
+        self.batched_state = np.array(batched_state)
+
+    def _get_reward(self, actions):
+        info_set = []
+        context_feedback_set = []
+        correction_feedback_set = []
+        for idx, circuit_set in enumerate(self.spectator_circuit_sets):
+            info = []
+            context_feedback = []
+            correction_feedback = []
+            for sample, action in zip(self.error_samples_batch, actions):
+                correction_theta, context_theta = action
+                
+                preps = self._get_preps(correction_theta)
+                obs = self._get_obs(correction_theta)
+
+                update_spectator_analytic_circuits(
+                    circuit_set, 0, 0, self.reward_sensitivity * sample, correction_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
+                )
+                
+                sim = [execute(
+                    circuit,
+                    backend=BasicAer.get_backend("qasm_simulator"),
+                    shots=self.num_reward_spectators,
+                    memory=True,
+                ) for circuit in circuit_set]
+
+                correction_feedback.append(
+                    [np.array(_sim.result().get_memory()).astype(int) for _sim in sim]
+                )
+                
+                preps = self._get_preps(context_theta)
+                obs = self._get_obs(context_theta)
+
+                update_spectator_analytic_circuits(
+                    circuit_set, 0, 0, self.context_sensitivity * sample, context_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
+                )
+                
+                sim = [execute(
+                    circuit,
+                    backend=BasicAer.get_backend("qasm_simulator"),
+                    shots=self.num_reward_spectators,
+                    memory=True,
+                ) for circuit in circuit_set]
+                
+                context_feedback.append(
+                    [np.array(_sim.result().get_memory()).astype(int) for _sim in sim]
+                )
+
+                # fidelity reward
+                # debugging only, not observable by agent
+                corr = self._get_correction(correction_theta)
+                info.append(
+                    [
+                        np.abs((corr * rz(self.reward_sensitivity * sample)).tr()) / 2,
+                        np.abs(rz(self.reward_sensitivity * sample).tr()) / 2,
+                    ]
+                )
+            info_set.append(info)
+            context_feedback_set.append(context_feedback)
+            correction_feedback_set.append(correction_feedback)
+        
+
+        self.info = np.array(info_set)
+        # if the correction is perfect then the reward measurement is 0 w.p. 1
+        # the underlying distribution we are sampling from is fidelity
+        return np.array(context_feedback_set), np.array(correction_feedback_set)
 
 
 class SpectatorEnvContinuous2d(SpectatorEnvApi):
