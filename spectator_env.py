@@ -132,7 +132,7 @@ class SpectatorEnvDiscrete(SpectatorEnvBase):
             )
         )
         self.num_arms = num_arms
-        
+
          # self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, 0, [0,1,0] / np.sqrt(3))
         self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
         self.spectator_reward_qc = create_spectator_reward_circuit(0, 0, 0, 0, [0,0,1] / np.sqrt(3))
@@ -210,7 +210,7 @@ class SpectatorEnvContinuous(SpectatorEnvBase):
         context_sensitivity = 1.0,
         reward_sensitivity = 1.0,
     ):
-        
+
          # self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, 0, [0,1,0] / np.sqrt(3))
         self.spectator_context_qc = create_spectator_context_circuit(0, 0, 0, np.pi / 2, -np.pi, -np.pi / 2)
         self.spectator_reward_qc = create_spectator_reward_circuit(0, 0, 0, 0, [0,0,1] / np.sqrt(3))
@@ -459,7 +459,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 circuit_set = update_spectator_analytic_circuits(
                     circuit_set, 0, 0, self.reward_sensitivity * sample, correction_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
                 )
-                
+
                 f = []
                 for circuit in circuit_set:
                     sim = execute(
@@ -486,7 +486,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                         backend=BasicAer.get_backend("qasm_simulator"),
                         shots=self.num_reward_spectators,
                         memory=True,
-                    ) 
+                    )
 
                     f.append(
                         np.array(sim.result().get_memory()).astype(int)
