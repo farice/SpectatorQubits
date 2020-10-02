@@ -498,7 +498,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 corr = self._get_correction(np.array(correction_theta) / self.reward_sensitivity)
                 info.append(
                     [
-                        1 - np.abs((corr * rz(sample)).tr()) / 2,
+                        np.abs((corr * rz(sample)).tr()) / 2,
                         np.abs(rz(sample).tr()) / 2,
                     ]
                 )
