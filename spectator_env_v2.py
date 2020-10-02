@@ -204,7 +204,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         context_theta = (
             np.repeat([[0, 0, 0]], self.batch_size, axis=0)
             if actions is None
-            else [list(action)[1] for action in actions]
+            else [action['context'] for action in actions]
         )
 
         circuit_set = self.spectator_circuit_sets[0]
@@ -226,6 +226,26 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             batched_state.append(np.array(sim.result().get_memory()).astype(int))
         self.batched_state = np.array(batched_state)
 
+    def _get_analytic_feedback(self, circuit_set, error_unitary,
+                               correction_theta, sigma, prep, obs,
+                               num_spectators, sensitivity):
+        circuit_set = update_spectator_analytic_circuits(
+            circuit_set, error_unitary, correction_theta, sigma, prep, obs
+        )
+
+        f = []
+        for circuit in circuit_set:
+            sim = execute(
+                circuit,
+                backend=BasicAer.get_backend("qasm_simulator"),
+                shots=num_spectators,
+                memory=True,
+            )
+
+            f.append(
+                np.array(sim.result().get_memory()).astype(int))
+        return f
+
     def _get_reward(self, actions):
         info = []
         context_feedback_set = []
@@ -235,54 +255,28 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             context_feedback = []
             correction_feedback = []
             for sample, action in zip(self.error_samples_batch, actions):
-                correction_theta, context_theta = action
-
-                preps = self._get_preps(correction_theta)
-                obs = self._get_obs(correction_theta)
+                correction_theta = action['correction']
+                context_theta = action['context']
                 error_unitary = self._get_error_unitary(sample)
 
-                #  self.reward_sensitivity
-                circuit_set = update_spectator_analytic_circuits(
-                    circuit_set, error_unitary, correction_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
-                )
+                correction_feedback.append(self._get_analytic_feedback(
+                    circuit_set, error_unitary, correction_theta[idx],
+                    self.sigmas[idx], self._get_preps(correction_theta)[idx],
+                    self._get_preps(correction_theta)[idx],
+                    self.num_reward_spectators, self.reward_sensitivity))
 
-                f = []
-                for circuit in circuit_set:
-                    sim = execute(
-                        circuit,
-                        backend=BasicAer.get_backend("qasm_simulator"),
-                        shots=self.num_reward_spectators,
-                        memory=True,
-                    )
+                context_feedback.append(self._get_analytic_feedback(
+                    circuit_set, error_unitary, context_theta[idx],
+                    self.sigmas[idx], self._get_preps(context_theta)[idx],
+                    self._get_preps(context_theta)[idx],
+                    self.num_reward_spectators, self.context_sensitivity))
 
-                    f.append(
-                        np.array(sim.result().get_memory()).astype(int))
-                correction_feedback.append(f)
-
-                #  self.context_sensitivity
-                circuit_set = update_spectator_analytic_circuits(
-                    circuit_set, error_unitary, context_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
-                )
-                f = []
-                for circuit in circuit_set:
-                    sim = execute(
-                        circuit,
-                        backend=BasicAer.get_backend("qasm_simulator"),
-                        shots=self.num_reward_spectators,
-                        memory=True,
-                    )
-
-                    f.append(
-                        np.array(sim.result().get_memory()).astype(int)
-                    )
-                context_feedback.append(f)
-
-                # fidelity reward
-                # debugging only, not observable by agent
-                corr = self._get_correction(np.array(correction_theta) / self.reward_sensitivity)
+                # not observable by agent (hidden state)
+                corr = self._get_correction(
+                    np.array(correction_theta) / self.reward_sensitivity)
                 info.append(
                     [
-                        np.abs((corr.dag() * error_unitary).tr()) / 2,
+                        np.abs((corr * error_unitary).tr()) / 2,
                         np.abs(error_unitary.tr()) / 2,
                     ]
                 )
@@ -290,6 +284,5 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             correction_feedback_set.append(correction_feedback)
 
         self.info = info
-        # if the correction is perfect then the reward measurement is 0 w.p. 1
-        # the underlying distribution we are sampling from is fidelity
-        return np.array(context_feedback_set), np.array(correction_feedback_set)
+        return {'batched_context_feedback': np.array(context_feedback_set),
+                'batched_correction_feedback': np.array(correction_feedback_set)}
