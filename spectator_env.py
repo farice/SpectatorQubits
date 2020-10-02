@@ -495,11 +495,11 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
                 # fidelity reward
                 # debugging only, not observable by agent
-                corr = self._get_correction(correction_theta)
+                corr = self._get_correction(np.array(correction_theta) / self.reward_sensitivity)
                 info.append(
                     [
-                        np.abs((corr * rz(self.reward_sensitivity * sample)).tr()) / 2,
-                        np.abs(rz(self.reward_sensitivity * sample).tr()) / 2,
+                        np.abs((corr * rz(sample)).tr()) / 2,
+                        np.abs(rz(sample).tr()) / 2,
                     ]
                 )
             context_feedback_set.append(context_feedback)
