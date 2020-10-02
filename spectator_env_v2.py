@@ -42,15 +42,28 @@ class SpectatorEnvBase(SpectatorEnvApi):
         batch_size: int = 1,
         num_context_spectators: int = 2,
         num_reward_spectators: int = 2,
+        context_sensitivity: int = 1.0,
+        reward_sensitivity: int = 1.0,
     ):
-        assert num_context_spectators >= 2
-        assert num_reward_spectators >= 2
+        assert num_context_spectators > 0
+        assert num_reward_spectators > 0
         assert batch_size >= 1
         assert len(error_samples) > 0
+
+        # Although not strictly necessary, eases the analytic gradients logic.
+        # We need three circuits per error sample to measure the gradient of
+        # interest in expectation. In practice, it is reasonable to split these
+        # between error samples unevenly.
+        mod_3_msg = "Select a number of spectator divisible by 3"
+        assert num_context_spectators % 3 == 0, mod_3_msg
+        assert num_reward_spectators % 3 == 0, mod_3_msg
 
         self.num_context_spectators = num_context_spectators
         self.num_reward_spectators = num_reward_spectators
         self.error_samples = error_samples
+
+        self.context_sensitivity = context_sensitivity
+        self.reward_sensitivity = reward_sensitivity
 
         self.error_samples_batch = []
         self.batch_size = batch_size
@@ -58,7 +71,8 @@ class SpectatorEnvBase(SpectatorEnvApi):
         self.observation_space = MultiBinary(num_context_spectators)
 
         self.current_step = 0
-        self.num_resets = -1  # Becomes 0 after __init__ exits.
+        # Becomes 0 after __init__ exits.
+        self.num_resets = -1
         self.reset()
 
     def reset(self):
@@ -124,8 +138,6 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 Box(low=-np.pi, high=np.pi, shape=(), dtype=np.float32)
             )
         )
-        self.context_sensitivity = context_sensitivity
-        self.reward_sensitivity = reward_sensitivity
 
         self.sigmas = [
             sigmay(),
@@ -134,9 +146,12 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             ]
 
         self.spectator_circuit_sets = [
-            create_spectator_analytic_circuits(0, 0, 0, 0, self.sigmas[0], qeye(2), qeye(2)),
-            create_spectator_analytic_circuits(0, 0, 0, 0, self.sigmas[1], qeye(2), qeye(2)),
-            create_spectator_analytic_circuits(0, 0, 0, 0, self.sigmas[2], qeye(2), qeye(2))
+            create_spectator_analytic_circuits(error_unitary=qeye(2), theta=0,
+                                               herm=self.sigmas[0], prep=qeye(2),obs=qeye(2)),
+            create_spectator_analytic_circuits(error_unitary=qeye(2), theta=0,
+                                               herm=self.sigmas[1], prep=qeye(2), obs=qeye(2)),
+            create_spectator_analytic_circuits(error_unitary=qeye(2), theta=0,
+                                               herm=self.sigmas[2], prep=qeye(2), obs=qeye(2))
         ]
 
         super().__init__(
@@ -144,6 +159,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             batch_size,
             num_context_spectators,
             num_reward_spectators,
+            context_sensitivity,
+            reward_sensitivity
         )
 
     def _get_preps(self, t):
@@ -170,6 +187,9 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             qeye(2)
         ]
 
+    def _get_error_unitary(self, sample):
+        return rz(sample)
+
     def _get_correction(self, t):
         g = [
             1j * t[0] * self.sigmas[0],
@@ -191,8 +211,10 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         for sample, _context_theta in zip(self.error_samples_batch, context_theta):
             preps = self._get_preps(_context_theta)
             obs = self._get_obs(_context_theta)
+            error_unitary = self._get_error_unitary(sample)
+            # self.context_sensitivity
             update_spectator_analytic_circuits(
-                circuit_set, 0, 0, self.context_sensitivity * sample, _context_theta[0], self.sigmas[0], preps[0], obs[0]
+                circuit_set, error_unitary, _context_theta[0], self.sigmas[0], preps[0], obs[0]
             )
             sim = execute(
                 circuit_set[1],
@@ -217,9 +239,11 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
                 preps = self._get_preps(correction_theta)
                 obs = self._get_obs(correction_theta)
+                error_unitary = self._get_error_unitary(sample)
 
+                #  self.reward_sensitivity
                 circuit_set = update_spectator_analytic_circuits(
-                    circuit_set, 0, 0, self.reward_sensitivity * sample, correction_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
+                    circuit_set, error_unitary, correction_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
                 )
 
                 f = []
@@ -235,11 +259,9 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                         np.array(sim.result().get_memory()).astype(int))
                 correction_feedback.append(f)
 
-                preps = self._get_preps(context_theta)
-                obs = self._get_obs(context_theta)
-
+                #  self.context_sensitivity
                 circuit_set = update_spectator_analytic_circuits(
-                    circuit_set, 0, 0, self.context_sensitivity * sample, context_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
+                    circuit_set, error_unitary, context_theta[idx], self.sigmas[idx], preps[idx], obs[idx]
                 )
                 f = []
                 for circuit in circuit_set:
@@ -260,8 +282,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 corr = self._get_correction(np.array(correction_theta) / self.reward_sensitivity)
                 info.append(
                     [
-                        np.abs((corr * rz(sample)).tr()) / 2,
-                        np.abs(rz(sample).tr()) / 2,
+                        np.abs((corr.dag() * error_unitary).tr()) / 2,
+                        np.abs(error_unitary.tr()) / 2,
                     ]
                 )
             context_feedback_set.append(context_feedback)

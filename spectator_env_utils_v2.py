@@ -5,7 +5,7 @@ from qiskit.extensions.unitary import UnitaryGate
 import numpy as np
 
 
-def create_spectator_analytic_circuits(error_theta, error_phi, error_lambda, theta, herm, prep, obs):
+def create_spectator_analytic_circuits(error_unitary, theta, herm, prep, obs):
     # circuit per lo/mid/hi in analytic gradient expression
     qr = [QuantumRegister(1), QuantumRegister(1), QuantumRegister(1)]
     cr = [ClassicalRegister(1), ClassicalRegister(1), ClassicalRegister(1)]
@@ -15,7 +15,8 @@ def create_spectator_analytic_circuits(error_theta, error_phi, error_lambda, the
         # prepare in X
         _qc.h(_qr)
         # error rotation in euler basis
-        _qc.u3(error_theta, error_phi, error_lambda, _qr)
+        _qc.unitary(UnitaryGate(
+           error_unitary), _qr)
 
 
     qc[0].unitary(UnitaryGate(
@@ -41,10 +42,10 @@ def create_spectator_analytic_circuits(error_theta, error_phi, error_lambda, the
 
 # explicit update function allows us to avoid creating a new ciruit object
 # at every iteration
-def update_spectator_analytic_circuits(qc, error_theta, error_phi, error_lambda, theta, herm, prep, obs):
+def update_spectator_analytic_circuits(qc, error_unitary, theta, herm, prep, obs):
     for _qc in qc:
         inst, qarg, carg = _qc.data[1]
-        _qc.data[1] = U3Gate(error_theta, error_phi, error_lambda), qarg, carg
+        _qc.data[1] = UnitaryGate(error_unitary), qarg, carg
 
     # update lo/mid/hi in analytic gradient expression
     if theta is not None:
@@ -62,5 +63,5 @@ def update_spectator_analytic_circuits(qc, error_theta, error_phi, error_lambda,
         qc[2].data[2] = UnitaryGate(
            obs * (1j * (theta + np.pi/4) * herm).expm() * prep
         ), qarg, carg
-    
+
     return qc
