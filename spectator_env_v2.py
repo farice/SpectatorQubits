@@ -1,9 +1,3 @@
-from spectator_env_utils import (
-    create_spectator_context_circuit,
-    create_spectator_reward_circuit,
-    update_spectator_circuit,
-)
-
 from spectator_env_utils_v2 import (
     create_spectator_analytic_circuits,
     update_spectator_analytic_circuits
@@ -13,13 +7,13 @@ from spectator_env_utils_v2 import (
 import numpy as np
 
 from gym import Env
-from gym.spaces import Discrete, MultiBinary, Box, Tuple
+from gym.spaces import MultiBinary, Box, Tuple
 
 from qiskit import BasicAer, execute
 from qutip import rz
-from qutip.operators import sigmax, sigmay, sigmaz
-from qutip.qip.gates import rotation
+from qutip.operators import sigmax, sigmay
 from qutip import qeye
+
 
 class SpectatorEnvApi(Env):
     def reset(self):
@@ -72,7 +66,7 @@ class SpectatorEnvBase(SpectatorEnvApi):
         self.num_resets += 1
 
         self.error_samples_batch = self.error_samples[
-            self.current_step : self.current_step + self.batch_size
+            self.current_step: self.current_step + self.batch_size
         ]
         self._choose_next_state()
         self.current_step += self.batch_size
@@ -83,7 +77,7 @@ class SpectatorEnvBase(SpectatorEnvApi):
         reward = self._get_reward(actions)
 
         self.error_samples_batch = self.error_samples[
-            self.current_step : self.current_step + self.batch_size
+            self.current_step: self.current_step + self.batch_size
         ]
         self._choose_next_state(actions)
         self.current_step += self.batch_size
@@ -115,8 +109,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         batch_size: int = 1,
         num_context_spectators: int = 2,
         num_reward_spectators: int = 2,
-        context_sensitivity = 1.0,
-        reward_sensitivity = 1.0,
+        context_sensitivity: int = 1.0,
+        reward_sensitivity: int = 1.0,
     ):
         self.action_space = Tuple(
             (
@@ -238,7 +232,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                     )
 
                     f.append(
-                    np.array(sim.result().get_memory()).astype(int))
+                        np.array(sim.result().get_memory()).astype(int))
                 correction_feedback.append(f)
 
                 preps = self._get_preps(context_theta)
