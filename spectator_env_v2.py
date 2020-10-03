@@ -1,6 +1,6 @@
 from spectator_env_utils_v2 import (
-    create_spectator_analytic_circuits,
-    update_spectator_analytic_circuits
+    create_spectator_analytic_circuit,
+    update_spectator_analytic_circuit
 )
 
 
@@ -10,8 +10,8 @@ from gym import Env
 from gym.spaces import MultiBinary, Box, Tuple
 
 from qiskit import BasicAer, execute
-from qutip import rz
-from qutip.operators import sigmax, sigmay
+from qutip import rz, rx
+from qutip.operators import sigmaz
 from qutip import qeye
 
 
@@ -82,18 +82,18 @@ class SpectatorEnvBase(SpectatorEnvApi):
         self.error_samples_batch = self.error_samples[
             self.current_step: self.current_step + self.batch_size
         ]
-        self._choose_next_state()
+        batched_state = self._choose_next_state()
         self.current_step += self.batch_size
 
-        return self.batched_state
+        return batched_state
 
     def step(self, actions):
-        reward = self._get_reward(actions)
+        reward, info = self._get_reward(actions)
 
         self.error_samples_batch = self.error_samples[
             self.current_step: self.current_step + self.batch_size
         ]
-        self._choose_next_state(actions)
+        batched_state = self._choose_next_state(actions)
         self.current_step += self.batch_size
 
         done = (
@@ -101,7 +101,7 @@ class SpectatorEnvBase(SpectatorEnvApi):
             if self.current_step + self.batch_size < len(self.error_samples)
             else True
         )
-        return self.batched_state, reward, done, self.info
+        return batched_state, reward, done, info
 
     def set_error_samples(self, new_error_samples):
         self.error_samples = new_error_samples
@@ -125,6 +125,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         num_reward_spectators: int = 2,
         context_sensitivity: int = 1.0,
         reward_sensitivity: int = 1.0,
+        # single qubit unitary can be parameterized in Euler rotation basis
+        num_variational_params: int = 3,
     ):
         self.action_space = Tuple(
             (
@@ -139,20 +141,21 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             )
         )
 
+        # We parameterize our single-qubit rotation by a U3 gate
+        # 𝑈3(𝜃,𝜙,𝜆)=𝑅𝑍(𝜙)𝑅𝑋(−𝜋/2)𝑅𝑍(𝜃)𝑅𝑋(𝜋/2)𝑅𝑍(𝜆)
         self.sigmas = [
-            sigmay(),
-            sigmax(),
-            sigmay()
+            sigmaz(),
+            sigmaz(),
+            sigmaz()
             ]
 
-        self.spectator_circuit_sets = [
-            create_spectator_analytic_circuits(error_unitary=qeye(2), theta=0,
-                                               herm=self.sigmas[0], prep=qeye(2),obs=qeye(2)),
-            create_spectator_analytic_circuits(error_unitary=qeye(2), theta=0,
-                                               herm=self.sigmas[1], prep=qeye(2), obs=qeye(2)),
-            create_spectator_analytic_circuits(error_unitary=qeye(2), theta=0,
-                                               herm=self.sigmas[2], prep=qeye(2), obs=qeye(2))
-        ]
+        self.num_variational_params = num_variational_params
+
+        # This is the general circuit object which is reused for the various
+        # context/reward measurements. The initialization is arbitrary.
+        self.spectator_analytic_circuit = create_spectator_analytic_circuit(
+            error_unitary=qeye(2), theta=0, herm=qeye(2), prep=qeye(2),
+            obs=qeye(2), parameter_shift=0)
 
         super().__init__(
             error_samples,
@@ -165,25 +168,25 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
     def _get_preps(self, t):
         g = [
-            1j * t[0] * self.sigmas[0],
-            1j * t[1] * self.sigmas[1],
-            1j * t[2] * self.sigmas[2]
+            1j * t[0] * self.sigmas[0] / 2,
+            1j * t[1] * self.sigmas[1] / 2,
+            1j * t[2] * self.sigmas[2] / 2
         ]
         return [
             qeye(2),
-            g[0].expm(),
-            g[1].expm() * g[0].expm()
+            rx(np.pi / 2) * g[0].expm(),
+            rx(-np.pi / 2) * g[1].expm() * rx(np.pi/2) * g[0].expm()
         ]
 
     def _get_obs(self, t):
         g = [
-            1j * t[0] * self.sigmas[0],
-            1j * t[1] * self.sigmas[1],
-            1j * t[2] * self.sigmas[2]
+            1j * t[0] * self.sigmas[0] / 2,
+            1j * t[1] * self.sigmas[1] / 2,
+            1j * t[2] * self.sigmas[2] / 2
         ]
         return [
-            g[2].expm() * g[1].expm(),
-            g[2].expm(),
+            g[2].expm() * rx(-np.pi / 2) * g[1].expm() * rx(np.pi / 2),
+            g[2].expm() * rx(-np.pi / 2),
             qeye(2)
         ]
 
@@ -192,49 +195,21 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
     def _get_correction(self, t):
         g = [
-            1j * t[0] * self.sigmas[0],
-            1j * t[1] * self.sigmas[1],
-            1j * t[2] * self.sigmas[2]
+            1j * t[0] * self.sigmas[0] / 2 ,
+            1j * t[1] * self.sigmas[1] / 2,
+            1j * t[2] * self.sigmas[2] / 2
         ]
-        return g[2].expm() * g[1].expm() * g[0].expm()
+        return g[2].expm() * rx(-np.pi / 2) * g[1].expm() * rx(np.pi / 2) * g[0].expm()
 
-    # sets batched state
-    def _choose_next_state(self, actions=None):
-        batched_state = []
-        context_theta = (
-            np.repeat([[0, 0, 0]], self.batch_size, axis=0)
-            if actions is None
-            else [action['context'] for action in actions]
-        )
-
-        circuit_set = self.spectator_circuit_sets[0]
-        for sample, _context_theta in zip(self.error_samples_batch, context_theta):
-            preps = self._get_preps(_context_theta)
-            obs = self._get_obs(_context_theta)
-            error_unitary = self._get_error_unitary(sample)
-            # self.context_sensitivity
-            update_spectator_analytic_circuits(
-                circuit_set, error_unitary, _context_theta[0], self.sigmas[0], preps[0], obs[0]
-            )
-            sim = execute(
-                circuit_set[1],
-                backend=BasicAer.get_backend("qasm_simulator"),
-                shots=self.num_context_spectators,
-                memory=True,
-            )
-
-            batched_state.append(np.array(sim.result().get_memory()).astype(int))
-        self.batched_state = np.array(batched_state)
-
-    def _get_analytic_feedback(self, circuit_set, error_unitary,
+    def _get_analytic_feedback(self, error_unitary,
                                correction_theta, sigma, prep, obs,
                                num_spectators, sensitivity):
-        circuit_set = update_spectator_analytic_circuits(
-            circuit_set, error_unitary, correction_theta, sigma, prep, obs
-        )
-
-        f = []
-        for circuit in circuit_set:
+        feedback = []
+        for parameter_shift in [-np.pi/4, 0, np.pi/4]:
+            circuit = update_spectator_analytic_circuit(
+                self.spectator_analytic_circuit,
+                error_unitary, correction_theta, sigma, prep, obs,
+                parameter_shift)
             sim = execute(
                 circuit,
                 backend=BasicAer.get_backend("qasm_simulator"),
@@ -242,15 +217,47 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 memory=True,
             )
 
-            f.append(
+            feedback.append(
                 np.array(sim.result().get_memory()).astype(int))
-        return f
+        return feedback
+
+    # sets batched state
+    def _choose_next_state(self, actions=None):
+        assert actions is None or len(actions) == self.batch_size
+        context_theta = (
+            np.repeat([[0, 0, 0]], self.batch_size, axis=0)
+            if actions is None
+            else [action['context'] for action in actions]
+        )
+
+        batched_state = []
+        for sample, _context_theta in zip(self.error_samples_batch,
+                                          context_theta):
+            preps = self._get_preps(_context_theta)
+            obs = self._get_obs(_context_theta)
+            error_unitary = self._get_error_unitary(sample)
+            # self.context_sensitivity
+            circuit = update_spectator_analytic_circuit(
+                self.spectator_analytic_circuit, error_unitary,
+                _context_theta[0], self.sigmas[0], preps[0], obs[0], 0
+            )
+            sim = execute(
+                circuit,
+                backend=BasicAer.get_backend("qasm_simulator"),
+                shots=self.num_context_spectators,
+                memory=True,
+            )
+
+            batched_state.append(np.array(sim.result().get_memory()).astype(int))
+        return np.array(batched_state)
 
     def _get_reward(self, actions):
+        assert len(actions) == self.batch_size
         info = []
         context_feedback_set = []
         correction_feedback_set = []
-        for idx, circuit_set in enumerate(self.spectator_circuit_sets):
+        # compute gradient per variational param
+        for idx in range(self.num_variational_params):
             info = []
             context_feedback = []
             correction_feedback = []
@@ -260,13 +267,13 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 error_unitary = self._get_error_unitary(sample)
 
                 correction_feedback.append(self._get_analytic_feedback(
-                    circuit_set, error_unitary, correction_theta[idx],
+                    error_unitary, correction_theta[idx],
                     self.sigmas[idx], self._get_preps(correction_theta)[idx],
                     self._get_preps(correction_theta)[idx],
                     self.num_reward_spectators, self.reward_sensitivity))
 
                 context_feedback.append(self._get_analytic_feedback(
-                    circuit_set, error_unitary, context_theta[idx],
+                    error_unitary, context_theta[idx],
                     self.sigmas[idx], self._get_preps(context_theta)[idx],
                     self._get_preps(context_theta)[idx],
                     self.num_reward_spectators, self.context_sensitivity))
@@ -274,15 +281,18 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 # not observable by agent (hidden state)
                 corr = self._get_correction(
                     np.array(correction_theta) / self.reward_sensitivity)
+#                 fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+                fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+                control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
                 info.append(
                     [
-                        np.abs((corr * error_unitary).tr()) / 2,
-                        np.abs(error_unitary.tr()) / 2,
+                        fid,
+                        control_fid,
                     ]
                 )
             context_feedback_set.append(context_feedback)
             correction_feedback_set.append(correction_feedback)
 
-        self.info = info
         return {'batched_context_feedback': np.array(context_feedback_set),
-                'batched_correction_feedback': np.array(correction_feedback_set)}
+                'batched_correction_feedback': np.array(
+                    correction_feedback_set)}, info
