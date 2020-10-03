@@ -121,8 +121,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         self,
         error_samples,
         batch_size: int = 1,
-        num_context_spectators: int = 2,
-        num_reward_spectators: int = 2,
+        num_context_spectators: int = 3,
+        num_reward_spectators: int = 3,
         context_sensitivity: int = 1.0,
         reward_sensitivity: int = 1.0,
         # single qubit unitary can be parameterized in Euler rotation basis
@@ -205,11 +205,14 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                                correction_theta, sigma, prep, obs,
                                num_spectators, sensitivity):
         feedback = []
-        for parameter_shift in [-np.pi/4, 0, np.pi/4]:
+        for parameter_shift in [-np.pi/2, 0, np.pi/2]:
             circuit = update_spectator_analytic_circuit(
-                self.spectator_analytic_circuit,
-                error_unitary, correction_theta, sigma, prep, obs,
-                parameter_shift)
+                qc=self.spectator_analytic_circuit,
+                error_unitary=error_unitary, theta=correction_theta,
+                herm=sigma, prep=prep, obs=obs,
+                parameter_shift=parameter_shift)
+#             print("feedback", parameter_shift, correction_theta, error_unitary)
+#             print(circuit)
             sim = execute(
                 circuit,
                 backend=BasicAer.get_backend("qasm_simulator"),
@@ -238,9 +241,12 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             error_unitary = self._get_error_unitary(sample)
             # self.context_sensitivity
             circuit = update_spectator_analytic_circuit(
-                self.spectator_analytic_circuit, error_unitary,
-                _context_theta[0], self.sigmas[0], preps[0], obs[0], 0
+                qc=self.spectator_analytic_circuit, error_unitary=error_unitary,
+                theta=_context_theta[0], herm=self.sigmas[0], prep=preps[0], obs=obs[0],
+                parameter_shift=0
             )
+#             print("context", _context_theta, sample)
+#             print(circuit)
             sim = execute(
                 circuit,
                 backend=BasicAer.get_backend("qasm_simulator"),
@@ -267,22 +273,23 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 error_unitary = self._get_error_unitary(sample)
 
                 correction_feedback.append(self._get_analytic_feedback(
-                    error_unitary, correction_theta[idx],
-                    self.sigmas[idx], self._get_preps(correction_theta)[idx],
-                    self._get_preps(correction_theta)[idx],
-                    self.num_reward_spectators, self.reward_sensitivity))
+                    error_unitary=error_unitary, correction_theta=correction_theta[idx],
+                    sigma=self.sigmas[idx], prep=self._get_preps(correction_theta)[idx],
+                    obs=self._get_obs(correction_theta)[idx],
+                    num_spectators=self.num_reward_spectators,
+                    sensitivity=self.reward_sensitivity))
 
                 context_feedback.append(self._get_analytic_feedback(
                     error_unitary, context_theta[idx],
-                    self.sigmas[idx], self._get_preps(context_theta)[idx],
-                    self._get_preps(context_theta)[idx],
-                    self.num_reward_spectators, self.context_sensitivity))
+                    self.sigmas[idx], prep=self._get_preps(context_theta)[idx],
+                    obs=self._get_obs(context_theta)[idx],
+                    num_spectators=self.num_reward_spectators,
+                    sensitivity=self.context_sensitivity))
 
                 # not observable by agent (hidden state)
                 corr = self._get_correction(
                     np.array(correction_theta) / self.reward_sensitivity)
-#                 fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
-                fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+                fid = (np.linalg.norm((corr.conj() * error_unitary).tr()) / 2) ** 2
                 control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
                 info.append(
                     [

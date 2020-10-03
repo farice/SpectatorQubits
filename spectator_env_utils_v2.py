@@ -16,7 +16,7 @@ def create_spectator_analytic_circuit(error_unitary, theta, herm, prep, obs,
            error_unitary), qr)
 
     qc.unitary(UnitaryGate(
-       obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep
+       (obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep)
     ), qr)
 
     # measure in x-basis
@@ -36,7 +36,7 @@ def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep, obs,
     if theta is not None:
         inst, qarg, carg = qc.data[2]
         qc.data[2] = UnitaryGate(
-           obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep
+           (obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep)
         ), qarg, carg
 
     return qc
