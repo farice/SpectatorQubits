@@ -71,18 +71,16 @@ class SpectatorEnvBase(SpectatorEnvApi):
         self.observation_space = MultiBinary(num_context_spectators)
 
         self.current_step = 0
-        # Becomes 0 after __init__ exits.
-        self.num_resets = -1
-        self.reset()
+        self.num_resets = 0
 
-    def reset(self):
+    def reset(self, init_actions):
         self.current_step = 0
         self.num_resets += 1
 
         self.error_samples_batch = self.error_samples[
             self.current_step: self.current_step + self.batch_size
         ]
-        batched_state = self._choose_next_state()
+        batched_state = self._choose_next_state(init_actions)
         self.current_step += self.batch_size
 
         return batched_state
@@ -211,8 +209,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 error_unitary=error_unitary, theta=correction_theta,
                 herm=sigma, prep=prep, obs=obs,
                 parameter_shift=parameter_shift)
-#             print("feedback", parameter_shift, correction_theta, error_unitary)
-#             print(circuit)
+
             sim = execute(
                 circuit,
                 backend=BasicAer.get_backend("qasm_simulator"),
@@ -225,13 +222,9 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         return feedback
 
     # sets batched state
-    def _choose_next_state(self, actions=None):
+    def _choose_next_state(self, actions):
         assert actions is None or len(actions) == self.batch_size
-        context_theta = (
-            np.repeat([[0, 0, 0]], self.batch_size, axis=0)
-            if actions is None
-            else [action['context'] for action in actions]
-        )
+        context_theta = [action['context'] for action in actions]
 
         batched_state = []
         for sample, _context_theta in zip(self.error_samples_batch,
@@ -245,8 +238,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 theta=_context_theta[0], herm=self.sigmas[0], prep=preps[0], obs=obs[0],
                 parameter_shift=0
             )
-#             print("context", _context_theta, sample)
-#             print(circuit)
+
             sim = execute(
                 circuit,
                 backend=BasicAer.get_backend("qasm_simulator"),
@@ -289,10 +281,11 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 # not observable by agent (hidden state)
                 corr = self._get_correction(
                     np.array(correction_theta) / self.reward_sensitivity)
-                fid = (np.linalg.norm((corr.conj() * error_unitary).tr()) / 2) ** 2
+                fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
                 control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
                 info.append(
                     [
+                        # error correction
                         fid,
                         control_fid,
                     ]
