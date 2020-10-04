@@ -193,7 +193,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
     def _get_correction(self, t):
         g = [
-            1j * t[0] * self.sigmas[0] / 2 ,
+            1j * t[0] * self.sigmas[0] / 2,
             1j * t[1] * self.sigmas[1] / 2,
             1j * t[2] * self.sigmas[2] / 2
         ]
@@ -268,14 +268,17 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                     error_unitary=error_unitary, correction_theta=correction_theta[idx],
                     sigma=self.sigmas[idx], prep=self._get_preps(correction_theta)[idx],
                     obs=self._get_obs(correction_theta)[idx],
-                    num_spectators=self.num_reward_spectators,
+                    # A nuance is that we don't actually need all three measurements for the *correction*
+                    # gradient update. Hence, arguably, our scaling is even better than this.
+                    num_spectators=self.num_reward_spectators / 3,
                     sensitivity=self.reward_sensitivity))
 
                 context_feedback.append(self._get_analytic_feedback(
                     error_unitary, context_theta[idx],
                     self.sigmas[idx], prep=self._get_preps(context_theta)[idx],
                     obs=self._get_obs(context_theta)[idx],
-                    num_spectators=self.num_reward_spectators,
+                    # In this case, we do need all three measurements.
+                    num_spectators=self.num_reward_spectators / 3,
                     sensitivity=self.context_sensitivity))
 
                 # not observable by agent (hidden state)
@@ -285,7 +288,6 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
                 info.append(
                     [
-                        # error correction
                         fid,
                         control_fid,
                     ]
