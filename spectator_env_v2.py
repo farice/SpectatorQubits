@@ -19,7 +19,7 @@ class SpectatorEnvApi(Env):
     def reset(self):
         pass
 
-    def step(self, actions):
+    def step(self, actions, feedback_alloc):
         pass
 
     def set_error_samples(self, new_error_samples):
@@ -31,7 +31,7 @@ class SpectatorEnvApi(Env):
     def _choose_next_state(self, actions):
         pass
 
-    def _get_reward(self, actions):
+    def _get_reward(self, actions, feedback_alloc):
         pass
 
 
@@ -41,25 +41,14 @@ class SpectatorEnvBase(SpectatorEnvApi):
         error_samples,
         batch_size: int = 1,
         num_context_spectators: int = 2,
-        num_reward_spectators: int = 2,
         context_sensitivity: int = 1.0,
         reward_sensitivity: int = 1.0,
     ):
         assert num_context_spectators > 0
-        assert num_reward_spectators > 0
         assert batch_size >= 1
         assert len(error_samples) > 0
 
-        # Although not strictly necessary, eases the analytic gradients logic.
-        # We need three circuits per error sample to measure the gradient of
-        # interest in expectation. In practice, it is reasonable to split these
-        # between error samples unevenly.
-        mod_3_msg = "Select a number of spectator divisible by 3"
-        assert num_context_spectators % 3 == 0, mod_3_msg
-        assert num_reward_spectators % 3 == 0, mod_3_msg
-
         self.num_context_spectators = num_context_spectators
-        self.num_reward_spectators = num_reward_spectators
         self.error_samples = error_samples
 
         self.context_sensitivity = context_sensitivity
@@ -85,8 +74,8 @@ class SpectatorEnvBase(SpectatorEnvApi):
 
         return batched_state
 
-    def step(self, actions):
-        reward, info = self._get_reward(actions)
+    def step(self, actions, feedback_alloc):
+        reward, info = self._get_reward(actions, feedback_alloc)
 
         self.error_samples_batch = self.error_samples[
             self.current_step: self.current_step + self.batch_size
@@ -110,7 +99,7 @@ class SpectatorEnvBase(SpectatorEnvApi):
     def _choose_next_state(self, actions):
         pass
 
-    def _get_reward(self, actions):
+    def _get_reward(self, actions, feedback_alloc):
         pass
 
 
@@ -120,7 +109,6 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         error_samples,
         batch_size: int = 1,
         num_context_spectators: int = 3,
-        num_reward_spectators: int = 3,
         context_sensitivity: int = 1.0,
         reward_sensitivity: int = 1.0,
         # single qubit unitary can be parameterized in Euler rotation basis
@@ -159,7 +147,6 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             error_samples,
             batch_size,
             num_context_spectators,
-            num_reward_spectators,
             context_sensitivity,
             reward_sensitivity
         )
@@ -201,9 +188,9 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
     def _get_analytic_feedback(self, error_unitary,
                                correction_theta, sigma, prep, obs,
-                               num_spectators, sensitivity):
+                               num_spectators, sensitivity, parameter_shifts):
         feedback = []
-        for parameter_shift in [-np.pi/2, 0, np.pi/2]:
+        for parameter_shift in parameter_shifts:
             circuit = update_spectator_analytic_circuit(
                 qc=self.spectator_analytic_circuit,
                 error_unitary=error_unitary, theta=correction_theta,
@@ -249,52 +236,78 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             batched_state.append(np.array(sim.result().get_memory()).astype(int))
         return np.array(batched_state)
 
-    def _get_reward(self, actions):
-        assert len(actions) == self.batch_size
+    def _get_reward_correction(self, actions, alloc):
         info = []
-        context_feedback_set = []
-        correction_feedback_set = []
-        # compute gradient per variational param
+        feedback_set = []
+        # Compute gradient per variational param.
         for idx in range(self.num_variational_params):
             info = []
-            context_feedback = []
-            correction_feedback = []
+            feedback = []
             for sample, action in zip(self.error_samples_batch, actions):
-                correction_theta = action['correction']
-                context_theta = action['context']
+                correction = action['correction']
                 error_unitary = self._get_error_unitary(sample)
 
-                correction_feedback.append(self._get_analytic_feedback(
-                    error_unitary=error_unitary, correction_theta=correction_theta[idx],
-                    sigma=self.sigmas[idx], prep=self._get_preps(correction_theta)[idx],
-                    obs=self._get_obs(correction_theta)[idx],
-                    # A nuance is that we don't actually need all three measurements for the *correction*
-                    # gradient update. Hence, arguably, our scaling is even better than this.
-                    num_spectators=self.num_reward_spectators / 3,
-                    sensitivity=self.reward_sensitivity))
+                feedback.append(self._get_analytic_feedback(
+                    error_unitary=error_unitary, correction_theta=correction[idx],
+                    sigma=self.sigmas[idx], prep=self._get_preps(correction)[idx],
+                    obs=self._get_obs(correction)[idx],
+                    num_spectators=alloc / 2,
+                    sensitivity=self.reward_sensitivity,
+                    parameter_shifts=[-np.pi/2, np.pi/2]))
 
-                context_feedback.append(self._get_analytic_feedback(
-                    error_unitary, context_theta[idx],
-                    self.sigmas[idx], prep=self._get_preps(context_theta)[idx],
-                    obs=self._get_obs(context_theta)[idx],
+            feedback_set.append(feedback)
+        return feedback_set
+            
+    def _get_reward_context(self, actions, alloc):
+        info = []
+        feedback_set = []
+        # Compute gradient per variational param.
+        for idx in range(self.num_variational_params):
+            info = []
+            feedback = []
+            for sample, action in zip(self.error_samples_batch, actions):
+                context_action = action['context']
+                error_unitary = self._get_error_unitary(sample)
+
+                feedback.append(self._get_analytic_feedback(
+                    error_unitary, context_action[idx],
+                    self.sigmas[idx], prep=self._get_preps(context_action)[idx],
+                    obs=self._get_obs(context_action)[idx],
                     # In this case, we do need all three measurements.
-                    num_spectators=self.num_reward_spectators / 3,
-                    sensitivity=self.context_sensitivity))
+                    num_spectators=alloc / 3,
+                    sensitivity=self.context_sensitivity,
+                    parameter_shifts=[-np.pi/2, 0, np.pi/2]))
 
-                # not observable by agent (hidden state)
-                corr = self._get_correction(
-                    np.array(correction_theta) / self.reward_sensitivity)
-                fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
-                control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
-                info.append(
-                    [
-                        fid,
-                        control_fid,
-                    ]
-                )
-            context_feedback_set.append(context_feedback)
-            correction_feedback_set.append(correction_feedback)
+            feedback_set.append(feedback)
+        return feedback_set
+        
+    def _get_reward(self, actions, feedback_alloc):
+        context_alloc = feedback_alloc['context']
+        correction_alloc = feedback_alloc['correction']
+        # Although not strictly necessary, eases the analytic gradients logic.
+        # In practice, it is reasonable to split these between error samples unevenly.
+        assert context_alloc % 3 == 0, "Select a context alloc divisible by 3"
+        assert correction_alloc % 2 == 0, "Select a correction alloc divisible by 2"
+        assert len(actions) == self.batch_size
 
-        return {'batched_context_feedback': np.array(context_feedback_set),
+        info = []
+        for sample, action in zip(self.error_samples_batch, actions):
+            correction_theta = action['correction']
+            error_unitary = self._get_error_unitary(sample)
+
+            # not observable by agent (hidden state)
+            corr = self._get_correction(
+                np.array(correction_theta) / self.reward_sensitivity)
+            fid = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+            control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
+            info.append(
+                [
+                    fid,
+                    control_fid,
+                ]
+            )
+
+        return {'batched_context_feedback': np.array(
+                    self._get_reward_context(actions, context_alloc)),
                 'batched_correction_feedback': np.array(
-                    correction_feedback_set)}, info
+                    self._get_reward_correction(actions, correction_alloc))}, info
