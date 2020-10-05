@@ -7,6 +7,7 @@ from qutip import basis
 
 import numpy as np
 
+
 def create_spectator_analytic_circuit(error_unitary, theta, herm, prep, obs,
                                       parameter_shift):
     # circuit per lo/mid/hi in analytic gradient expression
@@ -33,8 +34,8 @@ def create_spectator_analytic_circuit(error_unitary, theta, herm, prep, obs,
 
 # explicit update function allows us to avoid creating a new ciruit object
 # at every iteration
-def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep, obs,
-                                      parameter_shift):
+def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep,
+                                      obs, parameter_shift):
     inst, qarg, carg = qc.data[1]
     qc.data[1] = UnitaryGate(error_unitary), qarg, carg
 
@@ -45,6 +46,7 @@ def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep, obs,
         ), qarg, carg
 
     return qc
+
 
 # Since we are preparing |+>, it useful to parameterize all unitaries
 # considered in this algorithm in terms of their image on this state.
@@ -70,16 +72,19 @@ def extract_theta_phi(single_qubit_gate):
         phi = 0
     else:
         theta = 2 * np.arccos(np.sqrt(ket_raw[0] * ket_raw[0].conj()))
-        phi = np.angle(ket_raw[0].conj() * ket_raw[1] / (
-            np.sqrt(ket_raw[0] * ket_raw[0].conj()) * np.sqrt(ket_raw[1] * ket_raw[1].conj())))
+        phi = (np.angle(ket_raw[0].conj() * ket_raw[1]
+               / (np.sqrt(ket_raw[0] * ket_raw[0].conj())
+               * np.sqrt(ket_raw[1] * ket_raw[1].conj()))))
 
     return theta, phi
+
 
 def get_parameterized_state(theta, phi):
     prepared_basis = [snot() * basis(2, 0), snot() * sigmax() * basis(2, 0)]
     meas = np.cos(theta / 2) * prepared_basis[0] + np.exp(
                 1j * phi) * np.sin(theta / 2) * prepared_basis[1]
     return meas.unit()
+
 
 def get_error_state(unitary):
     return unitary * snot() * basis(2, 0)

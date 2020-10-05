@@ -215,7 +215,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
             batched_state.append(np.array(sim.result().get_memory()).astype(int))
         return np.array(batched_state)
-    
+
     def _get_analytic_feedback(self, error_unitary,
                                correction_theta, sigma, prep, obs,
                                num_spectators, parameter_shifts):
@@ -239,15 +239,14 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         return feedback
 
     def _get_reward_correction(self, actions, alloc):
-        info = []
         feedback_set = []
         # Compute gradient per variational param.
         for idx in range(self.num_variational_params):
-            info = []
             feedback = []
             for sample, action in zip(self.error_samples_batch, actions):
                 correction = action['correction']
-                error_unitary = self._get_error_unitary(sample, sensitivity=self.reward_sensitivity)
+                error_unitary = self._get_error_unitary(
+                    sample, sensitivity=self.reward_sensitivity)
 
                 feedback.append(self._get_analytic_feedback(
                     error_unitary=error_unitary, correction_theta=correction[idx],
@@ -258,21 +257,21 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
             feedback_set.append(feedback)
         return feedback_set
-            
+
     def _get_reward_context(self, actions, alloc):
-        info = []
         feedback_set = []
         # Compute gradient per variational param.
         for idx in range(self.num_variational_params):
-            info = []
             feedback = []
             for sample, action in zip(self.error_samples_batch, actions):
                 context_action = action['context']
-                error_unitary = self._get_error_unitary(sample, sensitivity=self.reward_sensitivity)
+                error_unitary = self._get_error_unitary(
+                    sample, sensitivity=self.context_sensitivity)
 
                 feedback.append(self._get_analytic_feedback(
                     error_unitary, context_action[idx],
-                    self.sigmas[idx], prep=self._get_preps(context_action)[idx],
+                    self.sigmas[idx],
+                    prep=self._get_preps(context_action)[idx],
                     obs=self._get_obs(context_action)[idx],
                     # In this case, we do need all three measurements.
                     num_spectators=alloc / 3,
@@ -280,14 +279,16 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
             feedback_set.append(feedback)
         return feedback_set
-        
+
     def _get_reward(self, actions, feedback_alloc):
         context_alloc = feedback_alloc['context']
         correction_alloc = feedback_alloc['correction']
         # Although not strictly necessary, eases the analytic gradients logic.
-        # In practice, it is reasonable to split these between error samples unevenly.
-        assert context_alloc % 3 == 0, "Select a context alloc divisible by 3"
-        assert correction_alloc % 2 == 0, "Select a correction alloc divisible by 2"
+        # In practice, it is reasonable to split these between error samples
+        # unevenly.
+        alloc_evenness_msg = "Select a context alloc divisble by "
+        assert context_alloc % 3 == 0, alloc_evenness_msg + "3"
+        assert correction_alloc % 2 == 0, alloc_evenness_msg + "2"
         assert len(actions) == self.batch_size
 
         info = []
@@ -295,25 +296,34 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             correction = action['correction']
             # Actual error applied to data qubit.
             error_unitary = self._get_error_unitary(sample, sensitivity=1.0)
+            amplified_error_unitary = self._get_error_unitary(
+                sample, sensitivity=self.reward_sensitivity)
 
             # Not observable by agent (hidden state).
             corr = self._get_correction(np.array(correction))
-            
+
             theta, phi = extract_theta_phi(corr.dag())
             theta /= self.reward_sensitivity
             meas = get_parameterized_state(theta, phi)
-            fid_data = meas.overlap(get_error_state(error_unitary)) * get_error_state(error_unitary).overlap(meas)
-            fid_spectator = (np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+            overlap = meas.overlap(get_error_state(error_unitary))
+            overlap_conj = get_error_state(error_unitary).overlap(meas)
+            fid_data = overlap * overlap_conj
+
+            fid_spectator = (
+                np.linalg.norm((corr * amplified_error_unitary).tr()) / 2) ** 2
+
             control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
+
             info.append(
-                [
-                    fid_data,
-                    fid_spectator,
-                    control_fid,
-                ]
+                {
+                    'data_fidelity': fid_data,
+                    'spectator_fidelity': fid_spectator,
+                    'control_fidelity': control_fid
+                }
             )
 
-        return {'batched_context_feedback': np.array(
+        return ({'batched_context_feedback': np.array(
                     self._get_reward_context(actions, context_alloc)),
                 'batched_correction_feedback': np.array(
-                    self._get_reward_correction(actions, correction_alloc))}, info
+                    self._get_reward_correction(actions, correction_alloc))},
+                info)
