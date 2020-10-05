@@ -187,7 +187,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             1j * t[1] * self.sigmas[1] / 2,
             1j * t[2] * self.sigmas[2] / 2
         ]
-        return g[2].expm() * rx(-np.pi / 2) * g[1].expm() * rx(np.pi / 2) * g[0].expm()
+        return (g[2].expm() * rx(-np.pi / 2) * g[1].expm() * rx(np.pi / 2)
+                * g[0].expm())
 
     # sets batched state
     def _choose_next_state(self, actions):
@@ -199,10 +200,12 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                                           context_theta):
             preps = self._get_preps(_context_theta)
             obs = self._get_obs(_context_theta)
-            error_unitary = self._get_error_unitary(sample, sensitivity=self.context_sensitivity)
+            error_unitary = self._get_error_unitary(
+                sample, sensitivity=self.context_sensitivity)
             circuit = update_spectator_analytic_circuit(
                 qc=self.spectator_analytic_circuit, error_unitary=error_unitary,
-                theta=_context_theta[0], herm=self.sigmas[0], prep=preps[0], obs=obs[0],
+                theta=_context_theta[0], herm=self.sigmas[0], prep=preps[0],
+                obs=obs[0],
                 parameter_shift=0
             )
 
@@ -213,7 +216,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 memory=True,
             )
 
-            batched_state.append(np.array(sim.result().get_memory()).astype(int))
+            batched_state.append(np.array(
+                sim.result().get_memory()).astype(int))
         return np.array(batched_state)
 
     def _get_analytic_feedback(self, error_unitary,
@@ -250,7 +254,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
                 feedback.append(self._get_analytic_feedback(
                     error_unitary=error_unitary, correction_theta=correction[idx],
-                    sigma=self.sigmas[idx], prep=self._get_preps(correction)[idx],
+                    sigma=self.sigmas[idx],
+                    prep=self._get_preps(correction)[idx],
                     obs=self._get_obs(correction)[idx],
                     num_spectators=alloc / 2,
                     parameter_shifts=[-np.pi/2, np.pi/2]))
