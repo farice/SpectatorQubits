@@ -108,7 +108,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         self,
         error_samples,
         batch_size: int = 1,
-        num_context_spectators: int = 3,
+        num_context_spectators: int = 2,
         context_sensitivity: int = 1.0,
         reward_sensitivity: int = 1.0,
         # single qubit unitary can be parameterized in Euler rotation basis
