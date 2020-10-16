@@ -179,7 +179,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         ]
 
     def _get_error_unitary(self, sample, sensitivity):
-        return rz(sample * sensitivity)
+        return rx(sample[1] * sensitivity) * rz(sample[0] * sensitivity)
 
     def _get_correction(self, t):
         g = [
@@ -299,33 +299,38 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
         info = []
         for sample, action in zip(self.error_samples_batch, actions):
             correction = action['correction']
-            # Actual error applied to data qubit.
-            error_unitary = self._get_error_unitary(sample, sensitivity=1.0)
-            amplified_error_unitary = self._get_error_unitary(
-                sample, sensitivity=self.reward_sensitivity)
-
             # Not observable by agent (hidden state).
             corr = self._get_correction(np.array(correction))
-
-            theta, phi = extract_theta_phi(corr.dag())
-            theta /= self.reward_sensitivity
-            meas = get_parameterized_state(theta, phi)
-            overlap = meas.overlap(get_error_state(error_unitary))
-            overlap_conj = get_error_state(error_unitary).overlap(meas)
-            fid_data = overlap * overlap_conj
-
-            fid_spectator = (
-                np.linalg.norm((corr * amplified_error_unitary).tr()) / 2) ** 2
-
+            # Actual error applied to data qubit.
+            error_unitary = self._get_error_unitary(sample, sensitivity=1.0)
             control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
+            if self.reward_sensitivity != 1:
+                theta, phi = extract_theta_phi(corr.dag())
+                theta /= self.reward_sensitivity
+                meas = get_parameterized_state(theta, phi)
+                overlap = meas.overlap(get_error_state(error_unitary))
+                overlap_conj = get_error_state(error_unitary).overlap(meas)
+                fid_data = overlap * overlap_conj
 
-            info.append(
-                {
-                    'data_fidelity': fid_data,
-                    'spectator_fidelity': fid_spectator,
-                    'control_fidelity': control_fid
-                }
-            )
+                fid_spectator = (
+                    np.linalg.norm((corr * amplified_error_unitary).tr()) / 2) ** 2
+
+                info.append(
+                    {
+                        'data_fidelity': fid_data,
+                        'spectator_fidelity': fid_spectator,
+                        'control_fidelity': control_fid
+                    }
+                )
+            else:
+                fid_data = (
+                    np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+                info.append(
+                    {
+                        'data_fidelity': fid_data,
+                        'control_fidelity': control_fid
+                    }
+                )
 
         return ({'batched_context_feedback': np.array(
                     self._get_reward_context(actions, context_alloc)),
