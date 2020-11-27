@@ -38,10 +38,11 @@ def generate_contour_trajectories_for_sums(s, T):
     return np.array(list(set(itertools.permutations(path, len(path)))))
 
 
-@njit
+@njit # Ridiculous improvement in runtime. Optimizes linalg and loops.
 def keldysh_qprob(observable_spectra, q_prob, H, l_perms, r_perms, state0, T):
     for l_perm in l_perms:
         for r_perm in r_perms:
+            # Delta on L and R path end-points.
             if l_perm[-1] != r_perm[-1]:
                 continue
             base_prob = (observable_spectra[l_perm[0]]).conjugate().transpose().dot(

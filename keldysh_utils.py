@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from qutip import *
 from qutip.qip.operations import rx
@@ -30,19 +31,40 @@ def get_support(T):
     zs = list(set(map(mul, zs)))
     return np.sort(zs)
 
-def keldysh_plot(meas, keldysh_vec, T):
+def keldysh_vec_to_pd(keldysh_vec, T):
+    d = {
+        'basis': np.array([]),
+        'p(z)': np.array([]),
+        'z': np.array([]),
+        'random_gp': np.array([]),
+        }
     zs = get_support(T)
-    f, a = plt.subplots(1, len(meas), sharex=True, sharey=True, figsize=(8 * len(meas), 6))
+    for k, v in keldysh_vec.items():
+        for idx, random_gp_v in enumerate(v):
+            d['basis'] = np.append(d['basis'], np.repeat(k, len(random_gp_v)))
+            d['p(z)'] = np.append(d['p(z)'], random_gp_v)
+            d['z'] = np.append(d['z'], zs)
+            d['random_gp'] = np.append(d['random_gp'], np.repeat(idx, len(random_gp_v)))
+    return pd.DataFrame(d)
+
+
+def keldysh_plot(meas, keldysh_vec, T):
+    plt.style.use('seaborn')
+    zs = get_support(T)
+    f, a = plt.subplots(int(len(meas) / 2), 2, sharex=True, sharey=True, figsize=(16, 6 * len(meas) / 2))
+#     f.suptitle('Keldysh quasi-probability distributions for single-qubit fixed-axis GP error')
     for idx, (k, _) in enumerate(meas.items()):
+        ax = a[idx % 2, idx // 2]
         corr_vec = keldysh_vec[k]
         for corr in corr_vec:
-            a[idx].plot(zs, corr, alpha=0.3)
+            ax.plot(zs, corr, alpha=0.3)
 
-        a[idx].plot(zs, np.mean(corr_vec, axis=0), 'r+', label='mean')
-        title = fr'KQPD ${k}$'
-        a[idx].set_title(title)
-
-    f.legend()
+        ax.plot(zs, np.mean(corr_vec, axis=0), 'r', label='mean')
+        title = fr'${k}-basis$'
+        ax.set_title(title)
+        ax.set_ylabel(r'$qp(z)$')
+        ax.set_xlabel(r'$z$')
+        ax.legend()
     f.show()
     
     
