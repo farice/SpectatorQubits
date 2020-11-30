@@ -12,4 +12,4 @@
 
 - [spectator_env_v2.py](spectator_env_v2.py): a noisy spectator qubit environment testbed for benchmarking control algorithms in a consistent way.
 
-- [keldysh.py](keldysh.ipynb): Keldysh quasiprobability simulations and analysis for classical stochastic error discrimination.
+- [keldysh.ipynb](keldysh.ipynb): Keldysh quasiprobability simulations and analysis for classical stochastic error discrimination.
