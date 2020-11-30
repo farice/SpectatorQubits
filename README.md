@@ -2,12 +2,14 @@
 
 ## Overview
 
-## Layout
+### Reference
 
-- [MAB-gaussian.ipynb](MAB-gaussian.ipynb): Contextual multi-armed bandits to calibrate to coherent noise drawn from a fixed distribution.
+- [Paper](https://www.overleaf.com/read/sttwhrfbqvtf)
 
-- [dqn_rnn.ipynb](dqn_rnn.ipynb): DQN using a RNN function approximator to handle non-stationarity.
+### Layout
 
-- [spectatorl-noisemodel.py](spectatorl-noisemodel.py): a random walk-like realistic noise model.
+- [MAB-gaussian.ipynb](MAB-continuous-analytic-arbitrary-axis.ipynb): Variational spectators for adaptive classical stochastic error disrimination and mitigation.
 
-- [spectator_env.py](spectator_env.py): a noisy spectator qubit environment testbed for benchmarking control algorithms in a consistent way.
+- [spectator_env_v2.py](spectator_env_v2.py): a noisy spectator qubit environment testbed for benchmarking control algorithms in a consistent way.
+
+- [keldysh.py](keldysh.ipynb): Keldysh quasiprobability simulations and analysis for classical stochastic error discrimination.
