@@ -291,6 +291,8 @@ def plot_layered(results, context_contour, correction_contour):
         plot_2d_contour_scatter(axs[2], sim.correction_2d_repr[1], color=color)
 
         axs[3].set_title('Fidelity (per episode)')
-        axs[3].plot(sim.data_fidelity_per_episode, 'g', label='corrected (data)' if idx == 0 else '')
-        axs[3].plot(sim.control_fidelity_per_episode, 'r', label='uncorrected' if idx == 0 else '')
+        axs[3].plot(sim.data_fidelity_per_episode, 'g',
+                    label='corrected (data)' if idx == 0 else '', alpha=0.2)
+        axs[3].plot(sim.control_fidelity_per_episode, 'r',
+                    label='uncorrected' if idx == 0 else '', alpha=0.2)
         axs[3].legend()
