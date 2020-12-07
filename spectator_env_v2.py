@@ -3,7 +3,8 @@ from spectator_env_utils_v2 import (
     update_spectator_analytic_circuit,
     get_error_state,
     get_parameterized_state,
-    extract_theta_phi
+    extract_theta_phi,
+    get_error_unitary
 )
 
 
@@ -178,9 +179,6 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             qeye(2)
         ]
 
-    def _get_error_unitary(self, sample, sensitivity):
-        return rx(sample[1] * sensitivity) * rz(sample[0] * sensitivity)
-
     def _get_correction(self, t):
         g = [
             1j * t[0] * self.sigmas[0] / 2,
@@ -200,7 +198,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                                           context_theta):
             preps = self._get_preps(_context_theta)
             obs = self._get_obs(_context_theta)
-            error_unitary = self._get_error_unitary(
+            error_unitary = get_error_unitary(
                 sample, sensitivity=self.context_sensitivity)
             circuit = update_spectator_analytic_circuit(
                 qc=self.spectator_analytic_circuit, error_unitary=error_unitary,
@@ -249,7 +247,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             feedback = []
             for sample, action in zip(self.error_samples_batch, actions):
                 correction = action['correction']
-                error_unitary = self._get_error_unitary(
+                error_unitary = get_error_unitary(
                     sample, sensitivity=self.reward_sensitivity)
 
                 feedback.append(self._get_analytic_feedback(
@@ -270,7 +268,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             feedback = []
             for sample, action in zip(self.error_samples_batch, actions):
                 context_action = action['context']
-                error_unitary = self._get_error_unitary(
+                error_unitary = get_error_unitary(
                     sample, sensitivity=self.context_sensitivity)
 
                 feedback.append(self._get_analytic_feedback(
@@ -302,35 +300,16 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             # Not observable by agent (hidden state).
             corr = self._get_correction(np.array(correction))
             # Actual error applied to data qubit.
-            error_unitary = self._get_error_unitary(sample, sensitivity=1.0)
+            error_unitary = get_error_unitary(sample, sensitivity=1.0)
             control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
-            if self.reward_sensitivity != 1:
-                theta, phi = extract_theta_phi(corr.dag())
-                theta /= self.reward_sensitivity
-                meas = get_parameterized_state(theta, phi)
-                overlap = meas.overlap(get_error_state(error_unitary))
-                overlap_conj = get_error_state(error_unitary).overlap(meas)
-                fid_data = overlap * overlap_conj
-
-                fid_spectator = (
-                    np.linalg.norm((corr * amplified_error_unitary).tr()) / 2) ** 2
-
-                info.append(
-                    {
-                        'data_fidelity': fid_data,
-                        'spectator_fidelity': fid_spectator,
-                        'control_fidelity': control_fid
-                    }
-                )
-            else:
-                fid_data = (
-                    np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
-                info.append(
-                    {
-                        'data_fidelity': fid_data,
-                        'control_fidelity': control_fid
-                    }
-                )
+            fid_data = (
+                np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+            info.append(
+                {
+                    'data_fidelity': fid_data,
+                    'control_fidelity': control_fid
+                }
+            )
 
         return ({'batched_context_feedback': np.array(
                     self._get_reward_context(actions, context_alloc)),
