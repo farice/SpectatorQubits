@@ -3,10 +3,13 @@ from typing import List, Any
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions.unitary import UnitaryGate
+from qiskit.circuit.library.standard_gates.h import HGate
+from qiskit.circuit.library import IGate
 
 from qutip.operators import sigmax, sigmay, sigmaz
 from qutip.qip.operations import snot
 from qutip import basis
+from qutip import rx, ry, rz
 
 import numpy as np
 import pandas as pd
@@ -44,7 +47,7 @@ def create_spectator_analytic_circuit(error_unitary, theta, herm, prep, obs,
 # explicit update function allows us to avoid creating a new ciruit object
 # at every iteration
 def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep,
-                                      obs, parameter_shift):
+                                      obs, parameter_shift, basis_coin):
     inst, qarg, carg = qc.data[1]
     qc.data[1] = UnitaryGate(error_unitary), qarg, carg
 
@@ -53,6 +56,23 @@ def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep,
         qc.data[2] = UnitaryGate(
            (obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep)
         ), qarg, carg
+        
+    if basis_coin % 3 == 0:
+        inst, qarg, carg = qc.data[0]
+        qc.data[0] = IGate(), qarg, carg
+        inst, qarg, carg = qc.data[3]
+        qc.data[3] = IGate(), qarg, carg
+    elif basis_coin % 3 == 1:
+        inst, qarg, carg = qc.data[0]
+        qc.data[0] = HGate(), qarg, carg
+        inst, qarg, carg = qc.data[3]
+        qc.data[3] = HGate(), qarg, carg
+    elif basis_coin % 3 == 2:
+        hadamard_phase = rz(np.pi / 2) * snot()
+        inst, qarg, carg = qc.data[0]
+        qc.data[0] = UnitaryGate(hadamard_phase), qarg, carg
+        inst, qarg, carg = qc.data[3]
+        qc.data[3] = UnitaryGate(hadamard_phase.dag()), qarg, carg
 
     return qc
 
@@ -60,9 +80,9 @@ def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep,
 # Since we are preparing |+>, it useful to parameterize all unitaries
 # considered in this algorithm in terms of their image on this state.
 # The classic cos(\theta) |+> + e^(i\phi) |-> representation is used.
-def extract_theta_phi(single_qubit_gate):
+def extract_theta_phi(single_qubit_gate, b=snot() * basis(2,0)):
     # apply gate to |+>
-    ket = single_qubit_gate * snot() * basis(2, 0)
+    ket = single_qubit_gate * b
 
     alpha = ket.full()[0][0]
     beta = ket.full()[1][0]
@@ -188,7 +208,7 @@ def plot(frame_idx, elapsed_time, baseline_fidelity=None,
                                [ax_context_grad]))
 
     axs = set_up_plots()
-    plt.style.use('seaborn-paper')
+    plt.style.use('seaborn')
 
     if context_contour and context_theta_history:
         plot_2d_contour(
@@ -210,11 +230,13 @@ def plot(frame_idx, elapsed_time, baseline_fidelity=None,
         axs[2].set_title('Context 1: Correction phase space (gradient steps)')
 
     if baseline_fidelity and corrected_fidelity:
-        axs[3].set_title('Fidelity (per episode)')
+        axs[3].set_title('Fidelity after burn-in')
         axs[3].plot(corrected_fidelity, 'g', label='corrected (data)')
         if spectator_fidelity and len(spectator_fidelity) > 0:
             axs[3].plot(spectator_fidelity, 'b', label='corrected (spectator)')
         axs[3].plot(baseline_fidelity, 'r', label='uncorrected')
+        axs[3].set_xlabel('Batches')
+        axs[3].set_ylabel('Haar-averaged fidelity')
         axs[3].legend()
 
     if context_outcome_hist:
@@ -258,19 +280,20 @@ class ParallelSimResult:
     correction_2d_repr: List[Any]
 
 
-def plot_layered(results, context_contour, correction_contour):
+def plot_layered(results, context_contour, correction_contour, burnin_length=0):
     def set_up_plots():
         _, axs_context_contour = plt.subplots(1, 1, figsize=(7.5, 7.5),
                                               subplot_kw=dict(polar=True))
         _, axs_correction_contour = plt.subplots(1, 2, figsize=(15, 10),
                                                  subplot_kw=dict(polar=True))
         _, ax_fid = plt.subplots(1, 1, figsize=(7.5, 5))
+        _, ax_rel_fid = plt.subplots(1, 1, figsize=(7.5, 5))
 
         return np.concatenate(([axs_context_contour], axs_correction_contour,
-                              [ax_fid]))
+                              [ax_fid], [ax_rel_fid]))
 
     axs = set_up_plots()
-    plt.style.use('seaborn-paper')
+    plt.style.use('seaborn')
 
     plot_2d_contour(
         context_contour['thetas'], context_contour['phis'],
@@ -286,13 +309,35 @@ def plot_layered(results, context_contour, correction_contour):
     axs[2].set_title('Context 1: Correction phase space (gradient steps)')
     for idx, sim in enumerate(results):
         color = f"C{idx % 10}"
-        plot_2d_contour_scatter(axs[0], sim.context_2d_repr, color=color)
-        plot_2d_contour_scatter(axs[1], sim.correction_2d_repr[0], color=color)
-        plot_2d_contour_scatter(axs[2], sim.correction_2d_repr[1], color=color)
+        plot_2d_contour_scatter(axs[0], sim[0].context_2d_repr, color=color)
+        plot_2d_contour_scatter(axs[1], sim[0].correction_2d_repr[0], color=color)
+        plot_2d_contour_scatter(axs[2], sim[0].correction_2d_repr[1], color=color)
 
-        axs[3].set_title('Fidelity (per episode)')
-        axs[3].plot(sim.data_fidelity_per_episode, 'g',
-                    label='corrected (data)' if idx == 0 else '', alpha=0.2)
-        axs[3].plot(sim.control_fidelity_per_episode, 'r',
-                    label='uncorrected' if idx == 0 else '', alpha=0.2)
+        def fid_plots(data_fids, ctrl_fids, alpha, label):
+            axs[3].plot(data_fids, color,
+                        label='corrected (data)' if idx == 0 and label else '', alpha=alpha)
+            axs[3].plot(ctrl_fids, color,
+                        label='uncorrected' if idx == 0 and label else '', alpha=alpha, linestyle='--')
+
+            axs[4].plot(data_fids / ctrl_fids, color, alpha=alpha)
+            
+        
+        
+        data_fids = np.mean(np.array([s.data_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
+        ctrl_fids = np.mean(np.array([s.control_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
+        fid_plots(data_fids, ctrl_fids, 1.0, label=True)
+        
+        for s in sim:
+            data_fids = np.array(s.data_fidelity_per_episode[burnin_length:])
+            ctrl_fids = np.array(s.control_fidelity_per_episode[burnin_length:])
+            fid_plots(data_fids, ctrl_fids, 0.25, label=False)
+            
+            
+        axs[3].set_title('Fidelity after burn-in')
+        axs[3].set_xlabel('Batches')
+        axs[3].set_ylabel('Haar-averaged fidelity')
         axs[3].legend()
+        
+        axs[4].set_xlabel('Batches')
+        axs[4].set_ylabel('Haar-averaged relative fidelity')
+        axs[4].set_title('Relative fidelity after burn-in')

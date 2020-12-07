@@ -204,7 +204,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 qc=self.spectator_analytic_circuit, error_unitary=error_unitary,
                 theta=_context_theta[0], herm=self.sigmas[0], prep=preps[0],
                 obs=obs[0],
-                parameter_shift=0
+                parameter_shift=0,
+                basis_coin=1
             )
 
             sim = execute(
@@ -220,14 +221,15 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
     def _get_analytic_feedback(self, error_unitary,
                                correction_theta, sigma, prep, obs,
-                               num_spectators, parameter_shifts):
+                               num_spectators, parameter_shifts, basis_coin=1):
         feedback = []
         for parameter_shift in parameter_shifts:
             circuit = update_spectator_analytic_circuit(
                 qc=self.spectator_analytic_circuit,
                 error_unitary=error_unitary, theta=correction_theta,
                 herm=sigma, prep=prep, obs=obs,
-                parameter_shift=parameter_shift)
+                parameter_shift=parameter_shift,
+                basis_coin=basis_coin)
 
             sim = execute(
                 circuit,
@@ -256,7 +258,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                     prep=self._get_preps(correction)[idx],
                     obs=self._get_obs(correction)[idx],
                     num_spectators=alloc / 2,
-                    parameter_shifts=[-np.pi/2, np.pi/2]))
+                    parameter_shifts=[-np.pi/2, np.pi/2],
+                    basis_coin=np.random.choice([0, 1, 2])))
 
             feedback_set.append(feedback)
         return feedback_set
@@ -306,7 +309,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
             info.append(
                 {
-                    'data_fidelity': fid_data,
+                    'data_fidelity': max(fid_data, 1-fid_data),
                     'control_fidelity': control_fid
                 }
             )
