@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from typing import List, Any
 
@@ -161,10 +162,13 @@ def plot_2d_contour(thetas, phis, loss, ax):
     ax.contourf(phis, thetas, loss, alpha=0.4, cmap='viridis')
 
 
-def plot_2d_contour_scatter(ax, history, color='C0'):
+def plot_2d_contour_scatter(ax, history, color='C0', invert=False):
     history = np.real(history)
     theta = np.array([x[0] for x in history])
     phi = np.array([x[1] for x in history])
+    
+    if invert:
+        phi = phi + np.pi
     alphas = np.linspace(0.1, 1, len(history) - 1, dtype=np.float32)
     rgba_colors = np.zeros((len(history) - 1, 4))
     rgba_colors[:, 2] = 1
@@ -309,35 +313,38 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0):
     axs[2].set_title('Context 1: Correction phase space (gradient steps)')
     for idx, sim in enumerate(results):
         color = f"C{idx % 10}"
+        invert = np.real(sim[0].context_2d_repr[-1][0]) < np.pi / 2
         plot_2d_contour_scatter(axs[0], sim[0].context_2d_repr, color=color)
-        plot_2d_contour_scatter(axs[1], sim[0].correction_2d_repr[0], color=color)
-        plot_2d_contour_scatter(axs[2], sim[0].correction_2d_repr[1], color=color)
+        plot_2d_contour_scatter(axs[1], sim[0].correction_2d_repr[0], color=color, invert=invert)
+        plot_2d_contour_scatter(axs[2], sim[0].correction_2d_repr[1], color=color, invert=invert)
 
         def fid_plots(data_fids, ctrl_fids, alpha, label):
             axs[3].plot(data_fids, color,
-                        label='corrected (data)' if idx == 0 and label else '', alpha=alpha)
+                        label='corrected (data)' if idx == 0 and label else '',
+                        alpha=alpha)
             axs[3].plot(ctrl_fids, color,
-                        label='uncorrected' if idx == 0 and label else '', alpha=alpha, linestyle='--')
+                        label='uncorrected' if idx == 0 and label else '',
+                        alpha=alpha, linestyle='--')
 
             axs[4].plot(data_fids / ctrl_fids, color, alpha=alpha)
-            
-        
-        
+
+
+
         data_fids = np.mean(np.array([s.data_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
         ctrl_fids = np.mean(np.array([s.control_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
         fid_plots(data_fids, ctrl_fids, 1.0, label=True)
-        
+
         for s in sim:
             data_fids = np.array(s.data_fidelity_per_episode[burnin_length:])
             ctrl_fids = np.array(s.control_fidelity_per_episode[burnin_length:])
-            fid_plots(data_fids, ctrl_fids, 0.25, label=False)
-            
-            
+            fid_plots(data_fids, ctrl_fids, 0.1, label=False)
+
+
         axs[3].set_title('Fidelity after burn-in')
         axs[3].set_xlabel('Batches')
         axs[3].set_ylabel('Haar-averaged fidelity')
         axs[3].legend()
-        
+
         axs[4].set_xlabel('Batches')
         axs[4].set_ylabel('Haar-averaged relative fidelity')
         axs[4].set_title('Relative fidelity after burn-in')
