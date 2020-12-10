@@ -313,31 +313,43 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0):
     axs[2].set_title('Context 1: Correction phase space (gradient steps)')
     for idx, sim in enumerate(results):
         color = f"C{idx % 10}"
-        invert = np.real(sim[0].context_2d_repr[-1][0]) < np.pi / 2
-        plot_2d_contour_scatter(axs[0], sim[0].context_2d_repr, color=color)
-        plot_2d_contour_scatter(axs[1], sim[0].correction_2d_repr[0], color=color, invert=invert)
-        plot_2d_contour_scatter(axs[2], sim[0].correction_2d_repr[1], color=color, invert=invert)
+        if hasattr(sim, '__len__') and len(sim) > 1:
+            sim = sim[0]
+        invert = np.real(sim.context_2d_repr[-1][0]) < np.pi / 2
+        plot_2d_contour_scatter(axs[0], sim.context_2d_repr, color=color)
+        plot_2d_contour_scatter(axs[1], sim.correction_2d_repr[0], color=color, invert=invert)
+        plot_2d_contour_scatter(axs[2], sim.correction_2d_repr[1], color=color, invert=invert)
 
-        def fid_plots(data_fids, ctrl_fids, alpha, label):
+        def fid_plots(data_fids, ctrl_fids, alpha, label, label_override=None):
+            label = 'corrected (data)' if idx == 0 and label else ''
+            if label_override:
+                label = label_override
             axs[3].plot(data_fids, color,
-                        label='corrected (data)' if idx == 0 and label else '',
+                        label=label,
                         alpha=alpha)
+            label = 'uncorrected' if idx == 0 and label else ''
+            if label_override:
+                label = label_override
             axs[3].plot(ctrl_fids, color,
-                        label='uncorrected' if idx == 0 and label else '',
+                        label=label,
                         alpha=alpha, linestyle='--')
 
             axs[4].plot(data_fids / ctrl_fids, color, alpha=alpha)
 
 
+        if hasattr(sim, '__len__') and len(sim) > 1:
+            data_fids = np.mean(np.array([s.data_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
+            ctrl_fids = np.mean(np.array([s.control_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
+            fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
-        data_fids = np.mean(np.array([s.data_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
-        ctrl_fids = np.mean(np.array([s.control_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
-        fid_plots(data_fids, ctrl_fids, 1.0, label=True)
-
-        for s in sim:
-            data_fids = np.array(s.data_fidelity_per_episode[burnin_length:])
-            ctrl_fids = np.array(s.control_fidelity_per_episode[burnin_length:])
-            fid_plots(data_fids, ctrl_fids, 0.1, label=False)
+            for s in sim:
+                data_fids = np.array(s.data_fidelity_per_episode[burnin_length:])
+                ctrl_fids = np.array(s.control_fidelity_per_episode[burnin_length:])
+                fid_plots(data_fids, ctrl_fids, 0.1, label=False)
+        else:
+            data_fids = np.array(sim.data_fidelity_per_episode[burnin_length:])
+            ctrl_fids = np.array(sim.control_fidelity_per_episode[burnin_length:])
+            fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
 
         axs[3].set_title('Fidelity after burn-in')
