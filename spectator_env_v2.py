@@ -323,7 +323,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
 # Optimized action for a conditioning of the overall error distribution.
 class Context:
-    def __init__(self, gamma, eta, correction_theta_init):
+    def __init__(self, gamma, eta, correction_theta_init=[0, 0, 0]):
         # Discount factor.
         # This parameter is deprecated given that we rely on gradient updates
         # to adjust to non-stationarity.
@@ -373,17 +373,28 @@ class Context:
         return self.correction_theta, self.grads
 
 
+# Optimized action for a conditioning of the overall error distribution.
+class IdentityContext(Context):
+    def combine_correction_feedback(self):
+        self.reset()
+
+    def get_optimal_params(self):
+        return [0, 0, 0], [0, 0, 0]
+
+
 # Contextual analytic geometric descent
 class Analytic2D:
     def __init__(self, env, initial_gamma=1.0, context_eta=np.pi/64,
                  correction_eta=np.pi/64, context_theta_init=[0, 0, 0],
-                 correction_theta_init=[[0, 0, 0], [0, 0, 0]]):
+                 correction_theta_init=[[0, 0, 0], [0, 0, 0]],
+                 identity_threshold=0):
         # Contexts are defined in terms of a function on spectator outcomes.
         # Each context learns an optimal correction independently.
         self.contexts = [Context(initial_gamma, correction_eta,
                                  correction_theta_init[0]),
                          Context(initial_gamma, correction_eta,
-                                 correction_theta_init[1])]
+                                 correction_theta_init[1]),
+                         IdentityContext(initial_gamma, correction_eta)]
 
         self.num_context_spectators = env.num_context_spectators
 
@@ -394,6 +405,8 @@ class Analytic2D:
         self.context_theta = context_theta_init
 
         self.grads = [0, 0, 0]
+
+        self.identity_threshold = identity_threshold
 
     def get_actions(self, observations=None, batch_size=1):
         # Our context is an array of binary spectator qubit measurements.
@@ -409,8 +422,12 @@ class Analytic2D:
 
         actions = []
         for observation in observations:
-            context_idx = (1 if np.sum(observation) >
-                           self.num_context_spectators / 2 else 0)
+            if np.abs(np.sum(observation) - self.num_context_spectators / 2) < self.identity_threshold:
+                context_idx = 2
+            elif np.sum(observation) > self.num_context_spectators / 2:
+                context_idx = 1
+            else:
+                context_idx = 0
             context = self.contexts[context_idx]
 
             optimal_correction, correction_grad = context.get_optimal_params()
@@ -460,8 +477,12 @@ class Analytic2D:
         for idx in range(len(self.context_theta)):
             for _correction_feedback, observation in zip(
                     correction_feedback[idx], observations):
-                context_idx = (1 if np.sum(observation) >
-                               self.num_context_spectators / 2 else 0)
+                if np.abs(np.sum(observation) - self.num_context_spectators / 2) < self.identity_threshold:
+                    context_idx = 2
+                elif np.sum(observation) > self.num_context_spectators / 2:
+                    context_idx = 1
+                else:
+                    context_idx = 0
                 context = self.contexts[context_idx]
                 context.update_batch_feedback(_correction_feedback, idx)
 
@@ -483,7 +504,8 @@ class ParallelSim:
                  error_samples_generator, feedback_spectators_allocation_function,
                  num_batches_to_combine_correction_feedback,
                  num_batches_to_combine_context_feedback,
-                 num_epochs_to_redraw_errors):
+                 num_epochs_to_redraw_errors,
+                 identity_threshold=0):
         # Should store all hyperparams so that config can be accessed readily in analysis.
         self.context_eta = context_eta
         self.correction_eta = correction_eta
@@ -504,7 +526,8 @@ class ParallelSim:
         self.md = Analytic2D(self.env, context_eta=context_eta,
                              correction_eta=correction_eta,
                              context_theta_init=context_eta_init,
-                             correction_theta_init=correction_eta_init)
+                             correction_theta_init=correction_eta_init,
+                             identity_threshold=identity_threshold)
         self.data_fidelity_per_episode = []
         self.control_fidelity_per_episode = []
         self.data_fidelity = []
@@ -566,7 +589,7 @@ class ParallelSim:
 
         self.context_2d_repr.append(extract_theta_phi(
             self.env._get_correction(self.md.context_theta).dag()))
-        for idx, c in enumerate(self.md.contexts):
+        for idx, c in enumerate(self.md.contexts[:2]):
             correction_2d = extract_theta_phi(
                     self.env._get_correction(c.correction_theta).dag())
             if idx in self.correction_2d_repr.keys():

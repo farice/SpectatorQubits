@@ -234,7 +234,7 @@ def plot(frame_idx, elapsed_time, baseline_fidelity=None,
         axs[2].set_title('Context 1: Correction phase space (gradient steps)')
 
     if baseline_fidelity and corrected_fidelity:
-        axs[3].set_title('Fidelity after burn-in')
+        axs[3].set_title('Fidelity (after burn-in)')
         axs[3].plot(corrected_fidelity, 'g', label='corrected (data)')
         if spectator_fidelity and len(spectator_fidelity) > 0:
             axs[3].plot(spectator_fidelity, 'b', label='corrected (spectator)')
@@ -356,15 +356,15 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0,
             ctrl_fids = uniform_filter1d(np.array(sim.control_fidelity_per_episode[burnin_length:]), window_size)
             fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
-        axs[3].set_title('Fidelity after burn-in')
+        axs[3].set_title('Fidelity (after burn-in)')
         axs[3].set_xlabel(r'$\Delta t$')
         axs[3].set_ylabel('Haar-averaged fidelity')
         axs[3].legend()
 
         axs[4].set_xlabel(r'$\Delta t$')
         axs[4].set_ylabel('Haar-averaged fidelity difference')
-        axs[4].set_title('Fidelity difference after burn-in')
+        axs[4].set_title('Fidelity difference (after burn-in)')
 
         axs[5].set_xlabel(r'$\Delta t$')
         axs[5].set_ylabel('Haar-averaged fidelity difference')
-        axs[5].set_title('Fidelity difference relative to re-centered distribution after burn-in')
+        axs[5].set_title('Fidelity difference relative to re-centered distribution (after burn-in)')
