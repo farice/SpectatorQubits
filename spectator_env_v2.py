@@ -4,7 +4,8 @@ from spectator_env_utils_v2 import (
     get_error_state,
     get_parameterized_state,
     extract_theta_phi,
-    get_error_unitary
+    get_error_unitary,
+    ParallelSimResult
 )
 
 
@@ -319,3 +320,273 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
                 'batched_correction_feedback': np.array(
                     self._get_reward_correction(actions, correction_alloc))},
                 info)
+
+# Optimized action for a conditioning of the overall error distribution.
+class Context:
+    def __init__(self, gamma, eta, correction_theta_init):
+        # Discount factor.
+        # This parameter is deprecated given that we rely on gradient updates
+        # to adjust to non-stationarity.
+        self.gamma = gamma
+        # Gradient step size.
+        self.eta = eta
+
+        # Feedback which is batched until we decide to use it.
+        self.batch_correction_feedback = ([], [], [])
+        self.correction_theta = correction_theta_init
+
+        self.grads = [0, 0, 0]
+
+    def reset(self):
+        self.batch_correction_feedback = ([], [], [])
+
+    def discount(self):
+        pass
+
+    def update_gamma(self, gamma):
+        self.gamma = gamma
+
+    def update_batch_feedback(self, correction_feedback, idx):
+        self.batch_correction_feedback[idx].append(correction_feedback)
+
+    def combine_correction_feedback(self):
+        # feedback is given per variational param
+        for idx, f in enumerate(self.batch_correction_feedback):
+            if len(f) == 0:
+                continue
+            lo = np.array([r[0] for r in f])
+            hi = np.array([r[1] for r in f])
+            lo = np.array(list(map(lambda x: -1 if x == 0 else 1, lo.flatten())))
+            hi = np.array(list(map(lambda x: -1 if x == 0 else 1, hi.flatten())))
+
+            mu_plus = np.mean(hi)
+            mu_minus = np.mean(lo)
+
+            grad = mu_plus - mu_minus
+
+            self.correction_theta[idx] -= self.eta * grad
+            self.grads[idx] = grad
+
+        self.reset()
+
+    def get_optimal_params(self):
+        return self.correction_theta, self.grads
+
+
+# Contextual analytic geometric descent
+class Analytic2D:
+    def __init__(self, env, initial_gamma=1.0, context_eta=np.pi/64,
+                 correction_eta=np.pi/64, context_theta_init=[0, 0, 0],
+                 correction_theta_init=[[0, 0, 0], [0, 0, 0]]):
+        # Contexts are defined in terms of a function on spectator outcomes.
+        # Each context learns an optimal correction independently.
+        self.contexts = [Context(initial_gamma, correction_eta,
+                                 correction_theta_init[0]),
+                         Context(initial_gamma, correction_eta,
+                                 correction_theta_init[1])]
+
+        self.num_context_spectators = env.num_context_spectators
+
+        # step size
+        self.eta = context_eta
+
+        self.batch_context_feedback = ([], [], [])
+        self.context_theta = context_theta_init
+
+        self.grads = [0, 0, 0]
+
+    def get_actions(self, observations=None, batch_size=1):
+        # Our context is an array of binary spectator qubit measurements.
+        # Hence, we could convert this binary array to an integer and index
+        # 2^(spectator qubits) contexts.
+        # For now, we only have two contexts (+ vs -), and so we consider
+        # spectators to be indistinguishable noise polling devices.
+        # In the future, we may consider noise gradients and so we do indeed
+        # need to track the specific arrangement.
+
+        if observations is None:
+            return [{'context': self.context_theta} for i in range(batch_size)]
+
+        actions = []
+        for observation in observations:
+            context_idx = (1 if np.sum(observation) >
+                           self.num_context_spectators / 2 else 0)
+            context = self.contexts[context_idx]
+
+            optimal_correction, correction_grad = context.get_optimal_params()
+            actions.append(
+                {'correction': optimal_correction,
+                 'correction_grad': correction_grad,
+                 'context_grad': self.grads,
+                 'context': self.context_theta})
+        return actions
+
+    def combine_correction_feedback(self):
+        for context in self.contexts:
+            context.combine_correction_feedback()
+
+    def combine_contextual_feedback(self):
+        # Feedback is given per gate parameter.
+        for idx, f in enumerate(self.batch_context_feedback):
+            if len(f) == 0:
+                continue
+            lo = np.array([r[0] for r in f])
+            mid = np.array([r[1] for r in f])
+            hi = np.array([r[2] for r in f])
+
+            lo = np.array(list(map(lambda x: -1 if x == 0 else 1,
+                                   lo.flatten())))
+            mid = np.array(list(map(lambda x: -1 if x == 0 else 1,
+                                    mid.flatten())))
+            hi = np.array(list(map(lambda x: -1 if x == 0 else 1,
+                                   hi.flatten())))
+
+            mean_mid = np.mean(mid)
+            mean_lo = np.mean(lo)
+            mean_hi = np.mean(hi)
+            var_grad = np.mean([2 * (m - mean_mid)
+                                * ((h - l) - (mean_hi - mean_lo))
+                                for l, m, h in zip(lo, mid, hi)])
+            self.grads[idx] = var_grad
+
+            self.context_theta[idx] += self.eta * var_grad
+        self.reset()
+
+    def reset(self):
+        self.batch_context_feedback = ([], [], [])
+
+    def update_correction_feedback(self, correction_feedback, observations):
+        # Feedback is given per variational param.
+        for idx in range(len(self.context_theta)):
+            for _correction_feedback, observation in zip(
+                    correction_feedback[idx], observations):
+                context_idx = (1 if np.sum(observation) >
+                               self.num_context_spectators / 2 else 0)
+                context = self.contexts[context_idx]
+                context.update_batch_feedback(_correction_feedback, idx)
+
+    def update_context_feedback(self, context_feedback, observations):
+        # Feedback is given per variational param.
+        for idx in range(len(self.context_theta)):
+            for _context_feedback, observation in zip(
+                    context_feedback[idx], observations):
+                self.batch_context_feedback[idx].append(_context_feedback)
+
+    def _update_gammas(self, gamma):
+        for context in self.contexts:
+            context.update_gamma(gamma)
+
+
+class ParallelSim:
+    def __init__(self, context_eta, correction_eta, context_eta_init,
+                 correction_eta_init, batch_size, num_context_spectators,
+                 error_samples_generator, feedback_spectators_allocation_function,
+                 num_batches_to_combine_correction_feedback,
+                 num_batches_to_combine_context_feedback,
+                 num_epochs_to_redraw_errors):
+        # Should store all hyperparams so that config can be accessed readily in analysis.
+        self.context_eta = context_eta
+        self.correction_eta = correction_eta
+        self.context_eta_init = context_eta_init
+        self.correction_eta_init = correction_eta_init
+        self.batch_size = batch_size
+        self.num_context_spectators = num_context_spectators
+        self.error_samples_generator = error_samples_generator
+        self.feedback_spectators_allocation_function = feedback_spectators_allocation_function
+        self.num_batches_to_combine_correction_feedback = num_batches_to_combine_correction_feedback
+        self.num_batches_to_combine_context_feedback = num_batches_to_combine_context_feedback
+        self.num_epochs_to_redraw_errors = num_epochs_to_redraw_errors
+
+        error_samples = error_samples_generator(iteration=0, batch_size=self.batch_size)
+        self.env = SpectatorEnvContinuousV2(
+            error_samples, batch_size=batch_size,
+            num_context_spectators=num_context_spectators)
+        self.md = Analytic2D(self.env, context_eta=context_eta,
+                             correction_eta=correction_eta,
+                             context_theta_init=context_eta_init,
+                             correction_theta_init=correction_eta_init)
+        self.data_fidelity_per_episode = []
+        self.control_fidelity_per_episode = []
+        self.data_fidelity = []
+        self.control_fidelity = []
+        self.correction_2d_repr = {}
+        self.context_2d_repr = []
+        self.observation = self.env.reset(self.md.get_actions(
+                                          batch_size=batch_size))
+        self.batches_per_epoch = 1
+        self.frame_idx = 0
+
+    def destruct(self):
+        self.error_samples_generator = None
+        self.feedback_spectators_allocation_function = None
+        self.env = None
+        self.md = None
+
+    def set_error_samples(self, new_error_samples):
+        self.env.set_error_samples(new_error_samples)
+
+    def step(self):
+        '''
+        Beginning of main logic.
+        '''
+
+        # This will return the known optimal actions as a function of the context
+        # mapping.
+        actions = self.md.get_actions(self.observation,
+                                      batch_size=self.batch_size)
+        prev_observation = self.observation
+
+        # Allocation of non-contextual spectators between optimizing the objectives.
+        feedback_alloc = self.feedback_spectators_allocation_function()
+        self.observation, feedback, done, info = self.env.step(actions, feedback_alloc)
+        self.observation = None if done else self.observation
+
+        self.md.update_correction_feedback(
+                  correction_feedback=feedback['batched_correction_feedback'],
+                  observations=prev_observation)
+        self.md.update_context_feedback(
+                context_feedback=feedback['batched_context_feedback'],
+                observations=prev_observation)
+
+        if self.frame_idx % self.num_batches_to_combine_correction_feedback == 0:
+            self.md.combine_correction_feedback()
+        if self.frame_idx % self.num_batches_to_combine_context_feedback == 0:
+            self.md.combine_contextual_feedback()
+
+        new_error_samples = self.error_samples_generator(iteration=self.frame_idx)
+        self.set_error_samples(new_error_samples)
+
+        '''
+        End of main logic.
+        '''
+
+        for _info in info:
+            self.data_fidelity.append(_info['data_fidelity'])
+            self.control_fidelity.append(_info['control_fidelity'])
+
+        self.context_2d_repr.append(extract_theta_phi(
+            self.env._get_correction(self.md.context_theta).dag()))
+        for idx, c in enumerate(self.md.contexts):
+            correction_2d = extract_theta_phi(
+                    self.env._get_correction(c.correction_theta).dag())
+            if idx in self.correction_2d_repr.keys():
+                self.correction_2d_repr[idx].append(correction_2d)
+            else:
+                self.correction_2d_repr[idx] = [correction_2d]
+
+        if done:
+            self.data_fidelity_per_episode.append(np.mean(self.data_fidelity))
+            self.control_fidelity_per_episode.append(np.mean(self.control_fidelity))
+            self.data_fidelity = []
+            self.control_fidelity = []
+
+            self.observation = self.env.reset(actions)
+
+        self.frame_idx += 1
+        return ParallelSimResult(
+            done=done,
+            data_fidelity_per_episode=self.data_fidelity_per_episode,
+            control_fidelity_per_episode=self.control_fidelity_per_episode,
+            context_2d_repr=self.context_2d_repr,
+            correction_2d_repr=self.correction_2d_repr
+        )

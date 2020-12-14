@@ -57,7 +57,7 @@ def update_spectator_analytic_circuit(qc, error_unitary, theta, herm, prep,
         qc.data[2] = UnitaryGate(
            (obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep)
         ), qarg, carg
-        
+
     if basis_coin % 3 == 0:
         inst, qarg, carg = qc.data[0]
         qc.data[0] = IGate(), qarg, carg
@@ -166,7 +166,7 @@ def plot_2d_contour_scatter(ax, history, color='C0', invert=False):
     history = np.real(history)
     theta = np.array([x[0] for x in history])
     phi = np.array([x[1] for x in history])
-    
+
     if invert:
         phi = phi + np.pi
     alphas = np.linspace(0.1, 1, len(history) - 1, dtype=np.float32)
@@ -284,7 +284,8 @@ class ParallelSimResult:
     correction_2d_repr: List[Any]
 
 
-def plot_layered(results, context_contour, correction_contour, burnin_length=0, window_size=1):
+def plot_layered(results, context_contour, correction_contour, burnin_length=0,
+                 window_size=1):
     def set_up_plots():
         _, axs_context_contour = plt.subplots(1, 1, figsize=(7.5, 7.5),
                                               subplot_kw=dict(polar=True))
@@ -318,8 +319,10 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0, 
             sim = sim[0]
         invert = np.real(sim.context_2d_repr[-1][0]) < np.pi / 2
         plot_2d_contour_scatter(axs[0], sim.context_2d_repr, color=color)
-        plot_2d_contour_scatter(axs[1], sim.correction_2d_repr[0], color=color, invert=invert)
-        plot_2d_contour_scatter(axs[2], sim.correction_2d_repr[1], color=color, invert=invert)
+        plot_2d_contour_scatter(axs[1], sim.correction_2d_repr[0], color=color,
+                                invert=invert)
+        plot_2d_contour_scatter(axs[2], sim.correction_2d_repr[1], color=color,
+                                invert=invert)
 
         def fid_plots(data_fids, ctrl_fids, alpha, label, label_override=None):
             label = 'corrected (data)' if idx == 0 and label else ''
@@ -336,9 +339,8 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0, 
                         alpha=alpha, linestyle='--')
 
             axs[4].plot(data_fids - ctrl_fids, color, alpha=alpha)
-            
-            axs[5].plot(data_fids - np.max(ctrl_fids), color, alpha=alpha)
 
+            axs[5].plot(data_fids - np.max(ctrl_fids), color, alpha=alpha)
 
         if hasattr(sim, '__len__') and len(sim) > 1:
             data_fids = np.mean(np.array([s.data_fidelity_per_episode[burnin_length:] for s in sim]), axis=0)
@@ -354,7 +356,6 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0, 
             ctrl_fids = uniform_filter1d(np.array(sim.control_fidelity_per_episode[burnin_length:]), window_size)
             fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
-
         axs[3].set_title('Fidelity after burn-in')
         axs[3].set_xlabel(r'$\Delta t$')
         axs[3].set_ylabel('Haar-averaged fidelity')
@@ -363,7 +364,7 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0, 
         axs[4].set_xlabel(r'$\Delta t$')
         axs[4].set_ylabel('Haar-averaged fidelity difference')
         axs[4].set_title('Fidelity difference after burn-in')
-        
+
         axs[5].set_xlabel(r'$\Delta t$')
         axs[5].set_ylabel('Haar-averaged fidelity difference')
         axs[5].set_title('Fidelity difference relative to re-centered distribution after burn-in')
