@@ -19,6 +19,7 @@ from matplotlib import pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import scipy.interpolate
+from scipy.ndimage import uniform_filter1d
 
 
 def create_spectator_analytic_circuit(error_unitary, theta, herm, prep, obs,
@@ -33,7 +34,6 @@ def create_spectator_analytic_circuit(error_unitary, theta, herm, prep, obs,
     # error rotation
     qc.unitary(UnitaryGate(
            error_unitary), qr)
-
     qc.unitary(UnitaryGate(
        (obs * (1j * (theta + parameter_shift) * herm / 2).expm() * prep)
     ), qr)
@@ -284,7 +284,7 @@ class ParallelSimResult:
     correction_2d_repr: List[Any]
 
 
-def plot_layered(results, context_contour, correction_contour, burnin_length=0):
+def plot_layered(results, context_contour, correction_contour, burnin_length=0, window_size=1):
     def set_up_plots():
         _, axs_context_contour = plt.subplots(1, 1, figsize=(7.5, 7.5),
                                               subplot_kw=dict(polar=True))
@@ -292,9 +292,10 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0):
                                                  subplot_kw=dict(polar=True))
         _, ax_fid = plt.subplots(1, 1, figsize=(7.5, 5))
         _, ax_rel_fid = plt.subplots(1, 1, figsize=(7.5, 5))
+        _, ax_rel_centered_fid = plt.subplots(1, 1, figsize=(7.5, 5))
 
         return np.concatenate(([axs_context_contour], axs_correction_contour,
-                              [ax_fid], [ax_rel_fid]))
+                              [ax_fid], [ax_rel_fid], [ax_rel_centered_fid]))
 
     axs = set_up_plots()
     plt.style.use('seaborn')
@@ -334,7 +335,9 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0):
                         label=label,
                         alpha=alpha, linestyle='--')
 
-            axs[4].plot(data_fids / ctrl_fids, color, alpha=alpha)
+            axs[4].plot(data_fids - ctrl_fids, color, alpha=alpha)
+            
+            axs[5].plot(data_fids - np.max(ctrl_fids), color, alpha=alpha)
 
 
         if hasattr(sim, '__len__') and len(sim) > 1:
@@ -347,16 +350,20 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0):
                 ctrl_fids = np.array(s.control_fidelity_per_episode[burnin_length:])
                 fid_plots(data_fids, ctrl_fids, 0.1, label=False)
         else:
-            data_fids = np.array(sim.data_fidelity_per_episode[burnin_length:])
-            ctrl_fids = np.array(sim.control_fidelity_per_episode[burnin_length:])
+            data_fids = uniform_filter1d(np.array(sim.data_fidelity_per_episode[burnin_length:]), window_size)
+            ctrl_fids = uniform_filter1d(np.array(sim.control_fidelity_per_episode[burnin_length:]), window_size)
             fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
 
         axs[3].set_title('Fidelity after burn-in')
-        axs[3].set_xlabel('Batches')
+        axs[3].set_xlabel(r'$\Delta t$')
         axs[3].set_ylabel('Haar-averaged fidelity')
         axs[3].legend()
 
-        axs[4].set_xlabel('Batches')
-        axs[4].set_ylabel('Haar-averaged relative fidelity')
-        axs[4].set_title('Relative fidelity after burn-in')
+        axs[4].set_xlabel(r'$\Delta t$')
+        axs[4].set_ylabel('Haar-averaged fidelity difference')
+        axs[4].set_title('Fidelity difference after burn-in')
+        
+        axs[5].set_xlabel(r'$\Delta t$')
+        axs[5].set_ylabel('Haar-averaged fidelity difference')
+        axs[5].set_title('Fidelity difference relative to re-centered distribution after burn-in')

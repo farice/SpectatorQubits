@@ -310,7 +310,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             info.append(
                 {
                     'data_fidelity': max(fid_data, 1-fid_data),
-                    'control_fidelity': control_fid
+                    'control_fidelity': max(control_fid, 1-control_fid)
                 }
             )
 
