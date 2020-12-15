@@ -1,7 +1,3 @@
-import math
-from dataclasses import dataclass
-from typing import List, Any
-
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions.unitary import UnitaryGate
 from qiskit.circuit.library.standard_gates.h import HGate
@@ -10,15 +6,13 @@ from qiskit.circuit.library import IGate
 from qutip.operators import sigmax, sigmay, sigmaz
 from qutip.qip.operations import snot
 from qutip import basis
-from qutip import rx, ry, rz
+from qutip import rz
 
 import numpy as np
 import pandas as pd
 
 from matplotlib import pyplot as plt
 from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
-import scipy.interpolate
 from scipy.ndimage import uniform_filter1d
 
 
@@ -273,15 +267,6 @@ def plot(frame_idx, elapsed_time, baseline_fidelity=None,
     axs[8].plot([g[2] for g in context_grads], label='theta_3')
     axs[8].set_title('Context gradient')
     axs[8].legend()
-
-
-@dataclass
-class ParallelSimResult:
-    done: bool
-    data_fidelity_per_episode: List[Any]
-    control_fidelity_per_episode: List[Any]
-    context_2d_repr: List[Any]
-    correction_2d_repr: List[Any]
 
 
 def plot_layered(results, context_contour, correction_contour, burnin_length=0,
