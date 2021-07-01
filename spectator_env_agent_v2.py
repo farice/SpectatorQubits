@@ -67,7 +67,10 @@ class ParallelSim:
         '''
         Beginning of main logic.
         '''
-
+        
+#         print(f"idx: {self.frame_idx}")
+#         print(f"obs: {self.observation}")
+#         print(f"error samples: {self.env.error_samples}")
         # This will return the known optimal actions as a function of the context
         # mapping.
         actions = self.md.get_actions(self.observation,
@@ -93,12 +96,14 @@ class ParallelSim:
 
         new_error_samples = self.error_samples_generator(iteration=self.frame_idx)
         self.set_error_samples(new_error_samples)
-
+        
+#         print("\n")
         '''
         End of main logic.
         '''
 
         for _info in info:
+#             print(f"data fid: {_info['data_fidelity']}")
             self.data_fidelity.append(_info['data_fidelity'])
             self.control_fidelity.append(_info['control_fidelity'])
 

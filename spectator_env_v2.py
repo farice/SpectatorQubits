@@ -208,7 +208,7 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             sim = execute(
                 circuit,
                 backend=BasicAer.get_backend("qasm_simulator"),
-                shots=self.num_context_spectators,
+                shots=int(self.num_context_spectators),
                 memory=True,
             )
 
@@ -230,8 +230,8 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
 
             sim = execute(
                 circuit,
+                shots=int(num_spectators),
                 backend=BasicAer.get_backend("qasm_simulator"),
-                shots=num_spectators,
                 memory=True,
             )
 
@@ -301,13 +301,19 @@ class SpectatorEnvContinuousV2(SpectatorEnvBase):
             corr = self._get_correction(np.array(correction))
             # Actual error applied to data qubit.
             error_unitary = get_error_unitary(sample, sensitivity=1.0)
+#             print(f"error unitary: {error_unitary}")
+#             print(f"corr: {corr}")
+            
             control_fid = (np.linalg.norm(error_unitary.tr()) / 2) ** 2
             fid_data = (
                 np.linalg.norm((corr * error_unitary).tr()) / 2) ** 2
+#             print(f"fid data: {fid_data} =? {max(fid_data, 1-fid_data)}")
             info.append(
                 {
-                    'data_fidelity': max(fid_data, 1-fid_data),
-                    'control_fidelity': max(control_fid, 1-control_fid)
+#                     'data_fidelity': max(fid_data, 1-fid_data),
+#                     'control_fidelity': max(control_fid, 1-control_fid)
+                    'data_fidelity': fid_data,
+                    'control_fidelity': control_fid,
                 }
             )
 

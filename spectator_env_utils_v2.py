@@ -10,8 +10,10 @@ from qutip import rz
 
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 from matplotlib import pyplot as plt
+from matplotlib.colors import LogNorm
 from matplotlib import cm
 from scipy.ndimage import uniform_filter1d
 
@@ -268,17 +270,46 @@ def plot(frame_idx, elapsed_time, baseline_fidelity=None,
     axs[8].set_title('Context gradient')
     axs[8].legend()
 
+def fid_from_variance(var):
+                return (1 + np.exp(-2 * var)) / 2
+    
 
-def plot_layered(results, context_contour, correction_contour, burnin_length=0,
-                 window_size=1):
+def plot_heatmap(results, resource_regime, drift_strengths, burnin_length=0,
+                 window_size=1, variance=np.pi / 4):
+    plt.figure(figsize=(12, 10))
+    df = {"Drift strength": [], "Num spectators": [], "val": []}
+    for i in range(4):
+        for j in range(4):
+            idx = 4 * i + j
+            d = drift_strengths[idx]
+            df["Drift strength"].append(d)
+            r = resource_regime[idx]
+            df["Num spectators"].append(r * (2 + 3))
+            
+            v = [p[1] for p in sorted(results[idx].items())][0]
+            data_fids = uniform_filter1d(np.array(v.data_fidelity_per_episode[burnin_length:]), window_size)
+            baseline_centered_fid = fid_from_variance(variance)
+            max_fid = np.max(data_fids) - baseline_centered_fid
+            print("max data fid: ", np.max(data_fids))
+            max_fid = max(max_fid, 0.0)
+            df["val"].append(max_fid)
+            
+    df = pd.DataFrame.from_dict(df)
+    print(df)
+    ax = sns.heatmap(df.pivot("Drift strength", "Num spectators", "val")
+#                      , norm=LogNorm()
+                    )
+
+def plot_layered(results, context_contour=None, correction_contour=None, burnin_length=0,
+                 window_size=1, variance=np.pi / 4):
     def set_up_plots():
         _, axs_context_contour = plt.subplots(1, 1, figsize=(7.5, 7.5),
                                               subplot_kw=dict(polar=True))
         _, axs_correction_contour = plt.subplots(1, 2, figsize=(15, 10),
                                                  subplot_kw=dict(polar=True))
-        _, ax_fid = plt.subplots(1, 1, figsize=(7.5, 5))
-        _, ax_rel_fid = plt.subplots(1, 1, figsize=(7.5, 5))
-        _, ax_rel_centered_fid = plt.subplots(1, 1, figsize=(7.5, 5))
+        _, ax_fid = plt.subplots(1, 1, figsize=(15, 10))
+        _, ax_rel_fid = plt.subplots(1, 1, figsize=(15, 10))
+        _, ax_rel_centered_fid = plt.subplots(1, 1, figsize=(15, 10))
 
         return np.concatenate(([axs_context_contour], axs_correction_contour,
                               [ax_fid], [ax_rel_fid], [ax_rel_centered_fid]))
@@ -286,20 +317,26 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0,
     axs = set_up_plots()
     plt.style.use('seaborn')
 
-    plot_2d_contour(
-        context_contour['thetas'], context_contour['phis'],
-        context_contour['loss'], axs[0])
+    if context_contour:
+        plot_2d_contour(
+            context_contour['thetas'], context_contour['phis'],
+            context_contour['loss'], axs[0])
     axs[0].set_title('Context phase space (gradient steps)')
-    plot_2d_contour(
-        correction_contour[0]['thetas'], correction_contour[0]['phis'],
-        correction_contour[0]['loss'], axs[1])
+    if correction_contour:
+        plot_2d_contour(
+            correction_contour[0]['thetas'], correction_contour[0]['phis'],
+            correction_contour[0]['loss'], axs[1])
+        plot_2d_contour(
+            correction_contour[1]['thetas'], correction_contour[1]['phis'],
+            correction_contour[1]['loss'], axs[2])
     axs[1].set_title('Context 0: Correction phase space (gradient steps)')
-    plot_2d_contour(
-        correction_contour[1]['thetas'], correction_contour[1]['phis'],
-        correction_contour[1]['loss'], axs[2])
     axs[2].set_title('Context 1: Correction phase space (gradient steps)')
     for idx, sim in enumerate(results):
-        color = f"C{idx % 10}"
+        colors = {
+            0: '#bf1654',
+            1: '#641f54',
+        }
+        color = colors[idx % len(colors)]
         if hasattr(sim, '__len__') and len(sim) > 1:
             sim = sim[0]
         invert = np.real(sim.context_2d_repr[-1][0]) < np.pi / 2
@@ -310,21 +347,34 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0,
                                 invert=invert)
 
         def fid_plots(data_fids, ctrl_fids, alpha, label, label_override=None):
-            label = 'corrected (data)' if idx == 0 and label else ''
+            label = 'corrected' if idx == 0 and label else ''
             if label_override:
                 label = label_override
-            axs[3].plot(data_fids, color,
+            axs[3].plot(data_fids
+                        , color,
                         label=label,
                         alpha=alpha)
             label = 'uncorrected' if idx == 0 and label else ''
             if label_override:
                 label = label_override
-            axs[3].plot(ctrl_fids, color,
+            axs[3].plot(ctrl_fids
+                        , color,
                         label=label,
-                        alpha=alpha, linestyle='--')
+                        alpha=alpha, linestyle=(0, (1, 6 / 2)))
+            
+            NC = 7
+            variance_tilde = variance * (1 - 4 * variance *  NC / (np.cosh(4 * variance) + NC * np.sinh(4 * variance)))
+            print("variance tilde, N_C = 1: ", variance * (1 - 4 * variance * np.exp(-4 * variance)))
+            print("variance tilde: ", variance_tilde)
+            
+            optimal_fid = fid_from_variance(variance_tilde)
+            label = "optimal (mean)" if idx == 0 and label else ''
+            axs[3].hlines(optimal_fid, xmin=0, xmax=len(data_fids), color='#a58fa6', label=label, linestyle=(0, (10, 2)))
 
             axs[4].plot(data_fids - ctrl_fids, color, alpha=alpha)
-
+            
+            baseline_centered_fid = fid_from_variance(variance)
+            print(f"optimal fid: {optimal_fid}, baseline fid: {baseline_centered_fid}")
             axs[5].plot(data_fids - np.max(ctrl_fids), color, alpha=alpha)
 
         if hasattr(sim, '__len__') and len(sim) > 1:
@@ -333,7 +383,7 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0,
             fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
             for s in sim:
-                data_fids = np.array(s.data_fidelity_per_episode[burnin_length:])
+                data_fids = np.array(s.data_fidelity_per_episode[burnin_length:]) 
                 ctrl_fids = np.array(s.control_fidelity_per_episode[burnin_length:])
                 fid_plots(data_fids, ctrl_fids, 0.1, label=False)
         else:
@@ -341,15 +391,16 @@ def plot_layered(results, context_contour, correction_contour, burnin_length=0,
             ctrl_fids = uniform_filter1d(np.array(sim.control_fidelity_per_episode[burnin_length:]), window_size)
             fid_plots(data_fids, ctrl_fids, 1.0, label=True)
 
-        axs[3].set_title('Fidelity (after burn-in)')
-        axs[3].set_xlabel(r'$\Delta t$')
-        axs[3].set_ylabel('Haar-averaged fidelity')
-        axs[3].legend()
-
+        axs[3].set_title('Fidelity (after burn-in)', fontsize = 24)
+        axs[3].set_xlabel(r'$\Delta t$', fontsize = 24)
+        axs[3].set_ylabel('Entanglement fidelity', fontsize = 24)
+        axs[3].legend(fontsize=24)
+        axs[3].tick_params(axis='both', labelsize=24)
+            
         axs[4].set_xlabel(r'$\Delta t$')
-        axs[4].set_ylabel('Haar-averaged fidelity difference')
+        axs[4].set_ylabel('Entanglement fidelity difference')
         axs[4].set_title('Fidelity difference (after burn-in)')
 
         axs[5].set_xlabel(r'$\Delta t$')
-        axs[5].set_ylabel('Haar-averaged fidelity difference')
+        axs[5].set_ylabel('Entanglement fidelity difference')
         axs[5].set_title('Fidelity difference relative to re-centered distribution (after burn-in)')
